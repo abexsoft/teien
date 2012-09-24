@@ -1,4 +1,4 @@
-Copyright (c) 2012 abexsoft
+Copyright (c) 2012 abexsoft@gmail.com
 
 MIT License
 

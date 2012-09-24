@@ -6,14 +6,18 @@ require 'teien/version'
 Gem::Specification.new do |gem|
   gem.name          = "teien"
   gem.version       = Teien::VERSION
-  gem.authors       = ["abexsoft"]
+  gem.authors       = ["abexsoft works"]
   gem.email         = ["abexsoft@gmail.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
-  gem.homepage      = ""
+  gem.description   = %q{An easy 3D world maker.}
+  gem.summary       = %q{An easy 3D world maker. You can create your 3D world with ruby scripts.}
+  gem.homepage      = "https://github.com/abexsoft/teien"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
+
+  gem.add_dependency 'ruby-ogre'
+  gem.add_dependency 'ruby-bullet'
+  gem.add_dependency 'teien_ext'
 end
