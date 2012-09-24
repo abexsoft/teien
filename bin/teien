@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+
+# This script is a environment setting helper on the startup.
+# 1. set a LD_LIBRARY_PATH(or PATH) value for dynamic libraries.
+# 2. restart with above value.
+# 3. set a LOAD_PATH value for ruby libraries.
+
+if (ARGV[0] == "-h" || ARGV[0] == "--help")
+  puts "Usage: teien file"
+  exit
+end
+
+#
+# require this file directly at first line, unless you set 
+# RUBYLIB and LD_LIBRARY_PATH. (check sample code)
+#
+require 'rbconfig'
+require 'OgreConfig'
+
+$topDir = File.dirname(File.dirname(File.expand_path(__FILE__)))
+libPath  = $topDir  + "/lib"
+extPath  = OgreConfig::getDepsLibPath
+
+# needed by dynamic library.
+if (/mingw/ =~ RUBY_PLATFORM)
+  ldLibPath = extPath + ";" + OgreConfig::getLib + ";" + libPath
+  if (ENV["PATH"] == nil)
+    ENV["PATH"] =  ldLibPath
+    exec("ruby #{$0} #{ARGV.join(" ")}")
+  elsif (!ENV["PATH"].include?(ldLibPath))
+    ENV["PATH"] = ldLibPath + ";" +ENV["PATH"]
+    exec("ruby #{$0} #{ARGV.join(" ")}")
+  end
+else
+  ldLibPath = extPath + ":" + libPath
+  if (ENV["LD_LIBRARY_PATH"] == nil)
+    ENV["LD_LIBRARY_PATH"] = ldLibPath
+    exec($0, *ARGV)
+  elsif(!ENV["LD_LIBRARY_PATH"].include?(ldLibPath))
+    ENV["LD_LIBRARY_PATH"] = ldLibPath + ":" + ENV["LD_LIBRARY_PATH"]
+    exec($0, *ARGV)
+  end
+end
+
+$LOAD_PATH.push(libPath)
+$LOAD_PATH.push("./")
+
+load ARGV[0]
+

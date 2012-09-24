@@ -1,0 +1,3 @@
+module Teien
+  VERSION = "0.0.1"
+end

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+FILE_PATH=`dirname "$0"`
+teien $FILE_PATH/hello_garden.rb
+
