@@ -5,7 +5,7 @@ require "Ogre.so"
 require "Procedural.so"
 require "OIS.so"
 require "OgreBites.so"
-require "TeienExt.so"
+require "Teienlib.so"
 
 require "teien/tools.rb"
 require 'teien/light_object'

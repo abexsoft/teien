@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'teien/version'
@@ -19,5 +18,5 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'ruby-ogre'
   gem.add_dependency 'ruby-bullet'
-  gem.add_dependency 'teien_ext'
+  gem.add_dependency 'teienlib'
 end

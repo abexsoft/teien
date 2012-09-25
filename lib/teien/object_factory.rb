@@ -275,7 +275,7 @@ class ObjectFactory
       entity.setMaterialName(object_info.material_name) if object_info.material_name
       node = obj.create_scene_node(entity, object_info.view_offset)
       node.setScale(object_info.scale.x, object_info.scale.y, object_info.scale.z)
-      strider = TeienExt::MeshStrider.new(entity.getMesh().get())
+      strider = Teienlib::MeshStrider.new(entity.getMesh().get())
       cShape = Bullet::BtGImpactMeshShape.new(strider)
       cShape.setLocalScaling(Bullet::BtVector3.new(object_info.scale.x, 
                                                    object_info.scale.y, 
