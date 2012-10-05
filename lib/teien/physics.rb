@@ -12,9 +12,9 @@ class ContactResult < Bullet::ContactResultCallback
     return @isCollided
   end
 
-  def addSingleResult(cp, 
-                      colObj0, partId0, index0,
-                      colObj1, partId1, index1)
+  def add_single_result(cp, 
+                        colObj0, partId0, index0,
+                        colObj1, partId1, index1)
     @isCollided = true
     return 0
   end
@@ -51,10 +51,10 @@ class Physics < Bullet::TickListener
     @dynamics_world = Bullet::BtDiscreteDynamicsWorld.new(@collision_dispatcher, @aabb_cache,
                                                           @solver, @collision_config)
     gravity = Bullet::BtVector3.new(0.0, -9.8, 0.0)
-    @dynamics_world.setGravity(gravity)
+    @dynamics_world.set_gravity(gravity)
 
-    @dynamics_world.setInternalTickCallback(self, true);     
-    @dynamics_world.setInternalTickCallback(self, false);     
+    @dynamics_world.set_internal_tick_callback(self, true);     
+    @dynamics_world.set_internal_tick_callback(self, false);     
 =begin
     worldAabbCache->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 =end    
@@ -70,7 +70,7 @@ class Physics < Bullet::TickListener
   def finalize
     # clear all objects.
     @rigid_bodies.each{|body|
-      @dynamics_world.removeRigidBody(body)
+      @dynamics_world.remove_rigid_body(body)
     }
     @rigid_bodies = []
 
@@ -78,24 +78,24 @@ class Physics < Bullet::TickListener
   end
 
   def update(delta)
-    @dynamics_world.stepSimulation(delta, @max_sub_steps, @fixed_time_step)
+    @dynamics_world.step_simulation(delta, @max_sub_steps, @fixed_time_step)
     return true
   end
 
-  def frameRenderingQueued(evt)
+  def frame_rendering_queued(evt)
 #    print "Physics::tick: ", evt.timeSinceLastFrame * 1000, "ms\n"
-    @dynamics_world.stepSimulation(evt.timeSinceLastFrame, @max_sub_steps, @fixed_time_step)
+    @dynamics_world.step_simulation(evt.timeSinceLastFrame, @max_sub_steps, @fixed_time_step)
     return true
   end
 
   def flush_pair_cache(rigid_body)
-    pair_cache = @dynamics_world.getBroadphase().getOverlappingPairCache()
-    pair_cache.removeOverlappingPairsContainingProxy(rigid_body.getBroadphaseHandle(), 
-                                                     @dynamics_world.getDispatcher())
+    pair_cache = @dynamics_world.get_broadphase().get_overlapping_pair_cache()
+    pair_cache.remove_overlapping_pairs_containing_proxy(rigid_body.get_broadphase_handle(), 
+                                                         @dynamics_world.get_dispatcher())
   end
 
   def set_gravity(vec)
-    @dynamics_world.setGravity(vec)
+    @dynamics_world.set_gravity(vec)
   end
 
 =begin
@@ -117,15 +117,15 @@ class Physics < Bullet::TickListener
   def add_rigid_body(rigid_body, collision_filter = nil)
     @rigid_bodies.push(rigid_body)
     if (collision_filter)
-      @dynamics_world.addRigidBody(rigid_body, collision_filter.group, collision_filter.mask)
+      @dynamics_world.add_rigid_body(rigid_body, collision_filter.group, collision_filter.mask)
     else
-      @dynamics_world.addRigidBody(rigid_body)
+      @dynamics_world.add_rigid_body(rigid_body)
     end
   end
 
   def contact_pair_test(colObjA, colObjB)
     result = ContactResult.new
-    @dynamics_world.contactPairTest(colObjA, colObjB, result)
+    @dynamics_world.contact_pair_test(colObjA, colObjB, result)
     return result
   end
 

@@ -42,7 +42,7 @@ class ObjectFactory
       # Setting an entity and a node of Ogre3d.
       normal = Ogre::Vector3.new(0, 1, 0)
       up = Ogre::Vector3.new(0, 0, 1)
-      Ogre::MeshManager::getSingleton().createPlane(name, 
+      Ogre::MeshManager::get_singleton().create_plane(name, 
                                                     Ogre::ResourceGroupManager.DEFAULT_RESOURCE_GROUP_NAME,
                                                     Ogre::Plane.new(normal, 0), 
                                                     object_info.width * 2.0, 
@@ -52,19 +52,19 @@ class ObjectFactory
                                                     true, 1, 
                                                     object_info.u_tile, 
                                                     object_info.v_tile, up)
-      entity = @garden.view.scene_mgr.createEntity(name, name)
-      entity.setCastShadows(true)
-      entity.setMaterialName(object_info.material_name)
+      entity = @garden.view.scene_mgr.create_entity(name, name)
+      entity.set_cast_shadows(true)
+      entity.set_material_name(object_info.material_name)
       node = obj.create_scene_node(entity)
     end
 
     # Setting a collision shape and rigid body of Bullet.
     cShape = Bullet::BtBoxShape.new(Vector3D.new(object_info.width, object_info.depth, object_info.height))
     rb = obj.create_rigid_body(0, cShape, Vector3D.new(0, 0, 0), Vector3D.new(0.0, -object_info.depth, 0.0))
-    rb.setAngularFactor(physics_info.angular_factor)
-    rb.setRestitution(physics_info.restitution)
-    rb.setFriction(physics_info.friction)
-    rb.setDamping(physics_info.linear_damping, physics_info.angular_damping)
+    rb.set_angular_factor(physics_info.angular_factor)
+    rb.set_restitution(physics_info.restitution)
+    rb.set_friction(physics_info.friction)
+    rb.set_damping(physics_info.linear_damping, physics_info.angular_damping)
 
     @garden.add_object(obj)
       
@@ -79,23 +79,27 @@ class ObjectFactory
 
     unless @garden.is_server
       gen = Procedural::BoxGenerator.new()
-      gen.setSizeX(object_info.size.x * 2.0).setSizeY(object_info.size.y * 2.0).setSizeZ(object_info.size.z * 2.0)
-      gen.setNumSegX(object_info.num_seg_x).setNumSegY(object_info.num_seg_y).setNumSegZ(object_info.num_seg_z)
-      gen.setUTile(object_info.u_tile).setVTile(object_info.v_tile).realizeMesh(name)
-      entity = @garden.view.scene_mgr.createEntity(name)
-      entity.setCastShadows(true)
-      entity.setMaterialName(object_info.material_name)
+      gen.set_size_x(object_info.size.x * 2.0)
+      gen.set_size_y(object_info.size.y * 2.0)
+      gen.set_size_z(object_info.size.z * 2.0)
+      gen.set_num_seg_x(object_info.num_seg_x)
+      gen.set_num_seg_y(object_info.num_seg_y)
+      gen.set_num_seg_z(object_info.num_seg_z)
+      gen.set_utile(object_info.u_tile).set_vtile(object_info.v_tile).realize_mesh(name)
+      entity = @garden.view.scene_mgr.create_entity(name)
+      entity.set_cast_shadows(true)
+      entity.set_material_name(object_info.material_name)
       node = obj.create_scene_node(entity)
     end
 
     cShape = Bullet::BtBoxShape.new(Vector3D.new(object_info.size.x, object_info.size.y, object_info.size.z))
     inertia = Bullet::BtVector3.new()
-    cShape.calculateLocalInertia(physics_info.mass, inertia)
+    cShape.calculate_local_inertia(physics_info.mass, inertia)
     rb = obj.create_rigid_body(physics_info.mass, cShape, inertia)
-    rb.setAngularFactor(physics_info.angular_factor)
-    rb.setRestitution(physics_info.restitution)
-    rb.setFriction(physics_info.friction)
-    rb.setDamping(physics_info.linear_damping, physics_info.angular_damping)
+    rb.set_angular_factor(physics_info.angular_factor)
+    rb.set_restitution(physics_info.restitution)
+    rb.set_friction(physics_info.friction)
+    rb.set_damping(physics_info.linear_damping, physics_info.angular_damping)
 
 
     @garden.add_object(obj)
@@ -111,24 +115,24 @@ class ObjectFactory
 
     unless @garden.is_server
       gen = Procedural::SphereGenerator.new()
-      gen.setRadius(object_info.radius)
-      gen.setNumRings(object_info.num_rings)
-      gen.setNumSegments(object_info.num_segments)
-      gen.setUTile(object_info.u_tile).setVTile(object_info.v_tile).realizeMesh(name)
-      entity = @garden.view.scene_mgr.createEntity(name)
-      entity.setCastShadows(true)
-      entity.setMaterialName(object_info.material_name)
+      gen.set_radius(object_info.radius)
+      gen.set_num_rings(object_info.num_rings)
+      gen.set_num_segments(object_info.num_segments)
+      gen.set_vtile(object_info.u_tile).set_vtile(object_info.v_tile).realize_mesh(name)
+      entity = @garden.view.scene_mgr.create_entity(name)
+      entity.set_cast_shadows(true)
+      entity.set_material_name(object_info.material_name)
       node = obj.create_scene_node(entity)
     end
 
     cShape = Bullet::BtSphereShape.new(object_info.radius)
     inertia = Bullet::BtVector3.new()
-    cShape.calculateLocalInertia(physics_info.mass, inertia)
+    cShape.calculate_local_inertia(physics_info.mass, inertia)
     rb = obj.create_rigid_body(physics_info.mass, cShape, inertia)
-    rb.setAngularFactor(physics_info.angular_factor)
-    rb.setRestitution(physics_info.restitution)
-    rb.setFriction(physics_info.friction)
-    rb.setDamping(physics_info.linear_damping, physics_info.angular_damping)
+    rb.set_angular_factor(physics_info.angular_factor)
+    rb.set_restitution(physics_info.restitution)
+    rb.set_friction(physics_info.friction)
+    rb.set_damping(physics_info.linear_damping, physics_info.angular_damping)
 
     
     @garden.add_object(obj)
@@ -144,23 +148,25 @@ class ObjectFactory
 
     unless @garden.is_server
       gen = Procedural::CapsuleGenerator.new()
-      gen.setRadius(object_info.radius).setHeight(object_info.height)
-      gen.setNumRings(object_info.num_rings).setNumSegments(object_info.num_segments).setNumSegHeight(object_info.num_seg_height)
-      gen.setUTile(object_info.u_tile).setVTile(object_info.v_tile).realizeMesh(name)
-      entity = @garden.view.scene_mgr.createEntity(name)
-      entity.setCastShadows(true)
-      entity.setMaterialName(object_info.material_name)
+      gen.set_radius(object_info.radius).set_height(object_info.height)
+      gen.set_num_rings(object_info.num_rings)
+      gen.set_num_segments(object_info.num_segments)
+      gen.set_num_seg_height(object_info.num_seg_height)
+      gen.set_vtile(object_info.u_tile).set_vtile(object_info.v_tile).realize_mesh(name)
+      entity = @garden.view.scene_mgr.create_entity(name)
+      entity.set_cast_shadows(true)
+      entity.set_material_name(object_info.material_name)
       node = obj.create_scene_node(entity)
     end
 
     cShape = Bullet::BtCapsuleShape.new(object_info.radius, object_info.height)
     inertia = Bullet::BtVector3.new()
-    cShape.calculateLocalInertia(physics_info.mass, inertia)
+    cShape.calculate_local_inertia(physics_info.mass, inertia)
     rb = obj.create_rigid_body(physics_info.mass, cShape, inertia)
-    rb.setAngularFactor(physics_info.angular_factor)
-    rb.setRestitution(physics_info.restitution)
-    rb.setFriction(physics_info.friction)
-    rb.setDamping(physics_info.linear_damping, physics_info.angular_damping)
+    rb.set_angular_factor(physics_info.angular_factor)
+    rb.set_restitution(physics_info.restitution)
+    rb.set_friction(physics_info.friction)
+    rb.set_damping(physics_info.linear_damping, physics_info.angular_damping)
 
 
     @garden.add_object(obj)
@@ -176,23 +182,23 @@ class ObjectFactory
 
     unless @garden.is_server
       gen = Procedural::ConeGenerator.new
-      gen.setRadius(object_info.radius).setHeight(object_info.height)
-      gen.setNumSegBase(object_info.num_seg_base).setNumSegHeight(object_info.num_seg_height)
-      gen.setUTile(object_info.u_tile).setVTile(object_info.v_tile).realizeMesh(name)
-      entity = @garden.view.scene_mgr.createEntity(name)
-      entity.setCastShadows(true)
-      entity.setMaterialName(object_info.material_name)
+      gen.set_radius(object_info.radius).set_height(object_info.height)
+      gen.set_num_seg_base(object_info.num_seg_base).set_num_seg_height(object_info.num_seg_height)
+      gen.set_utile(object_info.u_tile).set_vtile(object_info.v_tile).realize_mesh(name)
+      entity = @garden.view.scene_mgr.create_entity(name)
+      entity.set_cast_shadows(true)
+      entity.set_material_name(object_info.material_name)
       node = obj.create_scene_node(entity)
     end
 
     cShape = Bullet::BtConeShape.new(object_info.radius, object_info.height)
     inertia = Bullet::BtVector3.new()
-    cShape.calculateLocalInertia(physics_info.mass, inertia)
+    cShape.calculate_local_inertia(physics_info.mass, inertia)
     rb = obj.create_rigid_body(physics_info.mass, cShape, inertia, Vector3D.new(0, object_info.height / 2, 0))
-    rb.setAngularFactor(physics_info.angular_factor)
-    rb.setRestitution(physics_info.restitution)
-    rb.setFriction(physics_info.friction)
-    rb.setDamping(physics_info.linear_damping, physics_info.angular_damping)
+    rb.set_angular_factor(physics_info.angular_factor)
+    rb.set_restitution(physics_info.restitution)
+    rb.set_friction(physics_info.friction)
+    rb.set_damping(physics_info.linear_damping, physics_info.angular_damping)
 
 
     @garden.add_object(obj)
@@ -208,12 +214,12 @@ class ObjectFactory
 
     unless @garden.is_server
       gen = Procedural::CylinderGenerator.new
-      gen.setRadius(object_info.radius).setHeight(object_info.height).setCapped(object_info.capped)
-      gen.setNumSegBase(object_info.num_seg_base).setNumSegHeight(object_info.num_seg_height)
-      gen.setUTile(object_info.u_tile).setVTile(object_info.v_tile).realizeMesh(name)
-      entity = @garden.view.scene_mgr.createEntity(name)
-      entity.setCastShadows(true)
-      entity.setMaterialName(object_info.material_name)
+      gen.set_radius(object_info.radius).set_height(object_info.height).set_capped(object_info.capped)
+      gen.set_num_seg_base(object_info.num_seg_base).set_num_seg_height(object_info.num_seg_height)
+      gen.set_utile(object_info.u_tile).set_vtile(object_info.v_tile).realize_mesh(name)
+      entity = @garden.view.scene_mgr.create_entity(name)
+      entity.set_cast_shadows(true)
+      entity.set_material_name(object_info.material_name)
       node = obj.create_scene_node(entity, Vector3D.new(0, -object_info.height / 2, 0))
     end
 
@@ -221,12 +227,12 @@ class ObjectFactory
                                                                object_info.height / 2, 
                                                                object_info.radius))
     inertia = Bullet::BtVector3.new()
-    cShape.calculateLocalInertia(physics_info.mass, inertia)
+    cShape.calculate_local_inertia(physics_info.mass, inertia)
     rb = obj.create_rigid_body(physics_info.mass, cShape, inertia)
-    rb.setAngularFactor(physics_info.angular_factor)
-    rb.setRestitution(physics_info.restitution)
-    rb.setFriction(physics_info.friction)
-    rb.setDamping(physics_info.linear_damping, physics_info.angular_damping)
+    rb.set_angular_factor(physics_info.angular_factor)
+    rb.set_restitution(physics_info.restitution)
+    rb.set_friction(physics_info.friction)
+    rb.set_damping(physics_info.linear_damping, physics_info.angular_damping)
 
     @garden.add_object(obj)
 
@@ -240,23 +246,23 @@ class ObjectFactory
     obj.physics_info = physics_info
 
     unless @garden.is_server
-      entity = @garden.view.scene_mgr.createEntity(name, object_info.mesh_path)
-      entity.setCastShadows(true)
-      entity.setMaterialName(object_info.material_name) if object_info.material_name
+      entity = @garden.view.scene_mgr.create_entity(name, object_info.mesh_path)
+      entity.set_cast_shadows(true)
+      entity.set_material_name(object_info.material_name) if object_info.material_name
       node = obj.create_scene_node(entity, object_info.view_offset, object_info.view_rotation)
-      node.setScale(object_info.size.x * object_info.scale.x, 
-                    object_info.size.y * object_info.scale.y, 
-                    object_info.size.z * object_info.scale.z)
+      node.set_scale(object_info.size.x * object_info.scale.x, 
+                     object_info.size.y * object_info.scale.y, 
+                     object_info.size.z * object_info.scale.z)
     end
 
     cShape = Bullet::BtBoxShape.new(object_info.size)
     inertia = Bullet::BtVector3.new()
-    cShape.calculateLocalInertia(physics_info.mass, inertia)
+    cShape.calculate_local_inertia(physics_info.mass, inertia)
     rb = obj.create_rigid_body(physics_info.mass, cShape, inertia, object_info.physics_offset)
-    rb.setAngularFactor(physics_info.angular_factor)
-    rb.setRestitution(physics_info.restitution)
-    rb.setFriction(physics_info.friction)
-    rb.setDamping(physics_info.linear_damping, physics_info.angular_damping)
+    rb.set_angular_factor(physics_info.angular_factor)
+    rb.set_restitution(physics_info.restitution)
+    rb.set_friction(physics_info.friction)
+    rb.set_damping(physics_info.linear_damping, physics_info.angular_damping)
 
     @garden.add_object(obj)
 
@@ -270,26 +276,26 @@ class ObjectFactory
     obj.physics_info = physics_info
 
     unless @garden.is_server
-      entity = @garden.view.scene_mgr.createEntity(name, object_info.mesh_path)
-      entity.setCastShadows(true)
-      entity.setMaterialName(object_info.material_name) if object_info.material_name
+      entity = @garden.view.scene_mgr.create_entity(name, object_info.mesh_path)
+      entity.set_cast_shadows(true)
+      entity.set_material_name(object_info.material_name) if object_info.material_name
       node = obj.create_scene_node(entity, object_info.view_offset)
-      node.setScale(object_info.scale.x, object_info.scale.y, object_info.scale.z)
-      strider = Teienlib::MeshStrider.new(entity.getMesh().get())
+      node.set_scale(object_info.scale.x, object_info.scale.y, object_info.scale.z)
+      strider = Teienlib::MeshStrider.new(entity.get_mesh().get())
       cShape = Bullet::BtGImpactMeshShape.new(strider)
-      cShape.setLocalScaling(Bullet::BtVector3.new(object_info.scale.x, 
-                                                   object_info.scale.y, 
-                                                   object_info.scale.z))
+      cShape.set_local_scaling(Bullet::BtVector3.new(object_info.scale.x, 
+                                                     object_info.scale.y, 
+                                                     object_info.scale.z))
       cShape.instance_variable_set(:@strider, strider) # prevent this from GC.
-      cShape.postUpdate()
-      cShape.updateBound()
+      cShape.post_update()
+      cShape.update_bound()
       inertia = Bullet::BtVector3.new()
-      cShape.calculateLocalInertia(physics_info.mass, inertia)
+      cShape.calculate_local_inertia(physics_info.mass, inertia)
       rb = obj.create_rigid_body(physics_info.mass, cShape, inertia, object_info.physics_offset)
-      rb.setAngularFactor(physics_info.angular_factor)
-      rb.setRestitution(physics_info.restitution)
-      rb.setFriction(physics_info.friction)
-      rb.setDamping(physics_info.linear_damping, physics_info.angular_damping)
+      rb.set_angular_factor(physics_info.angular_factor)
+      rb.set_restitution(physics_info.restitution)
+      rb.set_friction(physics_info.friction)
+      rb.set_damping(physics_info.linear_damping, physics_info.angular_damping)
     end
     
     @garden.add_object(obj)

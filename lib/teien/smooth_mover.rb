@@ -21,41 +21,41 @@ class SmoothMover
     @cameraDir = Ogre::Vector3.new(0, 0, 0)
   end
 
-  def clearAction()
+  def clear_action()
     @forward = false
     @backward = false
     @left = false
     @right = false
   end
 
-  def isMove()
+  def is_move()
     return (@forward || @backward || @left || @right)
   end
 
-  def moveForward(bool)
+  def move_forward(bool)
     @forward = bool
   end
 
-  def moveBackward(bool)
+  def move_backward(bool)
     @backward = bool
   end
 
-  def moveLeft(bool)
+  def move_left(bool)
     @left = bool
   end
 
-  def moveRight(bool)
+  def move_right(bool)
     @right = bool
   end
 
   #
   # This direction is the forward.
   #
-  def moveCameraDirection(cameraDir)
+  def move_camera_direction(cameraDir)
     @cameraDir = cameraDir
   end
 
-  def updateTarget(delta)
+  def update_target(delta)
     @moveDir.x = 0
     @moveDir.y = 0
     @moveDir.z = 0
@@ -79,9 +79,9 @@ class SmoothMover
 
     if (@movable)
       newAcc = @moveDir * @acceleration
-      @targetObject.setAcceleration(Vector3D::to_bullet(newAcc))
+      @targetObject.set_acceleration(Vector3D::to_bullet(newAcc))
     else
-      @targetObject.setAcceleration(@zeroVector)
+      @targetObject.set_acceleration(@zeroVector)
     end
 
     # update target's direction
@@ -92,8 +92,8 @@ class SmoothMover
     puts "BulletDir: (#{bulletDir.x}, #{bulletDir.y}, #{bulletDir.z})"
 =end
 
-    toGoal = Vector3D.to_ogre(-@targetObject.getOrientation().zAxis()).getRotationTo(@moveDir)
-    yawToGoal = toGoal.getYaw().valueDegrees()
+    toGoal = Vector3D.to_ogre(-@targetObject.get_orientation().z_axis()).get_rotation_to(@moveDir)
+    yawToGoal = toGoal.get_yaw().value_degrees()
     yawAtSpeed = yawToGoal / yawToGoal.abs * delta * @turnSpeed
 
     if (yawToGoal < 0) 
@@ -103,6 +103,6 @@ class SmoothMover
       yawToGoal = [0, [yawToGoal, yawAtSpeed].min].max
     end
 
-    @targetObject.yaw(Ogre::Degree.new(yawToGoal).valueRadians())
+    @targetObject.yaw(Ogre::Degree.new(yawToGoal).value_radians())
   end
 end

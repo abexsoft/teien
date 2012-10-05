@@ -41,7 +41,7 @@ class GardenObject < Bullet::BtMotionState
 
     @rigid_body = nil
     @transform = Bullet::BtTransform.new()
-    @transform.setIdentity()
+    @transform.set_identity()
     @acceleration = Vector3D.new(0, 0, 0)
 
     @maxHorizontalVelocity = 0
@@ -53,12 +53,12 @@ class GardenObject < Bullet::BtMotionState
   #
   def create_scene_node(entity, offset = Vector3D.new(0, 0, 0), rotate = Quaternion.new(0, 0, 0, 1.0))
     if (@pivot_scene_node == nil)
-      @pivot_scene_node = @garden.view.scene_mgr.getRootSceneNode().createChildSceneNode()
+      @pivot_scene_node = @garden.view.scene_mgr.get_root_scene_node().create_child_scene_node()
     end
-    @scene_node = @pivot_scene_node.createChildSceneNode(Vector3D.to_ogre(offset), Quaternion.to_ogre(rotate))
+    @scene_node = @pivot_scene_node.create_child_scene_node(Vector3D.to_ogre(offset), Quaternion.to_ogre(rotate))
     @pivot_scene_node.instance_variable_set(:@child, @scene_node) # prevent this from GC.
     if entity
-      @scene_node.attachObject(entity)
+      @scene_node.attach_object(entity)
       @entity = entity
     end
     return @scene_node
@@ -71,9 +71,9 @@ class GardenObject < Bullet::BtMotionState
 #    puts "offset(#{offset.x}, #{offset.y}, #{offset.z})"
     @pivot_shape = Bullet::BtCompoundShape.new
     localTrans = Bullet::BtTransform.new
-    localTrans.setIdentity()
-    localTrans.setOrigin(offset)
-    @pivot_shape.addChildShape(localTrans, shape)
+    localTrans.set_identity()
+    localTrans.set_origin(offset)
+    @pivot_shape.add_child_shape(localTrans, shape)
     @shape = shape
     @rigid_body = @garden.physics.create_rigid_body(mass, self, @pivot_shape, inertia)
   end
@@ -83,7 +83,7 @@ class GardenObject < Bullet::BtMotionState
   end
 
   def set_activation_state(state)
-    @rigid_body.setActivationState(state)
+    @rigid_body.set_activation_state(state)
   end
 
 
@@ -92,9 +92,9 @@ class GardenObject < Bullet::BtMotionState
   # ==== Args
   # [aPos: Vector3D] 
   def set_position(aPos)
-    @pivot_scene_node.setPosition(aPos.x, aPos.y, aPos.z) unless @garden.is_server
-    @transform.setOrigin(Bullet::BtVector3.new(aPos.x, aPos.y, aPos.z))
-    @rigid_body.setCenterOfMassTransform(@transform) if (@rigid_body != nil)
+    @pivot_scene_node.set_position(aPos.x, aPos.y, aPos.z) unless @garden.is_server
+    @transform.set_origin(Bullet::BtVector3.new(aPos.x, aPos.y, aPos.z))
+    @rigid_body.set_center_of_mass_transform(@transform) if (@rigid_body != nil)
   end
 
   # Set a linear velocity.
@@ -103,7 +103,7 @@ class GardenObject < Bullet::BtMotionState
   # [aVel: Vector3D] 
   def set_linear_velocity(aVel)
     @rigid_body.activate(true)
-    @rigid_body.setLinearVelocity(aVel)
+    @rigid_body.set_linear_velocity(aVel)
   end
 
   # Set an angular velocity.
@@ -111,7 +111,7 @@ class GardenObject < Bullet::BtMotionState
   # ==== Args
   # [vel: Vector3D] 
   def set_angular_velocity(vel)
-    @rigid_body.setAngularVelocity(vel)
+    @rigid_body.set_angular_velocity(vel)
   end
 
   # Set a max horizontal velocity.
@@ -136,22 +136,22 @@ class GardenObject < Bullet::BtMotionState
   end
 
   def set_gravity(grav)
-    @rigid_body.setGravity(grav)
+    @rigid_body.set_gravity(grav)
   end
 
   def set_rotation(quad)
-    transform = @rigid_body.getCenterOfMassTransform()
-    transform.setRotation(quad)
-    @rigid_body.setCenterOfMassTransform(transform)
+    transform = @rigid_body.get_center_of_mass_transform()
+    transform.set_rotation(quad)
+    @rigid_body.set_center_of_mass_transform(transform)
   end
 
   def set_collision_filter(filter)
-    @garden.physics.dynamicsWorld.removeRigidBody(@rigid_body)
-    @garden.physics.dynamicsWorld.addRigidBody(@rigid_body, filter.group, filter.mask)
+    @garden.physics.dynamicsWorld.remove_rigid_body(@rigid_body)
+    @garden.physics.dynamicsWorld.add_rigid_body(@rigid_body, filter.group, filter.mask)
     physics_info.collisionFilter = filter
   end
 
-  def setWorldTransform(worldTrans)
+  def set_world_transform(worldTrans)
 #    puts "setWorldTransform"
 
     if (@mode == MODE_FREE)
@@ -159,8 +159,8 @@ class GardenObject < Bullet::BtMotionState
 #    puts "origin(#{pos.x}, #{pos.y}, #{pos.z})"
 
       @transform = Bullet::BtTransform.new(worldTrans)
-      newPos = @transform.getOrigin()
-      newRot = @transform.getRotation()
+      newPos = @transform.get_origin()
+      newRot = @transform.get_rotation()
 #    puts "newRot(#{id}: #{newRot.x}, #{newRot.y}, #{newRot.z}, #{newRot.w})"
 #    puts "newPos(#{id}: #{newPos.x}, #{newPos.y}, #{newPos.z})"
 
@@ -169,43 +169,43 @@ class GardenObject < Bullet::BtMotionState
       end
 
       unless @garden.is_server
-        @pivot_scene_node.setPosition(newPos.x, newPos.y, newPos.z) 
-        @pivot_scene_node.setOrientation(newRot.w, newRot.x, newRot.y, newRot.z)
+        @pivot_scene_node.set_position(newPos.x, newPos.y, newPos.z) 
+        @pivot_scene_node.set_orientation(newRot.w, newRot.x, newRot.y, newRot.z)
       end
     end
   end
 
-  def getWorldTransform(worldTrans)
+  def get_world_transform(worldTrans)
 #    puts "getWorldTransform"
   end
 
   def get_activation_state()
-    @rigid_body.getActivationState()
+    @rigid_body.get_activation_state()
   end
 
   def get_mass()
-    return 1.0 / @rigid_body.getInvMass()
+    return 1.0 / @rigid_body.get_inv_mass()
   end
 
   def get_inv_mass()
-    return @rigid_body.getInvMass()
+    return @rigid_body.get_inv_mass()
   end
 
   def get_collision_mask()
-    @rigid_body.getBroadphaseHandle().m_collisionFilterMask
+    @rigid_body.get_broadphase_handle().m_collisionFilterMask
   end
 
   def get_position()
-    newPos = @transform.getOrigin()
+    newPos = @transform.get_origin()
     return newPos
   end
 
   def get_linear_velocity()
-    return @rigid_body.getLinearVelocity()
+    return @rigid_body.get_linear_velocity()
   end
 
   def get_angular_velocity()
-    return @rigid_body.getAngularVelocity()
+    return @rigid_body.get_angular_velocity()
   end
 
   def get_acceleration()
@@ -213,15 +213,15 @@ class GardenObject < Bullet::BtMotionState
   end
 
   def get_gravity()
-    return @rigid_body.getGravity()
+    return @rigid_body.get_gravity()
   end
 
   def get_rotation()
-    return @transform.getRotation()
+    return @transform.get_rotation()
   end
 
   def get_orientation()
-    return @transform.getRotation()
+    return @transform.get_rotation()
   end
 
   def limit_velocity(vel)
@@ -245,7 +245,7 @@ class GardenObject < Bullet::BtMotionState
 
   def apply_impulse(imp, rel = Vector3D.new(0, 0, 0))
     @rigid_body.activate(true)
-    @rigid_body.applyImpulse(imp, rel)
+    @rigid_body.apply_impulse(imp, rel)
   end
 
   #
@@ -260,32 +260,32 @@ class GardenObject < Bullet::BtMotionState
     qnorm = Quaternion.new()
     qnorm.copy(quat)
     qnorm.normalize()
-    transform = @rigid_body.getCenterOfMassTransform()
-    curRot = transform.getRotation()
+    transform = @rigid_body.get_center_of_mass_transform()
+    curRot = transform.get_rotation()
     newRot = curRot * qnorm
-    transform.setRotation(newRot)
-    @rigid_body.setCenterOfMassTransform(transform)
+    transform.set_rotation(newRot)
+    @rigid_body.set_center_of_mass_transform(transform)
 
-    @pivot_scene_node.setOrientation(Quaternion.to_ogre(newRot)) unless @garden.is_server
+    @pivot_scene_node.set_orientation(Quaternion.to_ogre(newRot)) unless @garden.is_server
   end
 
   def attach_object_to_bone(boneName, obj)
-    obj.scene_node.detachObject(obj.entity)
-    tag = @entity.attachObjectToBone(boneName, obj.entity)
-    @garden.physics.dynamics_world.removeRigidBody(obj.rigid_body)
+    obj.scene_node.detach_object(obj.entity)
+    tag = @entity.attach_object_to_bone(boneName, obj.entity)
+    @garden.physics.dynamics_world.remove_rigid_body(obj.rigid_body)
     obj.mode = MODE_ATTACHED
     return tag
   end
 
   def detach_object_from_bone(obj)
-    @entity.detachObjectFromBone(obj.entity)
-    obj.scene_node.attachObject(obj.entity)
+    @entity.detach_object_from_bone(obj.entity)
+    obj.scene_node.attach_object(obj.entity)
     if obj.physics_info.collisionFilter
-      @garden.physics.dynamics_world.addRigidBody(obj.rigid_body, 
-                                                 obj.physics_info.collisionFilter.group,
-                                                 obj.physics_info.collisionFilter.mask)
+      @garden.physics.dynamics_world.add_rigid_body(obj.rigid_body, 
+                                                    obj.physics_info.collisionFilter.group,
+                                                    obj.physics_info.collisionFilter.mask)
     else
-      @garden.physics.dynamics_world.addRigidBody(obj.rigid_body)
+      @garden.physics.dynamics_world.add_rigid_body(obj.rigid_body)
     end
     obj.mode = MODE_FREE
   end

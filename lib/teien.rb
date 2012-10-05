@@ -1,11 +1,11 @@
 require "teien/version"
 
-require "Bullet.so"
-require "Ogre.so"
-require "Procedural.so"
-require "OIS.so"
-require "OgreBites.so"
-require "Teienlib.so"
+require "bullet.so"
+require "ogre.so"
+require "procedural.so"
+require "ois.so"
+require "ogrebites.so"
+require "teienlib.so"
 
 require "teien/tools.rb"
 require 'teien/light_object'

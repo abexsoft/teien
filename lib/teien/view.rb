@@ -41,7 +41,7 @@ class View < Ogre::FrameListener
     load_plugins()
 
 #    return false unless (@root.restoreConfig())
-    return false unless (@root.showConfigDialog())
+    return false unless (@root.show_config_dialog())
 
     @window = @root.initialise(true, @window_title)
     
@@ -56,14 +56,14 @@ class View < Ogre::FrameListener
     cfg = Ogre::ConfigFile.new
     cfg.load(@plugins_cfg)
 
-    pluginDir = cfg.getSetting("PluginFolder")
+    pluginDir = cfg.get_setting("PluginFolder")
     pluginDir += "/" if (pluginDir.length > 0) && (pluginDir[-1] != '/') 
 
-    cfg.each_Settings {|secName, keyName, valueName|
+    cfg.each_settings {|secName, keyName, valueName|
       fullPath = pluginDir + valueName
       fullPath.sub!("<ConfigFileFolder>", File.dirname(@garden.plugins_cfg)) if @garden.resources_cfg
-      fullPath.sub!("<SystemPluginFolder>", OgreConfig::getPluginFolder)
-      @root.loadPlugin(fullPath) if (keyName == "Plugin")
+      fullPath.sub!("<SystemPluginFolder>", OgreConfig::get_plugin_folder)
+      @root.load_plugin(fullPath) if (keyName == "Plugin")
     }
   end
 
@@ -73,95 +73,95 @@ class View < Ogre::FrameListener
     cfg = Ogre::ConfigFile.new
     cfg.load(@resources_cfg)
 
-    resourceDir = cfg.getSetting("ResourceFolder")
+    resourceDir = cfg.get_setting("ResourceFolder")
     resourceDir += "/" if (resourceDir.length > 0) && (resourceDir[-1] != '/')
 
-    cfg.each_Settings {|secName, keyName, valueName|
+    cfg.each_settings {|secName, keyName, valueName|
       next if (keyName == "ResourceFolder")
 
       fullPath = resourceDir + valueName
       if @garden.resources_cfg
         fullPath.sub!("<ConfigFileFolder>", File.dirname(@garden.resources_cfg)) 
       end
-      fullPath.sub!("<SystemResourceFolder>", OgreConfig::getResourceFolder)
+      fullPath.sub!("<SystemResourceFolder>", OgreConfig::get_resource_folder)
 
-      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(fullPath, 
-                                                                     keyName, 
-                                                                     secName)
+      Ogre::ResourceGroupManager::get_singleton().add_resource_location(fullPath, 
+                                                                        keyName, 
+                                                                        secName)
     }
   end
 
   def init_managers
-    @root.addFrameListener(self)
+    @root.add_frame_listener(self)
 
     # initialize InputManager
     windowHnd = Ogre::Intp.new
-    @window.getCustomAttribute("WINDOW", windowHnd)
+    @window.get_custom_attribute("WINDOW", windowHnd)
     windowHndStr = sprintf("%d", windowHnd.value())
-    pl = OIS::ParamList.new
+    pl = Ois::ParamList.new
     pl["WINDOW"] = windowHndStr
 
     # initialize input manager
-    @inputManager = OIS::InputManager::createInputSystem(pl)
-    @keyboard = @inputManager.createInputObject(OIS::OISKeyboard, true).toKeyboard()
-    @mouse = @inputManager.createInputObject(OIS::OISMouse, true).toMouse()
+    @inputManager = Ois::InputManager::create_input_system(pl)
+    @keyboard = @inputManager.create_input_object(Ois::OISKeyboard, true).to_keyboard()
+    @mouse = @inputManager.create_input_object(Ois::OISMouse, true).to_mouse()
 
     # initialize trayManager
-    Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("Essential")
-    @tray_mgr = OgreBites::SdkTrayManager.new("Base", @window, @mouse);
-    ms = @mouse.getMouseState()
-    ms.width = @window.getWidth()
-    ms.height = @window.getHeight()
+    Ogre::ResourceGroupManager::get_singleton().initialise_resource_group("Essential")
+    @tray_mgr = Ogrebites::SdkTrayManager.new("Base", @window, @mouse);
+    ms = @mouse.get_mouse_state()
+    ms.width = @window.get_width()
+    ms.height = @window.get_height()
   end
 
   def start(script)
     @script = script
 
     # initialize scene_mgr
-    @scene_mgr = @root.createSceneManager(Ogre::ST_GENERIC)
-    @scene_mgr.setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE)
+    @scene_mgr = @root.create_scene_manager(Ogre::ST_GENERIC)
+    @scene_mgr.set_shadow_technique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE)
 
     # initialize a camera
-    @camera = @scene_mgr.createCamera("FixCamera")
+    @camera = @scene_mgr.create_camera("FixCamera")
     # Create one viewport, entire window
-    @vp = @window.addViewport(@camera);
-    @vp.setBackgroundColour(Ogre::ColourValue.new(0, 0, 0));
+    @vp = @window.add_viewport(@camera)
+    @vp.set_background_colour(Ogre::ColourValue.new(0, 0, 0))
     # Alter the camera aspect ratio to match the viewport
-    @camera.setAspectRatio(Float(@vp.getActualWidth()) / Float(@vp.getActualHeight()));
+    @camera.set_aspect_ratio(Float(@vp.get_actual_width()) / Float(@vp.get_actual_height()));
 
     # set listeners.
     @keyListener = KeyListener.new(self)
-    @keyboard.setEventCallback(@keyListener)
+    @keyboard.set_event_callback(@keyListener)
     @mouseListener = MouseListener.new(self)
-    @mouse.setEventCallback(@mouseListener)
+    @mouse.set_event_callback(@mouseListener)
     @trayListener = TrayListener.new(@script)
-    @tray_mgr.setListener(@trayListener)
+    @tray_mgr.set_listener(@trayListener)
 
     # load resources into ResourceGroupManager.
-    @tray_mgr.showLoadingBar(1, 0)
-    Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("General")
-    @tray_mgr.hideLoadingBar()
-    Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5)
+    @tray_mgr.show_loading_bar(1, 0)
+    Ogre::ResourceGroupManager::get_singleton().initialise_resource_group("General")
+    @tray_mgr.hide_loading_bar()
+    Ogre::TextureManager::get_singleton().set_default_num_mipmaps(5)
   end
 
   def prepare_render_loop
-    @root.getRenderSystem()._initRenderTargets()
-    @root.clearEventTimes()
+    @root.get_render_system()._init_render_targets()
+    @root.clear_event_times()
   end
 
   def stop
-    @scene_mgr.clearScene() if (@scene_mgr != nil)
-    @root.destroySceneManager(@scene_mgr) if (@scene_mgr != nil)
+    @scene_mgr.clear_scene() if (@scene_mgr != nil)
+    @root.destroy_scene_manager(@scene_mgr) if (@scene_mgr != nil)
     @scene_mgr = nil
-    @window.removeAllViewports()
-    @tray_mgr.destroyAllWidgets()
+    @window.remove_all_viewports()
+    @tray_mgr.destroy_all_widgets()
   end
 
   def finalize
     stop()
     if (@inputManger != nil)
-      @inputManager.destroyInputObject(@keyboard)
-      @inputManager.destroyInputObject(@mouse)
+      @inputManager.destroy_input_object(@keyboard)
+      @inputManager.destroy_input_object(@mouse)
       @inputManager = nil
     end
     @root.shutdown()
@@ -169,46 +169,46 @@ class View < Ogre::FrameListener
 
   def create_scene_node(parent = nil)
     if (parent == nil)
-      scene_node = @scene_mgr.getRootSceneNode().createChildSceneNode()
+      scene_node = @scene_mgr.get_root_scene_node().create_child_scene_node()
     else
-      scene_node = parent.createChildSceneNode()
+      scene_node = parent.create_child_scene_node()
     end
     return scene_node
   end
 
   # Takes a screen shot.
   def take_screen_shot(name)
-    @window.writeContentsToTimestampedFile(name + "_", ".png")
+    @window.write_contents_to_timestamped_file(name + "_", ".png")
   end
 
   # Shows the animation infomation of the entity.
   def show_all_animation(entity)
     puts "Animations:"
-    animSet = entity.getAllAnimationStates()
-    animSet.each_AnimationState() {|state|
-      puts "name: #{state.getAnimationName()}, len: #{state.getLength()}"
+    animSet = entity.get_all_animation_states()
+    animSet.each_animation_state() {|state|
+      puts "name: #{state.get_animation_name()}, len: #{state.get_length()}"
     }
   end
 
   # Called by the main loop periodically
   def update(delta)
-    Ogre::WindowEventUtilities.messagePump()
-    return @root.renderOneFrame(delta)
+    Ogre::WindowEventUtilities.message_pump()
+    return @root.render_one_frame(delta)
   end
 
   # Called through @root.renderOneFrame(delta).
-  def frameRenderingQueued(evt)
+  def frame_rendering_queued(evt)
     @keyboard.capture()
     @mouse.capture()
     @controller.update(evt.timeSinceLastFrame) if @controller
 
-    @tray_mgr.frameRenderingQueued(evt)
+    @tray_mgr.frame_rendering_queued(evt)
     if (@adjustFlag != true)
-      @tray_mgr.adjustTrays() # fix a caption invisible bug.
+      @tray_mgr.adjust_trays() # fix a caption invisible bug.
       @adjustFlag = true
     end
 
-    return @garden.updateInFrameRenderingQueued(evt.timeSinceLastFrame)
+    return @garden.update_in_frame_rendering_queued(evt.timeSinceLastFrame)
   end
 
   def key_pressed(keyEvent)
@@ -222,19 +222,19 @@ class View < Ogre::FrameListener
   end
 
   def mouse_moved(evt)
-    return true if @tray_mgr.injectMouseMove(evt)
+    return true if @tray_mgr.inject_mouse_move(evt)
     return true if @controller == nil      
     return @controller.mouse_moved(evt)
   end
   
   def mouse_pressed(mouseEvent, mouseButtonID)
-    return true if @tray_mgr.injectMouseDown(mouseEvent, mouseButtonID)
+    return true if @tray_mgr.inject_mouse_down(mouseEvent, mouseButtonID)
     return true if @controller == nil      
     return @controller.mouse_pressed(mouseEvent, mouseButtonID)
   end
   
   def mouse_released(mouseEvent, mouseButtonID)
-    return true if @tray_mgr.injectMouseUp(mouseEvent, mouseButtonID)
+    return true if @tray_mgr.inject_mouse_up(mouseEvent, mouseButtonID)
     return true if @controller == nil      
     return @controller.mouse_released(mouseEvent, mouseButtonID)
   end

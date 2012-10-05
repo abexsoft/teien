@@ -2,17 +2,17 @@ module Teien
   #
   # Key Listener
   #
-  class KeyListener < OIS::KeyListener
+  class KeyListener < Ois::KeyListener
     def initialize(listener)
       super()
       @listener = listener
     end
 
-    def keyPressed(key_event)
+    def key_pressed(key_event)
       return @listener.key_pressed(key_event)
     end
     
-    def keyReleased(key_event)
+    def key_released(key_event)
       return @listener.key_released(key_event)
     end
   end
@@ -20,21 +20,21 @@ module Teien
   #
   # Mouse Listener
   #
-  class MouseListener < OIS::MouseListener
+  class MouseListener < Ois::MouseListener
     def initialize(listener)
       super()
       @listener = listener
     end
 
-    def mouseMoved(evt)
+    def mouse_moved(evt)
       return @listener.mouse_moved(evt)
     end
     
-    def mousePressed(mouse_event, mouse_button_ID)
+    def mouse_pressed(mouse_event, mouse_button_ID)
       return @listener.mouse_pressed(mouse_event, mouse_button_ID)
     end
 
-    def mouseReleased(mouse_event, mouse_button_ID)
+    def mouse_released(mouse_event, mouse_button_ID)
       return @listener.mouse_released(mouse_event, mouse_button_ID)
     end
   end
@@ -42,25 +42,25 @@ module Teien
   #
   # Tray Listener
   #
-  class TrayListener < OgreBites::SdkTrayListener
+  class TrayListener < Ogrebites::SdkTrayListener
     def initialize(listener)
       super()
       @listener = listener
     end
 
-    def buttonHit(button)
-      @listener.button_Hit(button)
+    def button_hit(button)
+      @listener.button_hit(button)
     end
     
-    def itemSelected(menu)
-      @listener.item_Selected(menu)
+    def item_selected(menu)
+      @listener.item_selected(menu)
     end
     
-    def yesNoDialogClosed(name, bl)
+    def yes_no_dialog_closed(name, bl)
       @listener.yes_no_dialog_closed(name, bl)
     end
     
-    def okDialogClosed(name)
+    def ok_dialog_closed(name)
       @listener.ok_dialog_closed(name)
     end
   end

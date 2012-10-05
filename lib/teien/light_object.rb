@@ -11,26 +11,26 @@ class LightObject
   def initialize(garden, name)
     @garden = garden
     @name = name
-    @light = @garden.view.scene_mgr.createLight(@name);
+    @light = @garden.view.scene_mgr.create_light(@name);
   end
 
   def set_type(type)
-    @light.setType(type)
+    @light.set_type(type)
   end
 
   def set_diffuse_color(color)
-    @light.setDiffuseColour(color);
+    @light.set_diffuse_colour(color);
   end
 
   def set_specular_color(color)
-    @light.setSpecularColour(color)
+    @light.set_specular_colour(color)
   end
 
   def set_position(vec)
-    @light.setPosition(Vector3D.to_ogre(vec));
+    @light.set_position(Vector3D.to_ogre(vec));
   end
 
   def set_direction(vec)
-    @light.setDirection(Vector3D.to_ogre(vec));
+    @light.set_direction(Vector3D.to_ogre(vec));
   end
 end

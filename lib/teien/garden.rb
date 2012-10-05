@@ -63,18 +63,18 @@ class Garden
   # _color_:: : set a color(Color).
   #
   def set_ambient_light(color)
-    @view.scene_mgr.setAmbientLight(color)
+    @view.scene_mgr.set_ambient_light(color)
   end
 
   def set_sky_dome(enable, materialName, curvature = 10, tiling = 8, distance = 4000)
-    @view.scene_mgr.setSkyDome(enable, materialName, curvature, tiling, distance)
+    @view.scene_mgr.set_sky_dome(enable, materialName, curvature, tiling, distance)
   end
 
   def set_debug_draw(bl)
     if (bl)
       @debug_draw = bl
-      @debug_drawer = Ogrelet::DebugDrawer.new(@view.scene_mgr)
-      @physics.dynamicsWorld.setDebugDrawer(@debug_drawer)
+      @debug_drawer = Teienlib::DebugDrawer.new(@view.scene_mgr)
+      @physics.dynamicsWorld.set_debug_drawer(@debug_drawer)
     end      
   end
 
@@ -160,7 +160,7 @@ class Garden
 
   
   def update(delta)
-    @physics.dynamics_world.debugDrawWorld() if @debug_draw
+    @physics.dynamics_world.debug_draw_world() if @debug_draw
 
     return @view.update(delta)
   end
@@ -168,7 +168,7 @@ class Garden
   # called from view.update()
   # This function is divided from update() by the purpose of an optimization, 
   # which archives to run in parallel with GPU process.
-  def updateInFrameRenderingQueued(delta)
+  def update_in_frame_rendering_queued(delta)
     return false unless @physics.update(delta)
       
     @objects.each_value {|obj|
@@ -188,7 +188,7 @@ class Garden
   # clear all managers.
   def finalize()
     @physics.finalize()
-    @view.root.saveConfig()
+    @view.root.save_config()
     @view.finalize()
     @objects = {}
   end

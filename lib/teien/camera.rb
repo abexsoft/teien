@@ -14,11 +14,11 @@ class Camera
     end
 
     def get_position
-      return Vector3D.to_self(@camera.getPosition())
+      return Vector3D.to_self(@camera.get_position())
     end
 
     def get_direction
-      return Vector3D.to_self(@camera.getDirection())
+      return Vector3D.to_self(@camera.get_direction())
     end
 end
 

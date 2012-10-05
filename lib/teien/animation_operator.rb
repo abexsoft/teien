@@ -17,28 +17,28 @@ class AnimationOperator
   end
 
   def init(name, loop)
-    initializeAllAnimations()
+    initialize_all_animations()
     play(name, loop)
   end
 
-  def initializeAllAnimations()
-    set = @entity.getAllAnimationStates()
-    set.each_AnimationState {|state|
-      state.setEnabled(false)
-      state.setWeight(0)
-      state.setTimePosition(0)
+  def initialize_all_animations()
+    set = @entity.get_all_animation_states()
+    set.each_animation_state {|state|
+      state.set_enabled(false)
+      state.set_weight(0)
+      state.set_time_position(0)
     }
   end
 
-  def setEnabled(bl)
+  def set_enabled(bl)
 #    @blender.getSource().setEnabled(bl)
   end
 
-  def setBlendingMode(mode)
+  def set_blending_mode(mode)
     @mode = mode
   end
 
-  def setBlengingDuration(duration)
+  def set_blenging_duration(duration)
     @duration = duration
   end
 
@@ -46,28 +46,28 @@ class AnimationOperator
     @loop = loop
 
     unless @state
-      @state = @entity.getAnimationState(name)
-      @state.setEnabled(true)
-      @state.setWeight(1)
-      @state.setTimePosition(0)
-      @state.setLoop(loop)
+      @state = @entity.get_animation_state(name)
+      @state.set_enabled(true)
+      @state.set_weight(1)
+      @state.set_time_position(0)
+      @state.set_loop(loop)
       return
     end
 
     case @mode
     when BL_MODE_SWITCH
-      @state.setEnabled(false)
-      @state = @entity.getAnimationState(name)
-      @state.setEnabled(true)
-      @state.setWeight(1)
-      @state.setTimePosition(0)
+      @state.set_enabled(false)
+      @state = @entity.get_animation_state(name)
+      @state.set_enabled(true)
+      @state.set_weight(1)
+      @state.set_time_position(0)
       @timeLeft = 0
     else
-      newState = @entity.getAnimationState(name)
+      newState = @entity.get_animation_state(name)
       if @timeLeft > 0
-        if newState.getAnimationName == @nextState.getAnimationName
+        if newState.get_animation_name == @nextState.get_animation_name
           return
-        elsif newState.getAnimationName == @state.getAnimationName
+        elsif newState.get_animation_name == @state.get_animation_name
           # going back to the source state
           @state = @nextState
           @nextState = newState
@@ -75,22 +75,22 @@ class AnimationOperator
         else
           if @timeLeft < @duration * 0.5
             # simply replace the target with this one
-            @nextState.setEnabled(false)
-            @nextState.setWeight(0)
+            @nextState.set_enabled(false)
+            @nextState.set_weight(0)
           else
             # old target becomes new source
-            @state.setEnabled(false)
-            @state.setWeight(0)
+            @state.set_enabled(false)
+            @state.set_weight(0)
             @state = @nextState
           end
 
           @nextState = newState
-          @nextState.setEnabled(true)
-          @nextState.setWeight( 1.0 - @timeLeft / @duration )
-          @nextState.setTimePosition(0)
+          @nextState.set_enabled(true)
+          @nextState.set_weight( 1.0 - @timeLeft / @duration )
+          @nextState.set_time_position(0)
         end
       else
-        return if newState.getAnimationName == @state.getAnimationName
+        return if newState.get_animation_name == @state.get_animation_name
                   
         # assert( target == 0, "target should be 0 when not blending" )
         # @state.setEnabled(true)
@@ -98,44 +98,44 @@ class AnimationOperator
         # mTransition = transition;
         @timeLeft = @duration
         @nextState = newState
-        @nextState.setEnabled(true)
-        @nextState.setWeight(0)
-        @nextState.setTimePosition(0)
+        @nextState.set_enabled(true)
+        @nextState.set_weight(0)
+        @nextState.set_time_position(0)
       end
     end
 #    @blender.blend(name, Ogrelet::AnimationBlender::BlendWhileAnimating, 0.2, loop)
   end
 
-  def addTime(delta)
+  def add_time(delta)
     if @state
       if @timeLeft > 0
         @timeLeft -= delta
         
         if @timeLeft < 0
-          @state.setEnabled(false)
-          @state.setWeight(0)
+          @state.set_enabled(false)
+          @state.set_weight(0)
           @state = @nextState
-          @state.setEnabled(true)
-          @state.setWeight(1)
+          @state.set_enabled(true)
+          @state.set_weight(1)
           @nextState = nil
         else
           # still blending, advance weights
-          @state.setWeight(@timeLeft / @duration)
-          @nextState.setWeight(1.0 - @timeLeft / @duration)
+          @state.set_weight(@timeLeft / @duration)
+          @nextState.set_weight(1.0 - @timeLeft / @duration)
           if(@mode  == BL_MODE_CONCURRENT)
-            @nextState.addTime(delta)
+            @nextState.add_time(delta)
           end
         end
       end
       
-      if @state.getTimePosition() >= @state.getLength()
+      if @state.get_time_position() >= @state.get_length()
         @complete = true
       else
         @complete = false
       end
 
-      @state.addTime(delta)
-      @state.setLoop(@loop)
+      @state.add_time(delta)
+      @state.set_loop(@loop)
     end
     #    @blender.addTime(delta)
   end

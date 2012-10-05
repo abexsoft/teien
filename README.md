@@ -16,7 +16,7 @@ Or install it yourself as:
 
     $ gem install ruby-ogre
     $ gem install ruby-bullet
-    $ gem install teien_ext
+    $ gem install teienlib
     $ gem install pkg/teien-<version>.gem
 
 ## Usage

@@ -15,15 +15,15 @@ end
 # RUBYLIB and LD_LIBRARY_PATH. (check sample code)
 #
 require 'rbconfig'
-require 'OgreConfig'
+require 'ogre_config'
 
 $topDir = File.dirname(File.dirname(File.expand_path(__FILE__)))
 libPath  = $topDir  + "/lib"
-extPath  = OgreConfig::getDepsLibPath
+extPath  = OgreConfig::get_deps_lib_path
 
 # needed by dynamic library.
 if (/mingw/ =~ RUBY_PLATFORM)
-  ldLibPath = extPath + ";" + OgreConfig::getLib + ";" + libPath
+  ldLibPath = extPath + ";" + OgreConfig::get_lib + ";" + libPath
   if (ENV["PATH"] == nil)
     ENV["PATH"] =  ldLibPath
     exec("ruby #{$0} #{ARGV.join(" ")}")

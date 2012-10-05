@@ -17,184 +17,184 @@ class UserInterface
   end
 
   def show_frame_stats(placement)
-    @view.tray_mgr.showFrameStats(placement)
+    @view.tray_mgr.show_frame_stats(placement)
   end
 
   def show_logo(placement)
-    @view.tray_mgr.showLogo(placement)
+    @view.tray_mgr.show_logo(placement)
   end
 
   def show_cursor()
-    @view.tray_mgr.showCursor()
+    @view.tray_mgr.show_cursor()
   end
 
   def hide_cursor()
-    @view.tray_mgr.hideCursor()
+    @view.tray_mgr.hide_cursor()
   end
 
 end
 
 class UI < UserInterface
   # Layout
-  TL_BOTTOMLEFT =  OgreBites::TL_BOTTOMLEFT
-  TL_BOTTOMRIGHT = OgreBites::TL_BOTTOMRIGHT
+  TL_BOTTOMLEFT =  Ogrebites::TL_BOTTOMLEFT
+  TL_BOTTOMRIGHT = Ogrebites::TL_BOTTOMRIGHT
 
   # Keyboard
-  KC_UNASSIGNED  =   OIS::KC_UNASSIGNED  
-  KC_ESCAPE      =   OIS::KC_ESCAPE      
-  KC_1           =   OIS::KC_1           
-  KC_2           =   OIS::KC_2           
-  KC_3           =   OIS::KC_3           
-  KC_4           =   OIS::KC_4           
-  KC_5           =   OIS::KC_5           
-  KC_6           =   OIS::KC_6           
-  KC_7           =   OIS::KC_7           
-  KC_8           =   OIS::KC_8           
-  KC_9           =   OIS::KC_9           
-  KC_0           =   OIS::KC_0           
-  KC_MINUS       =   OIS::KC_MINUS       
-  KC_EQUALS      =   OIS::KC_EQUALS      
-  KC_BACK        =   OIS::KC_BACK        
-  KC_TAB         =   OIS::KC_TAB         
-  KC_Q           =   OIS::KC_Q           
-  KC_W           =   OIS::KC_W           
-  KC_E           =   OIS::KC_E           
-  KC_R           =   OIS::KC_R           
-  KC_T           =   OIS::KC_T           
-  KC_Y           =   OIS::KC_Y           
-  KC_U           =   OIS::KC_U           
-  KC_I           =   OIS::KC_I           
-  KC_O           =   OIS::KC_O           
-  KC_P           =   OIS::KC_P           
-  KC_LBRACKET    =   OIS::KC_LBRACKET    
-  KC_RBRACKET    =   OIS::KC_RBRACKET    
-  KC_RETURN      =   OIS::KC_RETURN      
-  KC_LCONTROL    =   OIS::KC_LCONTROL    
-  KC_A           =   OIS::KC_A           
-  KC_S           =   OIS::KC_S           
-  KC_D           =   OIS::KC_D           
-  KC_F           =   OIS::KC_F           
-  KC_G           =   OIS::KC_G           
-  KC_H           =   OIS::KC_H           
-  KC_J           =   OIS::KC_J           
-  KC_K           =   OIS::KC_K           
-  KC_L           =   OIS::KC_L           
-  KC_SEMICOLON   =   OIS::KC_SEMICOLON   
-  KC_APOSTROPHE  =   OIS::KC_APOSTROPHE  
-  KC_GRAVE       =   OIS::KC_GRAVE       
-  KC_LSHIFT      =   OIS::KC_LSHIFT      
-  KC_BACKSLASH   =   OIS::KC_BACKSLASH   
-  KC_Z           =   OIS::KC_Z           
-  KC_X           =   OIS::KC_X           
-  KC_C           =   OIS::KC_C           
-  KC_V           =   OIS::KC_V           
-  KC_B           =   OIS::KC_B           
-  KC_N           =   OIS::KC_N           
-  KC_M           =   OIS::KC_M           
-  KC_COMMA       =   OIS::KC_COMMA       
-  KC_PERIOD      =   OIS::KC_PERIOD      
-  KC_SLASH       =   OIS::KC_SLASH       
-  KC_RSHIFT      =   OIS::KC_RSHIFT      
-  KC_MULTIPLY    =   OIS::KC_MULTIPLY    
-  KC_LMENU       =   OIS::KC_LMENU       
-  KC_SPACE       =   OIS::KC_SPACE       
-  KC_CAPITAL     =   OIS::KC_CAPITAL     
-  KC_F1          =   OIS::KC_F1          
-  KC_F2          =   OIS::KC_F2          
-  KC_F3          =   OIS::KC_F3          
-  KC_F4          =   OIS::KC_F4          
-  KC_F5          =   OIS::KC_F5          
-  KC_F6          =   OIS::KC_F6          
-  KC_F7          =   OIS::KC_F7          
-  KC_F8          =   OIS::KC_F8          
-  KC_F9          =   OIS::KC_F9          
-  KC_F10         =   OIS::KC_F10         
-  KC_NUMLOCK     =   OIS::KC_NUMLOCK     
-  KC_SCROLL      =   OIS::KC_SCROLL      
-  KC_NUMPAD7     =   OIS::KC_NUMPAD7     
-  KC_NUMPAD8     =   OIS::KC_NUMPAD8     
-  KC_NUMPAD9     =   OIS::KC_NUMPAD9     
-  KC_SUBTRACT    =   OIS::KC_SUBTRACT    
-  KC_NUMPAD4     =   OIS::KC_NUMPAD4     
-  KC_NUMPAD5     =   OIS::KC_NUMPAD5     
-  KC_NUMPAD6     =   OIS::KC_NUMPAD6     
-  KC_ADD         =   OIS::KC_ADD         
-  KC_NUMPAD1     =   OIS::KC_NUMPAD1     
-  KC_NUMPAD2     =   OIS::KC_NUMPAD2     
-  KC_NUMPAD3     =   OIS::KC_NUMPAD3     
-  KC_NUMPAD0     =   OIS::KC_NUMPAD0     
-  KC_DECIMAL     =   OIS::KC_DECIMAL     
-  KC_OEM_102     =   OIS::KC_OEM_102     
-  KC_F11         =   OIS::KC_F11         
-  KC_F12         =   OIS::KC_F12         
-  KC_F13         =   OIS::KC_F13         
-  KC_F14         =   OIS::KC_F14         
-  KC_F15         =   OIS::KC_F15         
-  KC_KANA        =   OIS::KC_KANA        
-  KC_ABNT_C1     =   OIS::KC_ABNT_C1     
-  KC_CONVERT     =   OIS::KC_CONVERT     
-  KC_NOCONVERT   =   OIS::KC_NOCONVERT   
-  KC_YEN         =   OIS::KC_YEN         
-  KC_ABNT_C2     =   OIS::KC_ABNT_C2     
-  KC_NUMPADEQUALS=   OIS::KC_NUMPADEQUALS
-  KC_PREVTRACK   =   OIS::KC_PREVTRACK   
-  KC_AT          =   OIS::KC_AT          
-  KC_COLON       =   OIS::KC_COLON       
-  KC_UNDERLINE   =   OIS::KC_UNDERLINE   
-  KC_KANJI       =   OIS::KC_KANJI       
-  KC_STOP        =   OIS::KC_STOP        
-  KC_AX          =   OIS::KC_AX          
-  KC_UNLABELED   =   OIS::KC_UNLABELED   
-  KC_NEXTTRACK   =   OIS::KC_NEXTTRACK   
-  KC_NUMPADENTER =   OIS::KC_NUMPADENTER 
-  KC_RCONTROL    =   OIS::KC_RCONTROL    
-  KC_MUTE        =   OIS::KC_MUTE        
-  KC_CALCULATOR  =   OIS::KC_CALCULATOR  
-  KC_PLAYPAUSE   =   OIS::KC_PLAYPAUSE   
-  KC_MEDIASTOP   =   OIS::KC_MEDIASTOP   
-  KC_VOLUMEDOWN  =   OIS::KC_VOLUMEDOWN  
-  KC_VOLUMEUP    =   OIS::KC_VOLUMEUP    
-  KC_WEBHOME     =   OIS::KC_WEBHOME     
-  KC_NUMPADCOMMA =   OIS::KC_NUMPADCOMMA 
-  KC_DIVIDE      =   OIS::KC_DIVIDE      
-  KC_SYSRQ       =   OIS::KC_SYSRQ       
-  KC_RMENU       =   OIS::KC_RMENU       
-  KC_PAUSE       =   OIS::KC_PAUSE       
-  KC_HOME        =   OIS::KC_HOME        
-  KC_UP          =   OIS::KC_UP          
-  KC_PGUP        =   OIS::KC_PGUP        
-  KC_LEFT        =   OIS::KC_LEFT        
-  KC_RIGHT       =   OIS::KC_RIGHT       
-  KC_END         =   OIS::KC_END         
-  KC_DOWN        =   OIS::KC_DOWN        
-  KC_PGDOWN      =   OIS::KC_PGDOWN      
-  KC_INSERT      =   OIS::KC_INSERT      
-  KC_DELETE      =   OIS::KC_DELETE      
-  KC_LWIN        =   OIS::KC_LWIN        
-  KC_RWIN        =   OIS::KC_RWIN        
-  KC_APPS        =   OIS::KC_APPS        
-  KC_POWER       =   OIS::KC_POWER       
-  KC_SLEEP       =   OIS::KC_SLEEP       
-  KC_WAKE        =   OIS::KC_WAKE        
-  KC_WEBSEARCH   =   OIS::KC_WEBSEARCH   
-  KC_WEBFAVORITES=   OIS::KC_WEBFAVORITES
-  KC_WEBREFRESH  =   OIS::KC_WEBREFRESH  
-  KC_WEBSTOP     =   OIS::KC_WEBSTOP     
-  KC_WEBFORWARD  =   OIS::KC_WEBFORWARD  
-  KC_WEBBACK     =   OIS::KC_WEBBACK     
-  KC_MYCOMPUTER  =   OIS::KC_MYCOMPUTER  
-  KC_MAIL        =   OIS::KC_MAIL        
-  KC_MEDIASELECT =   OIS::KC_MEDIASELECT 
+  KC_UNASSIGNED  =   Ois::KC_UNASSIGNED  
+  KC_ESCAPE      =   Ois::KC_ESCAPE      
+  KC_1           =   Ois::KC_1           
+  KC_2           =   Ois::KC_2           
+  KC_3           =   Ois::KC_3           
+  KC_4           =   Ois::KC_4           
+  KC_5           =   Ois::KC_5           
+  KC_6           =   Ois::KC_6           
+  KC_7           =   Ois::KC_7           
+  KC_8           =   Ois::KC_8           
+  KC_9           =   Ois::KC_9           
+  KC_0           =   Ois::KC_0           
+  KC_MINUS       =   Ois::KC_MINUS       
+  KC_EQUALS      =   Ois::KC_EQUALS      
+  KC_BACK        =   Ois::KC_BACK        
+  KC_TAB         =   Ois::KC_TAB         
+  KC_Q           =   Ois::KC_Q           
+  KC_W           =   Ois::KC_W           
+  KC_E           =   Ois::KC_E           
+  KC_R           =   Ois::KC_R           
+  KC_T           =   Ois::KC_T           
+  KC_Y           =   Ois::KC_Y           
+  KC_U           =   Ois::KC_U           
+  KC_I           =   Ois::KC_I           
+  KC_O           =   Ois::KC_O           
+  KC_P           =   Ois::KC_P           
+  KC_LBRACKET    =   Ois::KC_LBRACKET    
+  KC_RBRACKET    =   Ois::KC_RBRACKET    
+  KC_RETURN      =   Ois::KC_RETURN      
+  KC_LCONTROL    =   Ois::KC_LCONTROL    
+  KC_A           =   Ois::KC_A           
+  KC_S           =   Ois::KC_S           
+  KC_D           =   Ois::KC_D           
+  KC_F           =   Ois::KC_F           
+  KC_G           =   Ois::KC_G           
+  KC_H           =   Ois::KC_H           
+  KC_J           =   Ois::KC_J           
+  KC_K           =   Ois::KC_K           
+  KC_L           =   Ois::KC_L           
+  KC_SEMICOLON   =   Ois::KC_SEMICOLON   
+  KC_APOSTROPHE  =   Ois::KC_APOSTROPHE  
+  KC_GRAVE       =   Ois::KC_GRAVE       
+  KC_LSHIFT      =   Ois::KC_LSHIFT      
+  KC_BACKSLASH   =   Ois::KC_BACKSLASH   
+  KC_Z           =   Ois::KC_Z           
+  KC_X           =   Ois::KC_X           
+  KC_C           =   Ois::KC_C           
+  KC_V           =   Ois::KC_V           
+  KC_B           =   Ois::KC_B           
+  KC_N           =   Ois::KC_N           
+  KC_M           =   Ois::KC_M           
+  KC_COMMA       =   Ois::KC_COMMA       
+  KC_PERIOD      =   Ois::KC_PERIOD      
+  KC_SLASH       =   Ois::KC_SLASH       
+  KC_RSHIFT      =   Ois::KC_RSHIFT      
+  KC_MULTIPLY    =   Ois::KC_MULTIPLY    
+  KC_LMENU       =   Ois::KC_LMENU       
+  KC_SPACE       =   Ois::KC_SPACE       
+  KC_CAPITAL     =   Ois::KC_CAPITAL     
+  KC_F1          =   Ois::KC_F1          
+  KC_F2          =   Ois::KC_F2          
+  KC_F3          =   Ois::KC_F3          
+  KC_F4          =   Ois::KC_F4          
+  KC_F5          =   Ois::KC_F5          
+  KC_F6          =   Ois::KC_F6          
+  KC_F7          =   Ois::KC_F7          
+  KC_F8          =   Ois::KC_F8          
+  KC_F9          =   Ois::KC_F9          
+  KC_F10         =   Ois::KC_F10         
+  KC_NUMLOCK     =   Ois::KC_NUMLOCK     
+  KC_SCROLL      =   Ois::KC_SCROLL      
+  KC_NUMPAD7     =   Ois::KC_NUMPAD7     
+  KC_NUMPAD8     =   Ois::KC_NUMPAD8     
+  KC_NUMPAD9     =   Ois::KC_NUMPAD9     
+  KC_SUBTRACT    =   Ois::KC_SUBTRACT    
+  KC_NUMPAD4     =   Ois::KC_NUMPAD4     
+  KC_NUMPAD5     =   Ois::KC_NUMPAD5     
+  KC_NUMPAD6     =   Ois::KC_NUMPAD6     
+  KC_ADD         =   Ois::KC_ADD         
+  KC_NUMPAD1     =   Ois::KC_NUMPAD1     
+  KC_NUMPAD2     =   Ois::KC_NUMPAD2     
+  KC_NUMPAD3     =   Ois::KC_NUMPAD3     
+  KC_NUMPAD0     =   Ois::KC_NUMPAD0     
+  KC_DECIMAL     =   Ois::KC_DECIMAL     
+  KC_OEM_102     =   Ois::KC_OEM_102     
+  KC_F11         =   Ois::KC_F11         
+  KC_F12         =   Ois::KC_F12         
+  KC_F13         =   Ois::KC_F13         
+  KC_F14         =   Ois::KC_F14         
+  KC_F15         =   Ois::KC_F15         
+  KC_KANA        =   Ois::KC_KANA        
+  KC_ABNT_C1     =   Ois::KC_ABNT_C1     
+  KC_CONVERT     =   Ois::KC_CONVERT     
+  KC_NOCONVERT   =   Ois::KC_NOCONVERT   
+  KC_YEN         =   Ois::KC_YEN         
+  KC_ABNT_C2     =   Ois::KC_ABNT_C2     
+  KC_NUMPADEQUALS=   Ois::KC_NUMPADEQUALS
+  KC_PREVTRACK   =   Ois::KC_PREVTRACK   
+  KC_AT          =   Ois::KC_AT          
+  KC_COLON       =   Ois::KC_COLON       
+  KC_UNDERLINE   =   Ois::KC_UNDERLINE   
+  KC_KANJI       =   Ois::KC_KANJI       
+  KC_STOP        =   Ois::KC_STOP        
+  KC_AX          =   Ois::KC_AX          
+  KC_UNLABELED   =   Ois::KC_UNLABELED   
+  KC_NEXTTRACK   =   Ois::KC_NEXTTRACK   
+  KC_NUMPADENTER =   Ois::KC_NUMPADENTER 
+  KC_RCONTROL    =   Ois::KC_RCONTROL    
+  KC_MUTE        =   Ois::KC_MUTE        
+  KC_CALCULATOR  =   Ois::KC_CALCULATOR  
+  KC_PLAYPAUSE   =   Ois::KC_PLAYPAUSE   
+  KC_MEDIASTOP   =   Ois::KC_MEDIASTOP   
+  KC_VOLUMEDOWN  =   Ois::KC_VOLUMEDOWN  
+  KC_VOLUMEUP    =   Ois::KC_VOLUMEUP    
+  KC_WEBHOME     =   Ois::KC_WEBHOME     
+  KC_NUMPADCOMMA =   Ois::KC_NUMPADCOMMA 
+  KC_DIVIDE      =   Ois::KC_DIVIDE      
+  KC_SYSRQ       =   Ois::KC_SYSRQ       
+  KC_RMENU       =   Ois::KC_RMENU       
+  KC_PAUSE       =   Ois::KC_PAUSE       
+  KC_HOME        =   Ois::KC_HOME        
+  KC_UP          =   Ois::KC_UP          
+  KC_PGUP        =   Ois::KC_PGUP        
+  KC_LEFT        =   Ois::KC_LEFT        
+  KC_RIGHT       =   Ois::KC_RIGHT       
+  KC_END         =   Ois::KC_END         
+  KC_DOWN        =   Ois::KC_DOWN        
+  KC_PGDOWN      =   Ois::KC_PGDOWN      
+  KC_INSERT      =   Ois::KC_INSERT      
+  KC_DELETE      =   Ois::KC_DELETE      
+  KC_LWIN        =   Ois::KC_LWIN        
+  KC_RWIN        =   Ois::KC_RWIN        
+  KC_APPS        =   Ois::KC_APPS        
+  KC_POWER       =   Ois::KC_POWER       
+  KC_SLEEP       =   Ois::KC_SLEEP       
+  KC_WAKE        =   Ois::KC_WAKE        
+  KC_WEBSEARCH   =   Ois::KC_WEBSEARCH   
+  KC_WEBFAVORITES=   Ois::KC_WEBFAVORITES
+  KC_WEBREFRESH  =   Ois::KC_WEBREFRESH  
+  KC_WEBSTOP     =   Ois::KC_WEBSTOP     
+  KC_WEBFORWARD  =   Ois::KC_WEBFORWARD  
+  KC_WEBBACK     =   Ois::KC_WEBBACK     
+  KC_MYCOMPUTER  =   Ois::KC_MYCOMPUTER  
+  KC_MAIL        =   Ois::KC_MAIL        
+  KC_MEDIASELECT =   Ois::KC_MEDIASELECT 
 
   # Mouse
-  MB_Left    = OIS::MB_Left
-  MB_Right   = OIS::MB_Right
-  MB_Middle  = OIS::MB_Middle
-  MB_Button3 = OIS::MB_Button3 
-  MB_Button4 = OIS::MB_Button4	
-  MB_Button5 = OIS::MB_Button5 
-  MB_Button6 = OIS::MB_Button6	
-  MB_Button7 = OIS::MB_Button7
+  MB_Left    = Ois::MB_Left
+  MB_Right   = Ois::MB_Right
+  MB_Middle  = Ois::MB_Middle
+  MB_Button3 = Ois::MB_Button3 
+  MB_Button4 = Ois::MB_Button4	
+  MB_Button5 = Ois::MB_Button5 
+  MB_Button6 = Ois::MB_Button6	
+  MB_Button7 = Ois::MB_Button7
 end
 
 
