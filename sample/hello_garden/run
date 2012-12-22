@@ -1,0 +1,5 @@
+#!/bin/sh
+
+FILE_PATH=`dirname "$0"`
+../../bin/teien  $FILE_PATH/model.rb $FILE_PATH/controller.rb
+

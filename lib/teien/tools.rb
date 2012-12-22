@@ -51,9 +51,19 @@ class Vector3D < Bullet::BtVector3
     return sprintf("(%f, %f, %f)", vec.x, vec.y, vec.z)
   end
 
-  def copy(vec)
-    setValue(vec.x, vec.y, vec.z)
+  def _dump(limit)
+    return [x(), y(), z()].pack("fff")
   end
+
+  def self._load(source)
+    array = source.unpack("fff")
+    return Vector3D.new(array[0], array[1], array[2])
+  end
+
+  def copy(vec)
+    set_value(vec.x, vec.y, vec.z)
+  end
+
 end
 
 
@@ -74,13 +84,31 @@ class Quaternion < Bullet::BtQuaternion
     return sprintf("(%f, %f, %f, %f)", qt.x, qt.y, qt.z, qt.w)
   end
 
+  def _dump(limit)
+    return [x(), y(), z(), w()].pack("ffff")
+  end
+
+  def self._load(source)
+    array = source.unpack("ffff")
+    return Quaternion.new(array[0], array[1], array[2], array[3])
+  end
+
   def copy(qt)
-    setValue(qt.x, qt.y, qt.z, qt.w)
+    set_value(qt.x, qt.y, qt.z, qt.w)
   end
 
 end
 
 class Color < Ogre::ColourValue
+  def _dump(limit)
+    return [r(), g(), b(), a()].pack("ffff")
+  end
+
+  def self._load(source)
+    array = source.unpack("ffff")
+    return Color.new(array[0], array[1], array[2], array[3])
+  end
+
 end
 
 class Radian < Ogre::Radian

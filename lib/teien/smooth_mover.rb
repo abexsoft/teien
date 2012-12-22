@@ -3,22 +3,18 @@ class SmoothMover
   TURN_SPEED = 500.0
 
   attr_accessor :acceleration
-  attr_accessor :turnSpeed
+  attr_accessor :turn_speed
   attr_accessor :movable
 
-  def initialize(targetObject)
-    @targetObject = targetObject
-
+  def initialize(target_object)
+    @target_object = target_object
     @acceleration = ACCELERATION
-    @turnSpeed = TURN_SPEED
-
-    clearAction()
-
+    @turn_speed = TURN_SPEED
+    @move_dir = Ogre::Vector3.new(0, 0, 0)
+    @forward_dir = Ogre::Vector3.new(0, 0, 0)
+    @zero_vector = Bullet::BtVector3.new(0, 0, 0)
+    clear_action()
     @movable = true
-
-    @zeroVector = Bullet::BtVector3.new(0, 0, 0)
-    @moveDir = Ogre::Vector3.new(0, 0, 0)
-    @cameraDir = Ogre::Vector3.new(0, 0, 0)
   end
 
   def clear_action()
@@ -28,8 +24,15 @@ class SmoothMover
     @right = false
   end
 
-  def is_move()
+  def moving?()
     return (@forward || @backward || @left || @right)
+  end
+
+  #
+  # This direction is the forward.
+  #
+  def set_forward_direction(forward_dir)
+    @forward_dir = forward_dir
   end
 
   def move_forward(bool)
@@ -48,61 +51,47 @@ class SmoothMover
     @right = bool
   end
 
-  #
-  # This direction is the forward.
-  #
-  def move_camera_direction(cameraDir)
-    @cameraDir = cameraDir
-  end
 
   def update_target(delta)
-    @moveDir.x = 0
-    @moveDir.y = 0
-    @moveDir.z = 0
+    @move_dir.x = 0
+    @move_dir.y = 0
+    @move_dir.z = 0
 
     # update target's acceleration
     if (@forward)
-      @moveDir += Ogre::Vector3.new(@cameraDir.x, @cameraDir.y, @cameraDir.z)
+      @move_dir += Ogre::Vector3.new(@forward_dir.x, @forward_dir.y, @forward_dir.z)
     end
     if (@backward)
-      @moveDir += Ogre::Vector3.new(-@cameraDir.x, -@cameraDir.y, -@cameraDir.z)
+      @move_dir += Ogre::Vector3.new(-@forward_dir.x, -@forward_dir.y, -@forward_dir.z)
     end
     if (@left)
-      @moveDir += Ogre::Vector3.new(@cameraDir.z, 0,  -@cameraDir.x)
+      @move_dir += Ogre::Vector3.new(@forward_dir.z, 0,  -@forward_dir.x)
     end
     if (@right)
-      @moveDir += Ogre::Vector3.new(-@cameraDir.z, 0, @cameraDir.x)
+      @move_dir += Ogre::Vector3.new(-@forward_dir.z, 0, @forward_dir.x)
     end
 
-    @moveDir.y = 0
-    @moveDir.normalise()
+    @move_dir.y = 0
+    @move_dir.normalise()
 
     if (@movable)
-      newAcc = @moveDir * @acceleration
-      @targetObject.set_acceleration(Vector3D::to_bullet(newAcc))
+      newAcc = @move_dir * @acceleration
+      @target_object.set_acceleration(Vector3D::to_bullet(newAcc))
     else
-      @targetObject.set_acceleration(@zeroVector)
+      @target_object.set_acceleration(@zero_vector)
     end
 
     # update target's direction
-=begin
-    ogreDir = -@targetObject.pivotSceneNode.getOrientation().zAxis()
-    bulletDir = -@targetObject.getOrientation().zAxis()
-    puts "OgreDir: (#{ogreDir.x}, #{ogreDir.y}, #{ogreDir.z})"
-    puts "BulletDir: (#{bulletDir.x}, #{bulletDir.y}, #{bulletDir.z})"
-=end
-
-    toGoal = Vector3D.to_ogre(-@targetObject.get_orientation().z_axis()).get_rotation_to(@moveDir)
+    toGoal = Vector3D.to_ogre(-@target_object.get_orientation().z_axis()).get_rotation_to(@move_dir)
     yawToGoal = toGoal.get_yaw().value_degrees()
-    yawAtSpeed = yawToGoal / yawToGoal.abs * delta * @turnSpeed
+    yawAtSpeed = yawToGoal / yawToGoal.abs * delta * @turn_speed
 
     if (yawToGoal < 0) 
       yawToGoal = [0, [yawToGoal, yawAtSpeed].max].min
-
     elsif (yawToGoal > 0) 
       yawToGoal = [0, [yawToGoal, yawAtSpeed].min].max
     end
 
-    @targetObject.yaw(Ogre::Degree.new(yawToGoal).value_radians())
+    @target_object.yaw(Ogre::Degree.new(yawToGoal).value_radians())
   end
 end

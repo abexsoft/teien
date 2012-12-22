@@ -1,5 +1,26 @@
 module Teien
 
+class LightObjectInfo
+  POINT = Ogre::Light::LT_POINT
+  DIRECTIONAL = Ogre::Light::LT_DIRECTIONAL
+  SPOTLIGHT = Ogre::Light::LT_SPOTLIGHT
+
+  attr_accessor :type
+  attr_accessor :diffuse_color
+  attr_accessor :specular_color
+  attr_accessor :direction
+
+  def initialize(type,
+                 diffuse_color = Color.new(1.0, 1.0, 1.0),
+                 specular_color = Color.new(0.25, 0.25, 0),
+                 direction = Vector3D.new( -1, -1, -1 ))
+    @type = type
+    @diffuse_color = diffuse_color
+    @specular_color = specular_color
+    @direction = direction
+  end
+end
+
 class MeshBBObjectInfo 
   attr_accessor :mesh_path
   attr_accessor :size          # Loading mesh only: bounding box size

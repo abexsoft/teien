@@ -129,8 +129,8 @@ class Physics < Bullet::TickListener
     return result
   end
 
-  def preTickCallback(timeStep)
-#    print "preTickCallback: ", timeStep * 1000, "ms\n"
+  def pre_tick_callback(timeStep)
+#    print "pre_tick_callback: ", timeStep * 1000, "ms\n"
     delta = Bullet::BtVector3.new(timeStep, timeStep, timeStep)
 
     @garden.objects.each {|name, obj|
@@ -142,8 +142,8 @@ class Physics < Bullet::TickListener
     }
   end
 
-  def tickCallback(timeStep)
-#    print "tickCallback: ", timeStep * 1000, "ms\n"
+  def tick_callback(timeStep)
+#    print "tick_callback: ", timeStep * 1000, "ms\n"
   end
 end
 

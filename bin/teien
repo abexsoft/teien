@@ -45,5 +45,21 @@ end
 $LOAD_PATH.push(libPath)
 $LOAD_PATH.push("./")
 
-load ARGV[0]
+if ARGV.length == 0
+#  load "teien/front_end.rb"
+
+elsif (ARGV.length == 1)
+  load ARGV[0]
+
+else
+  # ARGV[0] == model      (server)
+  # ARGV[1] == controller (client)
+
+  pid = Process.fork {
+    load ARGV[0]
+  }
+  load ARGV[1]
+
+  Process.kill("TERM", pid)
+end
 

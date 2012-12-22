@@ -5,14 +5,17 @@ module Teien
 class UserInterface
   def initialize(view)
     @view = view
-    @camera = Camera.new(view.camera)
+    @camera = nil
   end
 
+=begin
   def set_controller(controller)
     @view.set_controller(controller)
   end
+=end
 
   def get_camera()
+    @camera = Camera.new(@view.camera) if @camera == nil
     return @camera
   end
 

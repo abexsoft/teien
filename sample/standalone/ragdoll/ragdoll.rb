@@ -34,16 +34,8 @@ class BulletRagdoll
   JOINT_RIGHT_ELBOW = 9
   JOINT_COUNT = 10
 
-  attr_accessor :info
-
   def initialize(garden)
     @garden = garden
-    @info = {
-      :title => "Ragdoll",
-      :thumbnail => "thumb_terrain.png",
-      :description => "Ragdoll demo of Bullet.",
-      :category => "Bullet"
-    }
 
     @evt = Ogre::FrameEvent.new
     @cap_num = 0

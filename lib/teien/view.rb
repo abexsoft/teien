@@ -15,6 +15,7 @@ class View < Ogre::FrameListener
 
   def initialize(garden)
     super()
+
     @garden = garden
     @adjustFlag = false
     @root = nil
@@ -27,10 +28,12 @@ class View < Ogre::FrameListener
     @tray_mgr = nil
     @inputManager = nil
     @window_title = ""
-  end
 
-  def set_controller(controller)
-    @controller = controller
+    @garden.event_router.register_event_type(Event::KeyPressed)
+    @garden.event_router.register_event_type(Event::KeyReleased)
+    @garden.event_router.register_event_type(Event::MouseMoved)
+    @garden.event_router.register_event_type(Event::MousePressed)
+    @garden.event_router.register_event_type(Event::MouseReleased)
   end
 
   def setup
@@ -200,7 +203,7 @@ class View < Ogre::FrameListener
   def frame_rendering_queued(evt)
     @keyboard.capture()
     @mouse.capture()
-    @controller.update(evt.timeSinceLastFrame) if @controller
+#    @controller.update(evt.timeSinceLastFrame) if @controller
 
     @tray_mgr.frame_rendering_queued(evt)
     if (@adjustFlag != true)
@@ -211,34 +214,33 @@ class View < Ogre::FrameListener
     return @garden.update_in_frame_rendering_queued(evt.timeSinceLastFrame)
   end
 
-  def key_pressed(keyEvent)
-    return true if @controller == nil
-    return @controller.key_pressed(keyEvent)
+  def key_pressed(key_event)
+    @garden.event_router.notify(Event::KeyPressed.new(key_event.key))
+    return true
   end
 
-  def key_released(keyEvent)
-    return true if @controller == nil
-    return @controller.key_released(keyEvent)
+  def key_released(key_event)
+    @garden.event_router.notify(Event::KeyReleased.new(key_event.key))
+    return true
   end
 
   def mouse_moved(evt)
     return true if @tray_mgr.inject_mouse_move(evt)
-    return true if @controller == nil      
-    return @controller.mouse_moved(evt)
+    @garden.event_router.notify(Event::MouseMoved.new(evt))
+    return true 
   end
   
   def mouse_pressed(mouseEvent, mouseButtonID)
     return true if @tray_mgr.inject_mouse_down(mouseEvent, mouseButtonID)
-    return true if @controller == nil      
-    return @controller.mouse_pressed(mouseEvent, mouseButtonID)
+    @garden.event_router.notify(Event::MousePressed.new(mouseEvent, mouseButtonID))
+    return true
   end
   
   def mouse_released(mouseEvent, mouseButtonID)
     return true if @tray_mgr.inject_mouse_up(mouseEvent, mouseButtonID)
-    return true if @controller == nil      
-    return @controller.mouse_released(mouseEvent, mouseButtonID)
+    @garden.event_router.notify(Event::MouseReleased.new(mouseEvent, mouseButtonID))
+    return true
   end
-
 end
 
 end # module 

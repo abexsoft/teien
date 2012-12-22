@@ -1,64 +1,84 @@
 require 'teien/object_factory_base'
+require 'teien/proxy_garden_object'
 
 module Teien
 
-class ObjectFactory < ObjectFactoryBase
+class ProxyObjectFactory < ObjectFactoryBase
   def initialize(garden)
     super
   end
 
   def create_object(name, object_info, physics_info)
-    obj = GardenObject.new(@garden)
+    obj = ProxyGardenObject.new(@garden)
     obj.name = name
     obj.object_info = object_info
     obj.physics_info = physics_info    
     create_object_common(obj)
-    return obj
+  end
+
+  def create_object_from_event(event)
+    obj = ProxyGardenObject.new(@garden)
+    obj.name = event.name
+    obj.object_info = event.object_info
+    obj.physics_info = event.physics_info    
+    create_object_common(obj)
+
+    # position
+    obj.set_position(Vector3D.new(event.pos[0],
+                                  event.pos[1],
+                                  event.pos[2]))
   end
 
   def create_light_object(obj)
     add_light_object_physics(obj)
+    add_light_object_view(obj)
     @garden.add_object(obj)
     return obj
   end
 
   def create_floor_object(obj)
+    add_floor_object_view(obj)
     add_floor_object_physics(obj)
     @garden.add_object(obj)
-    return obj
   end
 
   def create_box_object(obj)
+    add_box_object_view(obj)
     add_box_object_physics(obj)
     @garden.add_object(obj)
     return obj
   end
 
   def create_sphere_object(obj)
+    add_sphere_object_view(obj)
     add_sphere_object_physics(obj)
     @garden.add_object(obj)
     return obj
   end
 
   def create_capsule_object(obj)
+    add_capsule_object_view(obj)
     add_capsule_object_physics(obj)
     @garden.add_object(obj)
     return obj
   end
 
   def create_cone_object(obj)
+    add_cone_object_view(obj)
     add_cone_object_physics(obj)
     @garden.add_object(obj)
     return obj
   end
 
   def create_cylinder_object(obj)
+    add_cylinder_object_view(obj)
     add_cylinder_object_physics(obj)
     @garden.add_object(obj)
     return obj
   end
 
   def create_meshBB_object(obj)
+    add_meshBB_object_view(obj)
     add_meshBB_object_physics(obj)
     @garden.add_object(obj)
     return obj
@@ -72,6 +92,7 @@ class ObjectFactory < ObjectFactoryBase
   end
 =end
 
+  
 end
 
 end
