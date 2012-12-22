@@ -100,7 +100,7 @@ class GardenBase
 
   def add_object(obj, collision_filter = nil)
     if (@objects[obj.name] == nil)
-      if (obj.rigid_body != nil && obj.object_info != LightObjectInfo)
+      if (obj.rigid_body != nil && obj.object_info.class != LightObjectInfo)
         if (collision_filter)
           @physics.add_rigid_body(obj.rigid_body, collision_filter) 
         else

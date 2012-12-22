@@ -1,6 +1,6 @@
 # Teien
 
-Teien will be a platform to make 3D world easily with Ruby.
+Teien will be a platform to make 3D worlds connected by network easily with Ruby.
 
 ## Installation
 
@@ -14,16 +14,18 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install ruby-ogre
-    $ gem install ruby-bullet
-    $ gem install teienlib
-    $ gem install pkg/teien-<version>.gem
+    $ gem install eventmachine 
+    $ gem install ruby-ogre 
+    $ gem install ruby-bullet 
+    $ gem install teienlib 
+    $ rake build 
+    $ gem install pkg/teien-<version>.gem 
 
 ## Usage
 
 Run a sample application.
 
-     $ /var/lib/gems/1.9.1/gems/teien-<version>/sample/standalone/hello_garden/run
+     $ /var/lib/gems/1.9.1/gems/teien-<version>/sample/hello_garden/run
 
 ## Contributing
 

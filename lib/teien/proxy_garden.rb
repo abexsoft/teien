@@ -12,6 +12,7 @@ class ProxyGarden < GardenBase
 
     @debug_draw = false
     @object_factory = ProxyObjectFactory.new(self)
+    @event_router.register_event_group(Event::ToModelGroup)
     @event_router.register_event_type(Event::SyncEnv)
     @event_router.register_event_type(Event::SyncObject)
     @event_router.register_receiver(Event::SyncEnv, self)
@@ -45,12 +46,6 @@ class ProxyGarden < GardenBase
       @physics.dynamics_world.set_debug_drawer(@debug_drawer)
     end      
   end
-
-=begin
-  def create_user_interface()
-      return 
-  end
-=end
 
   def setup()
     @view = View.new(self)
@@ -124,11 +119,19 @@ class ProxyGarden < GardenBase
       set_sky_dome(event.sky_dome.enable, event.sky_dome.materialName)
     when Event::SyncObject
       if @objects[event.name]
-        puts "There is a object which has the same name."
+        sync_object_with_event(event, @objects[event.name])
+#        puts "sync"
       else
         @object_factory.create_object_from_event(event)
       end
     end
+  end
+
+  def sync_object_with_event(event, obj)
+    obj.set_position(event.pos)
+    obj.set_linear_velocity(event.linear_vel)
+    obj.set_angular_velocity(event.angular_vel)
+    obj.set_rotation(event.quat)
   end
 
   def clean_up()

@@ -1,5 +1,12 @@
 module Event
 
+# event group
+module ToModelGroup
+end
+module ToControllerGroup
+end
+
+# event
 class KeyPressed
   attr_accessor :key
 
@@ -69,6 +76,8 @@ class ClientConnected
 end
 
 class SyncEnv
+  include ToControllerGroup
+
   attr_accessor :gravity
   attr_accessor :ambient_light_color
   attr_accessor :sky_dome
@@ -81,6 +90,8 @@ class SyncEnv
 end
 
 class SyncObject
+  include ToControllerGroup
+
   attr_accessor :id
   attr_accessor :name
   attr_accessor :mode
@@ -89,8 +100,8 @@ class SyncObject
   attr_accessor :physics_info
 
   attr_accessor :pos
-  attr_accessor :linearVel
-  attr_accessor :angularVel
+  attr_accessor :linear_vel
+  attr_accessor :angular_vel
   attr_accessor :quat
 
 
@@ -101,17 +112,10 @@ class SyncObject
     @object_info = obj.object_info
     @physics_info = obj.physics_info
 
-    pos = obj.get_position()
-    @pos = [pos.x, pos.y, pos.z]
-
-    linearVel = obj.get_linear_velocity()
-    @linearVel = [linearVel.x, linearVel.y, linearVel.z]
-
-    angularVel = obj.get_angular_velocity()
-    @angularVel = [angularVel.x, angularVel.y, angularVel.z]
-
-    quat = obj.get_rotation()
-    @quat = [quat.x, quat.y, quat.z, quat.w]
+    @pos = Vector3D.to_self(obj.get_position())
+    @linear_vel = Vector3D.to_self(obj.get_linear_velocity())
+    @angular_vel = Vector3D.to_self(obj.get_angular_velocity())
+    @quat = Quaternion.to_self(obj.get_rotation())
   end
 
   def print

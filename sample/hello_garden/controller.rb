@@ -1,5 +1,7 @@
 require 'teien'
 
+require_relative './user_event'
+
 include Teien
 
 class HelloGardenController
@@ -17,8 +19,13 @@ class HelloGardenController
   end
 
   def setup()
+    @garden.event_router.register_event_type(Event::ShotBox)
+    @garden.event_router.register_receiver(Event::ShotBox, self)
+
     @garden.event_router.register_receiver(Event::KeyPressed, self)
     @garden.event_router.register_receiver(Event::KeyReleased, self)
+    @garden.event_router.register_receiver(Event::MousePressed, self)
+    @garden.event_router.register_receiver(Event::MouseReleased, self)
     @garden.event_router.register_receiver(Event::MouseMoved, self)
 
     @camera_mover = @garden.ui.get_camera().get_mover()
@@ -69,6 +76,9 @@ class HelloGardenController
       @camera_mover.mouse_moved(event.event)
     when Event::MousePressed
       @camera_mover.mouse_pressed(event.event, event.button_id)
+      @garden.event_router.notify(Event::ShotBox.new(@garden.ui.get_camera().get_position(), 
+                                                     @garden.ui.get_camera().get_direction()))
+
     when Event::MouseReleased
       @camera_mover.mouse_released(event.event, event.button_id)
     end

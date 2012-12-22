@@ -5,8 +5,7 @@ class ServerNetwork < EM::Connection
 
   def initialize(event_router)
     @event_router = event_router
-    @event_router.register_receiver(Event::SyncEnv, self)
-    @event_router.register_receiver(Event::SyncObject, self)
+    @event_router.register_receiver(Event::ToControllerGroup, self)
   end
 
   def receive_event(event)
@@ -27,8 +26,9 @@ class ServerNetwork < EM::Connection
   include EM::P::ObjectProtocol
 
   def receive_object(obj)
-    puts "A object is received"
-    obj.print
+    @event_router.notify(obj)
+#    puts "A object is received"
+#    obj.print
   end
 
   def send_all(obj)
@@ -41,7 +41,7 @@ end
 class ClientNetwork < EM::Connection
   def initialize(event_router)
     @event_router = event_router
-#    @event_router.register_receiver(Event::KeyPressed, self)
+    @event_router.register_receiver(Event::ToModelGroup, self)
   end
 
   def receive_event(event)
@@ -59,14 +59,15 @@ class ClientNetwork < EM::Connection
   include EM::P::ObjectProtocol
 
   def receive_object(obj)
-    puts "A object is received"
-
+    @event_router.notify(obj)
+=begin
     case obj
     when Event::SyncEnv
       @event_router.notify(obj)
     when Event::SyncObject
       @event_router.notify(obj)
     end
+=end
   end
 end
 

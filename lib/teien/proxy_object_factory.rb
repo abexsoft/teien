@@ -23,10 +23,26 @@ class ProxyObjectFactory < ObjectFactoryBase
     obj.physics_info = event.physics_info    
     create_object_common(obj)
 
-    # position
+    obj.set_position(event.pos)
+    obj.set_linear_velocity(event.linear_vel)
+    obj.set_angular_velocity(event.angular_vel)
+    obj.set_rotation(event.quat)
+
+=begin
     obj.set_position(Vector3D.new(event.pos[0],
                                   event.pos[1],
                                   event.pos[2]))
+    obj.set_linear_velocity(Vector3D.new(event.linear_vel[0],
+                                         event.linear_vel[1],
+                                         event.linear_vel[2]))
+    obj.set_angular_velocity(Vector3D.new(event.angular_vel[0],
+                                          event.angular_vel[1],
+                                          event.angular_vel[2]))
+    obj.set_rotation(Quaternion.new(event.quat[0],
+                                    event.quat[1],
+                                    event.quat[2],
+                                    event.quat[3]))
+=end
   end
 
   def create_light_object(obj)

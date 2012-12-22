@@ -8,7 +8,7 @@ Gem::Specification.new do |gem|
   gem.authors       = ["abexsoft works"]
   gem.email         = ["abexsoft@gmail.com"]
   gem.description   = %q{An easy 3D world maker.}
-  gem.summary       = %q{An easy 3D world maker. You can create your 3D world with ruby scripts.}
+  gem.summary       = %q{An easy 3D world maker. You can create your 3D world connected by network with ruby scripts.}
   gem.homepage      = "https://github.com/abexsoft/teien"
 
   gem.files         = `git ls-files`.split($/)
@@ -16,6 +16,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
+  gem.add_dependency 'eventmachine'
   gem.add_dependency 'ruby-ogre'
   gem.add_dependency 'ruby-bullet'
   gem.add_dependency 'teienlib'

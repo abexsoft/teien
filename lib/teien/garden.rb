@@ -7,10 +7,13 @@ class Garden < GardenBase
   def initialize(script_klass)
     super
     @object_factory = ObjectFactory.new(self)
+    @event_router.register_event_group(Event::ToControllerGroup)
     @event_router.register_event_type(Event::SyncEnv)
     @event_router.register_event_type(Event::SyncObject)
     @event_router.register_event_type(Event::ClientConnected)
     @event_router.register_receiver(Event::ClientConnected, self)
+
+    @sync_timer = 0
   end
 
   def set_gravity(grav)
@@ -76,7 +79,13 @@ class Garden < GardenBase
       obj.update(delta)
     }
 
-    return @script.update(delta)
+    return false unless @script.update(delta)
+
+    @sync_timer += delta
+    if (@sync_timer > 0.5)
+      notify_objects()
+      @sync_timer = 0
+    end
   end
 
   def receive_event(event)
@@ -86,10 +95,18 @@ class Garden < GardenBase
 
       @event_router.notify(Event::SyncEnv.new(@gravity, @ambient_light_color, @sky_dome))      
 
-      @objects.each_value { |obj|
-        @event_router.notify(Event::SyncObject.new(obj))
-      }
+      notify_objects()
     end
+  end
+
+  def notify_objects()
+    @objects.each_value { |obj|
+      notify_object(obj)
+    }
+  end
+
+  def notify_object(obj)
+    @event_router.notify(Event::SyncObject.new(obj))
   end
 
   def finalize()
