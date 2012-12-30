@@ -1,5 +1,6 @@
 require "teien/garden_base.rb"
 require "teien/network.rb"
+require "teien/event.rb"
 
 module Teien
 
@@ -7,20 +8,6 @@ class Garden < GardenBase
 
   def initialize()
     super
-  end
-
-  def set_gravity(grav)
-    super
-  end
-
-  def set_ambient_light(color)
-    super
-    notify(:set_ambient_light, color)
-  end
-
-  def set_sky_dome(enable, materialName, curvature = 10, tiling = 8, distance = 4000)
-    super
-    notify(:set_sky_dome, enable, materialName, curvature, tiling, distance)
   end
 
   #
@@ -67,7 +54,16 @@ class Garden < GardenBase
     return true
   end
 
-=begin
+  def receive_event(con, event)
+    case event
+    when Event::ClientConnected
+      puts "A client is connected!"
+      con.send_object(Event::SyncEnv.new(@gravity, @ambient_light_color, @sky_dome))      
+      notify_objects()
+    end
+  end
+
+
   def notify_objects()
     @objects.each_value { |obj|
       notify_object(obj)
@@ -75,9 +71,8 @@ class Garden < GardenBase
   end
 
   def notify_object(obj)
-    @event_router.notify(Event::SyncObject.new(obj))
+    Network::send_all(Event::SyncObject.new(obj))
   end
-=end
 
   def finalize()
     @physics.finalize()

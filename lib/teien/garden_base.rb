@@ -18,7 +18,6 @@ class GardenBase
   attr_accessor :plugins_cfg
   attr_accessor :objects
   attr_accessor :physics
-  attr_accessor :event_router
 
   attr_accessor :gravity
   attr_accessor :ambient_light_color
@@ -64,38 +63,12 @@ class GardenBase
   #
   def set_ambient_light(color)
     @ambient_light_color = color
+    notify(:set_ambient_light, color)
   end
 
   def set_sky_dome(enable, materialName, curvature = 10, tiling = 8, distance = 4000)
     @sky_dome = SkyDome.new(enable, materialName, curvature, tiling, distance)
-  end
-
-  def receive_event(event)
-    case event
-=begin
-    when Event::Tick
-      if @first_tick
-        setup()
-        @event_router.notify(Event::Setup.new(self))
-        @last_time = Time.now.to_f
-        @first_tick = false
-      else
-        now_time = Time.now.to_f
-        delta = now_time - @last_time
-        @last_time = now_time
-        update(delta)
-        @event_router.notify(Event::ObjectsUpdated.new(self, event.delta))
-      end
-    when Event::AddObject
-      add_object(event.obj)
-    when Event::SetGravity
-      set_gravity(event.gravity)
-=end
-    when Event::ClientConnected
-      puts "A client is connected!"
-      @event_router.notify(Event::SyncEnv.new(@gravity, @ambient_light_color, @sky_dome))      
-      notify_objects()
-    end
+    notify(:set_sky_dome, enable, materialName, curvature, tiling, distance)
   end
 
   def create_object(name, object_info, physics_info)
@@ -124,25 +97,6 @@ class GardenBase
 #    return @object_factory.create_object(name, objectInfo, physicsInfo)
   end
 
-=begin
-  def create_light(name)
-    obj = LightObject.new(self, name)
-    add_object(obj)
-    return obj
-  end
-
-  def add_object(obj, collision_filter = nil)
-    obj.garden = @garden
-    if (@objects[obj.name] == nil)
-      @objects[obj.name] = obj
-      obj.id = @object_num
-      @object_num += 1
-      @event_router.notify(Event::InternalAddObject.new(obj))
-    else
-      raise RuntimeError, "There is a object with the same name (#{obj.name})"
-    end
-  end
-=end
   def check_collision(objectA, objectB)
     result = @physics.contact_pair_test(objectA.rigid_body, objectB.rigid_body)
     return result.collided?()

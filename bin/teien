@@ -45,6 +45,10 @@ end
 $LOAD_PATH.push(libPath)
 $LOAD_PATH.push("./")
 
+
+load ARGV[0]
+
+=begin
 if ARGV.length == 0
 #  load "teien/front_end.rb"
 
@@ -62,4 +66,4 @@ else
 
   Process.kill("TERM", pid)
 end
-
+=end

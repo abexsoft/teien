@@ -30,6 +30,7 @@ def start_standalone_garden(garden_script_klass, controller_script_klass)
 end
 
 def start_server_garden(ip, port, garden_script_klass)
+  require "teien/synchronizer"
   garden = Teien::Garden.new()
   garden_script = garden_script_klass.new(garden)
   sync = Synchronizer.new(garden)

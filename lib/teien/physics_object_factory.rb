@@ -1,4 +1,4 @@
-require 'teien/garden_object_base'
+require 'teien/garden_object'
 
 module Teien
 

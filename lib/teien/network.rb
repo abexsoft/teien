@@ -11,19 +11,19 @@ class Network < EM::Connection
 
   def post_init
     puts "A client has connected."
-    @@event_router.connected_regions.push(self)
-    @@event_router.notify(Event::ClientConnected.new)
+    @@connected_clients.push(self)
+    @@garden.receive_event(self, Event::ClientConnected.new)
   end
 
   def unbind
     puts "A client has unbinded."
-    @@event_router.connected_regions.delete(self)
+    @@connected_clients.delete(self)
   end
 
   include EM::P::ObjectProtocol
 
   def receive_object(obj)
-    @@garden.receive_event(obj)
+    @@garden.receive_event(self, obj)
 #    @@event_router.notify(obj)
 #    puts "A object is received"
 #    obj.print

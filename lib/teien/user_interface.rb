@@ -17,6 +17,8 @@ class UserInterface
 
     @view = View.new()
     @camera = nil
+
+    @debug_draw = false
   end
 
   def set_window_title(title)
@@ -29,6 +31,14 @@ class UserInterface
 
   def set_sky_dome(enable, materialName, curvature = 10, tiling = 8, distance = 4000)
     @view.scene_mgr.set_sky_dome(enable, materialName, curvature, tiling, distance)
+  end
+
+  def set_debug_draw(bl)
+    if (bl)
+      @debug_draw = bl
+      @debug_drawer = Teienlib::DebugDrawer.new(@view.scene_mgr)
+      @garden.physics.dynamics_world.set_debug_drawer(@debug_drawer)
+    end      
   end
 
   # Garden receiver
