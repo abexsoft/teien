@@ -1,3 +1,5 @@
+require "teien/physics_object_factory.rb"
+
 module Teien
 
 CollisionFilter = Struct.new(:group, :mask)
@@ -5,6 +7,7 @@ CollisionFilter = Struct.new(:group, :mask)
 class ContactResult < Bullet::ContactResultCallback
   def initialize
     super
+
     @isCollided = false
   end
 
@@ -27,18 +30,23 @@ class Physics < Bullet::TickListener
   attr_accessor :fixed_time_step
 #  attr_accessor :softBodyWorldInfo
 
-  def initialize(garden)
+  def initialize()
     super()
-    @garden = garden
+
+    @object_factory = PhysicsObjectFactory.new(self)
+    @rigid_bodies = []
 
     @max_sub_steps = 1
     @fixed_time_step = 1.0 / 60.0
-
-    @rigid_bodies = []
   end
 
-  def setup
-    @collision_config = Bullet::BtDefaultCollisionConfiguration.new();
+  def set_gravity(vec)
+    @dynamics_world.set_gravity(vec)
+  end
+
+  def setup(garden)
+    @garden = garden
+    @collision_config = Bullet::BtDefaultCollisionConfiguration.new()
     @collision_dispatcher = Bullet::BtCollisionDispatcher.new(@collision_config)
 
     worldAabbMin = Bullet::BtVector3.new(-3000.0,-500.0, -3000.0)
@@ -77,6 +85,30 @@ class Physics < Bullet::TickListener
 #    @dynamics_world.finalize()
   end
 
+  def add_physics_object(obj)
+    obj.physics_object = @object_factory.create_object(obj)
+
+    if (obj.physics_object.rigid_body != nil && 
+        obj.object_info.class != LightObjectInfo)
+      
+      if (obj.physics_info.collision_filter)
+        add_rigid_body(obj.physics_object.rigid_body, 
+                       obj.physics_info.collision_filter) 
+      else
+        add_rigid_body(obj.physics_object.rigid_body) 
+      end
+    end
+  end
+
+  def add_rigid_body(rigid_body, collision_filter = nil)
+    @rigid_bodies.push(rigid_body)
+    if (collision_filter)
+      @dynamics_world.add_rigid_body(rigid_body, collision_filter.group, collision_filter.mask)
+    else
+      @dynamics_world.add_rigid_body(rigid_body)
+    end
+  end
+
   def update(delta)
     @dynamics_world.step_simulation(delta, @max_sub_steps, @fixed_time_step)
     return true
@@ -92,35 +124,6 @@ class Physics < Bullet::TickListener
     pair_cache = @dynamics_world.get_broadphase().get_overlapping_pair_cache()
     pair_cache.remove_overlapping_pairs_containing_proxy(rigid_body.get_broadphase_handle(), 
                                                          @dynamics_world.get_dispatcher())
-  end
-
-  def set_gravity(vec)
-    @dynamics_world.set_gravity(vec)
-  end
-
-=begin
-  def create_box_shape(size)
-    return Bullet::BtBoxShape.new(size)
-  end
-
-  def createSphereShape(radius)
-    return Bullet::BtSphereShape.new(radius)
-  end
-=end
-
-  def create_rigid_body(mass, motionState, colObj, inertia)
-    rigid_body = Bullet::BtRigidBody.new(mass, motionState, colObj, inertia)
-    rigid_body.instance_variable_set(:@collision_shape, colObj) # prevent this colObj from GC.
-    return rigid_body
-  end
-
-  def add_rigid_body(rigid_body, collision_filter = nil)
-    @rigid_bodies.push(rigid_body)
-    if (collision_filter)
-      @dynamics_world.add_rigid_body(rigid_body, collision_filter.group, collision_filter.mask)
-    else
-      @dynamics_world.add_rigid_body(rigid_body)
-    end
   end
 
   def contact_pair_test(colObjA, colObjB)

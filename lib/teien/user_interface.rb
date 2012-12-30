@@ -1,18 +1,58 @@
 require 'teien/camera'
+require 'teien/view'
+require "teien/dispatcher.rb"
 
 module Teien
 
 class UserInterface
-  def initialize(view)
-    @view = view
+  include Dispatcher  
+
+  attr_accessor :garden
+
+  def initialize(garden)
+    super()
+
+    @garden = garden
+    @garden.register_receiver(self)
+
+    @view = View.new()
     @camera = nil
   end
 
-=begin
-  def set_controller(controller)
-    @view.set_controller(controller)
+  def set_window_title(title)
+    @view.window_title = title
   end
-=end
+
+  def set_ambient_light(color)
+    @view.set_ambient_light(color)
+  end
+
+  def set_sky_dome(enable, materialName, curvature = 10, tiling = 8, distance = 4000)
+    @view.scene_mgr.set_sky_dome(enable, materialName, curvature, tiling, distance)
+  end
+
+  # Garden receiver
+  def setup(garden)
+    @view.setup(garden)
+    notify(:setup, garden)
+  end
+
+  # Garden receiver
+  def update(delta)
+    @view.update(delta)
+    notify(:update, delta)
+  end
+
+  # Garden receiver
+  def create_object(obj)
+    @view.add_view_object(obj)
+  end
+
+
+  def register_receiver(recv)
+    super
+    @view.register_receiver(recv)
+  end
 
   def get_camera()
     @camera = Camera.new(@view.camera) if @camera == nil

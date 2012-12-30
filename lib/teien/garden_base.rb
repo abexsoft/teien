@@ -1,10 +1,9 @@
 require "teien/garden_object.rb"
 require "teien/sky_dome.rb"
-require "teien/object_factory.rb"
-require "teien/view.rb"
 require "teien/physics.rb"
-require "teien/user_interface.rb"
-require "teien/event_router.rb"
+#require "teien/user_interface.rb"
+#require "teien/event_router.rb"
+require "teien/dispatcher.rb"
 
 require "eventmachine"
 require "teien/network.rb"
@@ -13,53 +12,41 @@ module Teien
 
 # This is a top object of 3D world.
 class GardenBase
+  include Dispatcher
 
   attr_accessor :resources_cfg
   attr_accessor :plugins_cfg
   attr_accessor :objects
-  attr_accessor :object_factory
   attr_accessor :physics
   attr_accessor :event_router
 
-  attr_accessor :title
   attr_accessor :gravity
   attr_accessor :ambient_light_color
+
   #
   # _script_klass_:: : set a user define class.
   # 
-  def initialize(script_klass)
-    @script_klass = script_klass
-    @event_router = EventRouter.new
+  def initialize()
+    super()
 
-    @view = nil
-    @physics = nil
+    @physics = Physics.new()
 
     @resources_cfg = nil
     @plugins_cfg = nil
+
     @objects = {}
     @object_num = 0
-    @object_factory = nil 
 
     @debug_draw = false
     @quit = false
     @last_time = 0
 
     # environment value
-    @title = nil
     @gravity = nil
     @ambient_light_color = nil
     @sky_dome = nil
   end
 
-  #
-  # set a title name on the window title bar.
-  #
-  # _title_ :: : set a name(String).
-  #
-  def set_window_title(title)
-    @title = title
-  end
-  
   #
   # set the gravity of the world.
   #
@@ -67,6 +54,7 @@ class GardenBase
   #
   def set_gravity(grav)
     @gravity = grav
+    @physics.set_gravity(grav)
   end
 
   #
@@ -82,12 +70,58 @@ class GardenBase
     @sky_dome = SkyDome.new(enable, materialName, curvature, tiling, distance)
   end
 
-  def create_user_interface()
-    "This method should be overwritten."
+  def receive_event(event)
+    case event
+=begin
+    when Event::Tick
+      if @first_tick
+        setup()
+        @event_router.notify(Event::Setup.new(self))
+        @last_time = Time.now.to_f
+        @first_tick = false
+      else
+        now_time = Time.now.to_f
+        delta = now_time - @last_time
+        @last_time = now_time
+        update(delta)
+        @event_router.notify(Event::ObjectsUpdated.new(self, event.delta))
+      end
+    when Event::AddObject
+      add_object(event.obj)
+    when Event::SetGravity
+      set_gravity(event.gravity)
+=end
+    when Event::ClientConnected
+      puts "A client is connected!"
+      @event_router.notify(Event::SyncEnv.new(@gravity, @ambient_light_color, @sky_dome))      
+      notify_objects()
+    end
   end
 
-  def create_object(name, objectInfo, physicsInfo)
-    return @object_factory.create_object(name, objectInfo, physicsInfo)
+  def create_object(name, object_info, physics_info)
+    obj = GardenObject.new()
+    obj.name = name
+    obj.object_info = object_info
+    obj.physics_info = physics_info
+
+    obj.garden = @garden
+    if (@objects[obj.name] == nil)
+      @objects[obj.name] = obj
+      obj.id = @object_num
+      @object_num += 1
+#      @event_router.notify(Event::InternalAddObject.new(obj))
+      @physics.add_physics_object(obj)
+      notify(:create_object, obj)
+    else
+      raise RuntimeError, "There is a object with the same name (#{obj.name})"
+    end
+
+=begin
+    event = Event::AddObject.new(name, objectInfo, physicsInfo)
+    @event_router.notify(event)
+=end
+    return obj
+#    return @object_factory.create_object(name, objectInfo, physicsInfo)
   end
 
 =begin
@@ -96,34 +130,23 @@ class GardenBase
     add_object(obj)
     return obj
   end
-=end
 
   def add_object(obj, collision_filter = nil)
+    obj.garden = @garden
     if (@objects[obj.name] == nil)
-      if (obj.rigid_body != nil && obj.object_info.class != LightObjectInfo)
-        if (collision_filter)
-          @physics.add_rigid_body(obj.rigid_body, collision_filter) 
-        else
-          @physics.add_rigid_body(obj.rigid_body) 
-        end
-      end
       @objects[obj.name] = obj
       obj.id = @object_num
       @object_num += 1
+      @event_router.notify(Event::InternalAddObject.new(obj))
     else
       raise RuntimeError, "There is a object with the same name (#{obj.name})"
     end
   end
-
+=end
   def check_collision(objectA, objectB)
     result = @physics.contact_pair_test(objectA.rigid_body, objectB.rigid_body)
     return result.collided?()
   end
-
-  def update()
-    return true
-  end
-
 
   # quit the current running garden.
   def quit()

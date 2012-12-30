@@ -1,8 +1,12 @@
 require 'teien/ui_listener'
+require "teien/view_object_factory.rb"
+require "teien/dispatcher.rb"
 
 module Teien
 
 class View < Ogre::FrameListener
+  include Dispatcher  
+
   attr_accessor :root
   attr_accessor :camera
   attr_accessor :window
@@ -13,30 +17,26 @@ class View < Ogre::FrameListener
   attr_accessor :window_title
 
 
-  def initialize(garden)
+  def initialize()
     super()
 
-    @garden = garden
     @adjustFlag = false
     @root = nil
     @camera = nil
     @window = nil
     @mouse = nil
     @keyboard = nil
-    @controller = nil
     @scene_mgr = nil
     @tray_mgr = nil
     @inputManager = nil
     @window_title = ""
 
-    @garden.event_router.register_event_type(Event::KeyPressed)
-    @garden.event_router.register_event_type(Event::KeyReleased)
-    @garden.event_router.register_event_type(Event::MouseMoved)
-    @garden.event_router.register_event_type(Event::MousePressed)
-    @garden.event_router.register_event_type(Event::MouseReleased)
+    @object_factory = ViewObjectFactory.new(self)
   end
 
-  def setup
+  def setup(garden)
+    puts "view setup"
+    @garden = garden
     @plugins_cfg   = @garden.plugins_cfg ? @garden.plugins_cfg : "plugins.cfg"
     @resources_cfg = @garden.resources_cfg ? @garden.resources_cfg : "resources.cfg"
 
@@ -50,6 +50,9 @@ class View < Ogre::FrameListener
     
     init_resources()
     init_managers()
+
+    start()
+    prepare_render_loop()
 
     return true
   end
@@ -117,9 +120,7 @@ class View < Ogre::FrameListener
     ms.height = @window.get_height()
   end
 
-  def start(script)
-    @script = script
-
+  def start()
     # initialize scene_mgr
     @scene_mgr = @root.create_scene_manager(Ogre::ST_GENERIC)
     @scene_mgr.set_shadow_technique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE)
@@ -137,7 +138,7 @@ class View < Ogre::FrameListener
     @keyboard.set_event_callback(@keyListener)
     @mouseListener = MouseListener.new(self)
     @mouse.set_event_callback(@mouseListener)
-    @trayListener = TrayListener.new(@script)
+    @trayListener = TrayListener.new(self)
     @tray_mgr.set_listener(@trayListener)
 
     # load resources into ResourceGroupManager.
@@ -170,13 +171,12 @@ class View < Ogre::FrameListener
     @root.shutdown()
   end
 
-  def create_scene_node(parent = nil)
-    if (parent == nil)
-      scene_node = @scene_mgr.get_root_scene_node().create_child_scene_node()
-    else
-      scene_node = parent.create_child_scene_node()
-    end
-    return scene_node
+  def set_ambient_light(color)
+    @scene_mgr.set_ambient_light(color)
+  end
+
+  def add_view_object(obj)
+    obj.view_object = @object_factory.create_object(obj)
   end
 
   # Takes a screen shot.
@@ -203,7 +203,6 @@ class View < Ogre::FrameListener
   def frame_rendering_queued(evt)
     @keyboard.capture()
     @mouse.capture()
-#    @controller.update(evt.timeSinceLastFrame) if @controller
 
     @tray_mgr.frame_rendering_queued(evt)
     if (@adjustFlag != true)
@@ -211,36 +210,50 @@ class View < Ogre::FrameListener
       @adjustFlag = true
     end
 
-    return @garden.update_in_frame_rendering_queued(evt.timeSinceLastFrame)
-  end
-
-  def key_pressed(key_event)
-    @garden.event_router.notify(Event::KeyPressed.new(key_event.key))
     return true
   end
 
-  def key_released(key_event)
-    @garden.event_router.notify(Event::KeyReleased.new(key_event.key))
+  def key_pressed(keyEvent)
+    notify(:key_pressed, keyEvent)
+    return true
+  end
+
+  def key_released(keyEvent)
+    notify(:key_released, keyEvent)
     return true
   end
 
   def mouse_moved(evt)
     return true if @tray_mgr.inject_mouse_move(evt)
-    @garden.event_router.notify(Event::MouseMoved.new(evt))
-    return true 
+    notify(:mouse_moved, evt)
+    return true
   end
   
   def mouse_pressed(mouseEvent, mouseButtonID)
     return true if @tray_mgr.inject_mouse_down(mouseEvent, mouseButtonID)
-    @garden.event_router.notify(Event::MousePressed.new(mouseEvent, mouseButtonID))
-    return true
+    notify(:mouse_pressed, mouseEvent, mouseButtonID)
+    return true 
   end
   
   def mouse_released(mouseEvent, mouseButtonID)
     return true if @tray_mgr.inject_mouse_up(mouseEvent, mouseButtonID)
-    @garden.event_router.notify(Event::MouseReleased.new(mouseEvent, mouseButtonID))
-    return true
+    notify(:mouse_released, mouseEvent, mouseButtonID)
+    return true 
   end
 end
 
 end # module 
+
+
+
+=begin
+  def create_scene_node(parent = nil)
+    if (parent == nil)
+      scene_node = @scene_mgr.get_root_scene_node().create_child_scene_node()
+    else
+      scene_node = parent.create_child_scene_node()
+    end
+    return scene_node
+  end
+=end
+

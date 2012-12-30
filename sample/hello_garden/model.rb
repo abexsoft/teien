@@ -5,24 +5,23 @@ require_relative './user_event'
 include Teien
 
 class HelloGardenModel
-  attr_accessor :info
-
   def initialize(garden)
     @garden = garden
-
-    @garden.set_window_title("SimpleGarden")
     @quit = false
     @shot_num = 0
 
-    # set config files.
-    fileDir = File.dirname(File.expand_path(__FILE__))
-    @garden.plugins_cfg = "#{fileDir}/plugins.cfg"
-    @garden.resources_cfg = "#{fileDir}/resources.cfg"
+    @garden.register_receiver(self)
+
+#    # set config files.
+#    fileDir = File.dirname(File.expand_path(__FILE__))
+#    @garden.plugins_cfg = "#{fileDir}/plugins.cfg"
+#    @garden.resources_cfg = "#{fileDir}/resources.cfg"
   end
 
-  def setup()
-    @garden.event_router.register_event_type(Event::ShotBox)
-    @garden.event_router.register_receiver(Event::ShotBox, self)
+  def setup(garden)
+    puts "model setup"
+
+    @garden = garden
 
     @garden.set_ambient_light(Color.new(0.1, 0.1, 0.1))
     @garden.set_sky_dome(true, "Examples/CloudySky", 5, 8)
@@ -94,15 +93,8 @@ class HelloGardenModel
     return !@quit
   end
 
-  def receive_event(event)
-    case event
-    when Event::ShotBox
-      shot_box(event.pos, event.dir)
-    end
-  end
-
   def shot_box(pos, dir)
-    object_info = BoxObjectInfo.new(Vector3D.new(0.5, 0.5, 0.5))
+    object_info = BoxObjectInfo.new(Vector3D.new(1, 1, 1))
     object_info.material_name = "Examples/SphereMappedRustySteel"
     box = @garden.create_object("shotBox#{@shot_num}", object_info, PhysicsInfo.new(1.0))
     box.set_position(pos + (dir * 5.0))
@@ -114,6 +106,3 @@ class HelloGardenModel
   end
 end
 
-
-garden = create_garden(HelloGardenModel)
-garden.run()

@@ -1,5 +1,47 @@
 module Teien
 
+class Network < EM::Connection
+  @@connected_clients = Array.new
+  @@garden = nil
+
+  def initialize(garden)
+    @@garden = garden
+    @@garden.register_receiver(self)
+  end
+
+  def post_init
+    puts "A client has connected."
+    @@event_router.connected_regions.push(self)
+    @@event_router.notify(Event::ClientConnected.new)
+  end
+
+  def unbind
+    puts "A client has unbinded."
+    @@event_router.connected_regions.delete(self)
+  end
+
+  include EM::P::ObjectProtocol
+
+  def receive_object(obj)
+    @@garden.receive_event(obj)
+#    @@event_router.notify(obj)
+#    puts "A object is received"
+#    obj.print
+  end
+
+  # Garden receiver
+  def self.send_event(cli_id, event)
+    @@connected_clients[cli_id].send_all(event)
+  end
+
+  def self.send_all(obj)
+    @@connected_clients.each { |c|
+      c.send_object(obj)
+    }
+  end
+end
+
+=begin
 class ServerNetwork < EM::Connection
   @@connected_clients = Array.new
 
@@ -9,7 +51,7 @@ class ServerNetwork < EM::Connection
   end
 
   def receive_event(event)
-    send_object(event)
+    send_all(event)
   end
 
   def post_init
@@ -60,15 +102,9 @@ class ClientNetwork < EM::Connection
 
   def receive_object(obj)
     @event_router.notify(obj)
-=begin
-    case obj
-    when Event::SyncEnv
-      @event_router.notify(obj)
-    when Event::SyncObject
-      @event_router.notify(obj)
-    end
-=end
   end
 end
+
+=end
 
 end

@@ -1,5 +1,5 @@
 require "teien/garden_base.rb"
-require "teien/proxy_object_factory.rb"
+#require "teien/proxy_object_factory.rb"
 
 module Teien
 
@@ -89,7 +89,8 @@ class ProxyGarden < GardenBase
       Signal.trap("INT")  { EM.stop; self.finalize() }
       Signal.trap("TERM") { EM.stop; self.finalize() }
 
-      EM.connect('0.0.0.0', 10000, ClientNetwork, @event_router)
+      EM.connect('0.0.0.0', 11922, ClientNetwork, @event_router)
+#      EM.connect('49.212.146.194', 11922, ClientNetwork, @event_router)
     end
   end    
 
@@ -128,9 +129,11 @@ class ProxyGarden < GardenBase
   end
 
   def sync_object_with_event(event, obj)
-    obj.set_position(event.pos)
+    obj.set_position_with_interpolation(event.pos)
     obj.set_linear_velocity(event.linear_vel)
-    obj.set_angular_velocity(event.angular_vel)
+#    obj.set_linear_velocity_with_interpolation(event.linear_vel)
+#    obj.set_angular_velocity(event.angular_vel)
+    obj.set_angular_velocity_with_interpolation(event.angular_vel)
     obj.set_rotation(event.quat)
   end
 

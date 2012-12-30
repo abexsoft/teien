@@ -1,6 +1,6 @@
 module Event
   class ShotBox 
-    include Event::ToModelGroup
+#    include Event::ToModelGroup
 
     attr_accessor :pos
     attr_accessor :dir
