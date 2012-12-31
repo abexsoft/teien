@@ -10,17 +10,6 @@ class HelloGardenController
 
     @quit = false
   end
-
-=begin
-  def receive_event(event)
-    case event
-    when Event::Setup
-      setup(event.garden)
-    when Event::UserScriptUpdate
-      update(delta)
-    return true
-  end
-=end
   
   def setup(garden)
     puts "controller setup"
@@ -49,6 +38,17 @@ class HelloGardenController
     @camera_mover.update(delta)
     return !@quit
   end
+
+=begin
+  def receive_event(event)
+    case event
+    when Event::Setup
+      setup(event.garden)
+    when Event::UserScriptUpdate
+      update(delta)
+    return true
+  end
+=end
 
   def key_pressed(keyEvent)
     if (keyEvent.key == UI::KC_E)
@@ -85,10 +85,10 @@ class HelloGardenController
 
   def mouse_pressed(mouseEvent, mouseButtonID)
     @camera_mover.mouse_pressed(mouseEvent, mouseButtonID)
-=begin
-    @garden.event_router.notify(Event::ShotBox.new(@garden.ui.get_camera().get_position(), 
-                                                   @garden.ui.get_camera().get_direction()))
-=end
+
+    @garden.send_event(Event::ShotBox.new(@ui.get_camera().get_position(), 
+                                          @ui.get_camera().get_direction()))
+
     return true
   end
 

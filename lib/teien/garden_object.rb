@@ -283,10 +283,6 @@ class GardenObject < Bullet::BtMotionState
   end
 =end
 
-=begin
-  def update(delta)
-  end
-=end
 end
 
 

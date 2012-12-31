@@ -6,13 +6,13 @@ class Network < EM::Connection
 
   def initialize(garden)
     @@garden = garden
-    @@garden.register_receiver(self)
+#    @@garden.register_receiver(self)
   end
 
   def post_init
     puts "A client has connected."
     @@connected_clients.push(self)
-    @@garden.receive_event(self, Event::ClientConnected.new)
+    @@garden.receive_event(Event::ClientConnected.new, self)
   end
 
   def unbind
@@ -23,7 +23,7 @@ class Network < EM::Connection
   include EM::P::ObjectProtocol
 
   def receive_object(obj)
-    @@garden.receive_event(self, obj)
+    @@garden.receive_event(obj, self)
 #    @@event_router.notify(obj)
 #    puts "A object is received"
 #    obj.print

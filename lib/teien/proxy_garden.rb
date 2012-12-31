@@ -53,18 +53,14 @@ class ProxyGarden < GardenBase
 #    @physics.dynamics_world.debug_draw_world() if @debug_draw
     @physics.update(delta)
 
-=begin
-    @objects.each_value {|obj|
-      obj.update(delta)
-    }
-=end
     notify(:update, delta)
     return true
   end
 
-  def receive_event(con, event)
+  def receive_event(event, from)
     case event
     when Event::SyncEnv
+      puts "SyncEnv"
       set_gravity(event.gravity)
       set_ambient_light(event.ambient_light_color)
       set_sky_dome(event.sky_dome.enable, event.sky_dome.materialName)
@@ -77,6 +73,15 @@ class ProxyGarden < GardenBase
 #        @object_factory.create_object_from_event(event)
         create_object_from_event(event)
       end
+    end
+  end
+
+  def send_event(event, to = nil)
+    if (to)
+      to.send_object(event)
+    else
+      Network::send_all(event)
+      notify(:receive_event, event, nil)
     end
   end
 

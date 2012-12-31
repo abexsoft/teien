@@ -45,24 +45,28 @@ class Garden < GardenBase
 
   def update(delta)
     @physics.update(delta)
-=begin
-    @objects.each_value {|obj|
-      obj.update(delta)
-    }
-=end
     notify(:update, delta)
     return true
   end
 
-  def receive_event(con, event)
+  def receive_event(event, from)
     case event
     when Event::ClientConnected
       puts "A client is connected!"
-      con.send_object(Event::SyncEnv.new(@gravity, @ambient_light_color, @sky_dome))      
+      from.send_object(Event::SyncEnv.new(@gravity, @ambient_light_color, @sky_dome))      
       notify_objects()
     end
+    notify(:receive_event, event, from)
   end
 
+  def send_event(event, to = nil)
+    if (to)
+      to.send_object(event)
+    else
+      Network::send_all(event)
+      notify(:receive_event, event, nil)
+    end
+  end
 
   def notify_objects()
     @objects.each_value { |obj|

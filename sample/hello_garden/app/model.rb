@@ -93,6 +93,13 @@ class HelloGardenModel
     return !@quit
   end
 
+  def receive_event(event, from)
+    case event
+    when Event::ShotBox
+      shot_box(event.pos, event.dir)
+    end
+  end
+
   def shot_box(pos, dir)
     object_info = BoxObjectInfo.new(Vector3D.new(1, 1, 1))
     object_info.material_name = "Examples/SphereMappedRustySteel"
@@ -101,7 +108,6 @@ class HelloGardenModel
     @shot_num += 1
     force = dir * Vector3D.new(100.0, 100.0, 100.0)
     box.apply_impulse(force, Vector3D.new(0.0, 0.0, 0.0))
-
     @garden.notify_object(box)
   end
 end
