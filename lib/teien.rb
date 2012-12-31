@@ -11,11 +11,8 @@ require "teien/tools.rb"
 require 'teien/object_info'
 require 'teien/physics_info'
 require 'teien/smooth_mover'
-#require 'teien/event_router'
 require "teien/garden.rb"
-#require "teien/proxy_garden.rb"
 require 'teien/camera_mover'
-
 
 module Teien
 

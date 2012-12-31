@@ -10,9 +10,6 @@ class Garden < GardenBase
     super
   end
 
-  #
-  # mainloop
-  #
   def run(ip = nil, port = 11922)
     return false unless setup()
 
@@ -25,7 +22,10 @@ class Garden < GardenBase
         delta = now_time - @last_time
         @last_time = now_time
 
-        update(delta)
+        unless update(delta)
+          EM.stop
+          self.finalize()
+        end
       end
 
       Signal.trap("INT")  { EM.stop; self.finalize() }
@@ -46,9 +46,10 @@ class Garden < GardenBase
   def update(delta)
     @physics.update(delta)
     notify(:update, delta)
-    return true
+    return !@quit
   end
 
+  # receive handler of Network.
   def receive_event(event, from)
     case event
     when Event::ClientConnected
@@ -63,7 +64,7 @@ class Garden < GardenBase
     if (to)
       to.send_object(event)
     else
-      Network::send_all(event)
+      Network::send_all(event) if event.forward
       notify(:receive_event, event, nil)
     end
   end

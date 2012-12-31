@@ -10,7 +10,11 @@ class HelloGardenController
 
     @quit = false
   end
-  
+
+  # called as a receiver by a dispatcher.
+
+  # By UserInterface
+
   def setup(garden)
     puts "controller setup"
     @ui.set_window_title("SimpleGarden")
@@ -39,17 +43,6 @@ class HelloGardenController
     return !@quit
   end
 
-=begin
-  def receive_event(event)
-    case event
-    when Event::Setup
-      setup(event.garden)
-    when Event::UserScriptUpdate
-      update(delta)
-    return true
-  end
-=end
-
   def key_pressed(keyEvent)
     if (keyEvent.key == UI::KC_E)
       @camera_mover.move_forward(true)
@@ -59,6 +52,14 @@ class HelloGardenController
       @camera_mover.move_left(true)
     elsif (keyEvent.key == UI::KC_F)
       @camera_mover.move_right(true)
+    elsif (keyEvent.key == UI::KC_G)
+      if @ui.debug_draw
+        @ui.set_debug_draw(false)
+      else
+        @ui.set_debug_draw(true)
+      end
+    elsif (keyEvent.key == UI::KC_ESCAPE)
+      @garden.quit()
     end
     return true
   end
@@ -86,8 +87,10 @@ class HelloGardenController
   def mouse_pressed(mouseEvent, mouseButtonID)
     @camera_mover.mouse_pressed(mouseEvent, mouseButtonID)
 
-    @garden.send_event(Event::ShotBox.new(@ui.get_camera().get_position(), 
-                                          @ui.get_camera().get_direction()))
+    event = Event::ShotBox.new(@ui.get_camera().get_position(), 
+                               @ui.get_camera().get_direction())
+    event.forward = true
+    @garden.send_event(event)
 
     return true
   end

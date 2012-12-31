@@ -50,11 +50,10 @@ class ProxyGarden < GardenBase
   end
 
   def update(delta)
-#    @physics.dynamics_world.debug_draw_world() if @debug_draw
-    @physics.update(delta)
 
+    @physics.update(delta)
     notify(:update, delta)
-    return true
+    return !@quit
   end
 
   def receive_event(event, from)
@@ -80,7 +79,7 @@ class ProxyGarden < GardenBase
     if (to)
       to.send_object(event)
     else
-      Network::send_all(event)
+      Network::send_all(event) if event.forward
       notify(:receive_event, event, nil)
     end
   end

@@ -8,6 +8,7 @@ class UserInterface
   include Dispatcher  
 
   attr_accessor :garden
+  attr_accessor :debug_draw
 
   def initialize(garden)
     super()
@@ -25,43 +26,12 @@ class UserInterface
     @view.window_title = title
   end
 
-  def set_ambient_light(color)
-    @view.set_ambient_light(color)
-  end
-
-  def set_sky_dome(enable, materialName, curvature = 10, tiling = 8, distance = 4000)
-    @view.scene_mgr.set_sky_dome(enable, materialName, curvature, tiling, distance)
-  end
-
   def set_debug_draw(bl)
+    @debug_draw = bl
     if (bl)
-      @debug_draw = bl
       @debug_drawer = Teienlib::DebugDrawer.new(@view.scene_mgr)
       @garden.physics.dynamics_world.set_debug_drawer(@debug_drawer)
     end      
-  end
-
-  # Garden receiver
-  def setup(garden)
-    @view.setup(garden)
-    notify(:setup, garden)
-  end
-
-  # Garden receiver
-  def update(delta)
-    @view.update(delta)
-    notify(:update, delta)
-  end
-
-  # Garden receiver
-  def create_object(obj)
-    @view.add_view_object(obj)
-  end
-
-
-  def register_receiver(recv)
-    super
-    @view.register_receiver(recv)
   end
 
   def get_camera()
@@ -85,6 +55,39 @@ class UserInterface
     @view.tray_mgr.hide_cursor()
   end
 
+  def register_receiver(recv)
+    super
+    @view.register_receiver(recv)
+  end
+
+  # called as a receiver by a dispatcher.
+
+  #
+  # By Garden/GardenBase
+  #
+
+  def set_ambient_light(color)
+    @view.set_ambient_light(color)
+  end
+
+  def set_sky_dome(enable, materialName, curvature = 10, tiling = 8, distance = 4000)
+    @view.scene_mgr.set_sky_dome(enable, materialName, curvature, tiling, distance)
+  end
+
+  def setup(garden)
+    @view.setup(garden)
+    notify(:setup, garden)
+  end
+
+  def create_object(obj)
+    @view.add_view_object(obj)
+  end
+
+  def update(delta)
+    @garden.physics.dynamics_world.debug_draw_world() if @debug_draw
+    @view.update(delta)
+    notify(:update, delta)
+  end
 end
 
 class UI < UserInterface
