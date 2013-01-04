@@ -1,22 +1,28 @@
+require 'teien/remote_info'
+
 module Teien
 
 class Network < EM::Connection
-  @@connected_clients = Array.new
+  @@connected_clients = Hash.new
   @@garden = nil
 
   def initialize(garden)
     @@garden = garden
-#    @@garden.register_receiver(self)
+  end
+
+  def self.connected_clients
+    @@connected_clients
   end
 
   def post_init
     puts "A client has connected."
-    @@connected_clients.push(self)
+    @@connected_clients[self] = RemoteInfo.new(self)
     @@garden.receive_event(Event::ClientConnected.new, self)
   end
 
   def unbind
     puts "A client has unbinded."
+    @@garden.receive_event(Event::ClientUnbinded.new, self)
     @@connected_clients.delete(self)
   end
 
@@ -24,19 +30,11 @@ class Network < EM::Connection
 
   def receive_object(obj)
     @@garden.receive_event(obj, self)
-#    @@event_router.notify(obj)
-#    puts "A object is received"
-#    obj.print
-  end
-
-  # Garden receiver
-  def self.send_event(cli_id, event)
-    @@connected_clients[cli_id].send_all(event)
   end
 
   def self.send_all(obj)
-    @@connected_clients.each { |c|
-      c.send_object(obj)
+    @@connected_clients.each_value { |c|
+      c.connection.send_object(obj)
     }
   end
 end

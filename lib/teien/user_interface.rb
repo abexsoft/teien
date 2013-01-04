@@ -5,7 +5,7 @@ require "teien/dispatcher.rb"
 module Teien
 
 class UserInterface
-  include Dispatcher  
+#  include Dispatcher  
 
   attr_accessor :garden
   attr_accessor :debug_draw
@@ -56,7 +56,6 @@ class UserInterface
   end
 
   def register_receiver(recv)
-    super
     @view.register_receiver(recv)
   end
 
@@ -76,7 +75,6 @@ class UserInterface
 
   def setup(garden)
     @view.setup(garden)
-    notify(:setup, garden)
   end
 
   def create_object(obj)
@@ -86,7 +84,6 @@ class UserInterface
   def update(delta)
     @garden.physics.dynamics_world.debug_draw_world() if @debug_draw
     @view.update(delta)
-    notify(:update, delta)
   end
 end
 

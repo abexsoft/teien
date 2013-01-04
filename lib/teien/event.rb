@@ -3,19 +3,21 @@ module Event
 # event
 class EventBase
   # allows to forward to connected networks.
-  attr_accessor :forward 
+  attr_accessor :forwarding
 
-  def initialize()
-    @forward = false
+  def initialize(forwarding = false)
+    @forwarding = forwarding
   end
 end
 
 class ClientConnected < EventBase
 end
 
-class SyncEnv < EventBase
-#  include ToControllerGroup
+class ClientUnbinded < EventBase
+end
 
+
+class SyncEnv < EventBase
   attr_accessor :gravity
   attr_accessor :ambient_light_color
   attr_accessor :sky_dome
@@ -28,14 +30,13 @@ class SyncEnv < EventBase
 end
 
 class SyncObject < EventBase
-#  include ToControllerGroup
-
   attr_accessor :id
   attr_accessor :name
   attr_accessor :mode
 
   attr_accessor :object_info
   attr_accessor :physics_info
+  attr_accessor :animation_info
 
   attr_accessor :pos
   attr_accessor :linear_vel
@@ -49,6 +50,7 @@ class SyncObject < EventBase
 
     @object_info = obj.object_info
     @physics_info = obj.physics_info
+    @animation_info = obj.animation_info
 
     @pos = Vector3D.to_self(obj.get_position())
     @linear_vel = Vector3D.to_self(obj.get_linear_velocity())

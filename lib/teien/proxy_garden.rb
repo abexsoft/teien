@@ -50,8 +50,10 @@ class ProxyGarden < GardenBase
   end
 
   def update(delta)
-
     @physics.update(delta)
+    @actors.each_value {|actor|
+      actor.update(delta)
+    }
     notify(:update, delta)
     return !@quit
   end
@@ -72,14 +74,16 @@ class ProxyGarden < GardenBase
 #        @object_factory.create_object_from_event(event)
         create_object_from_event(event)
       end
+
     end
+    notify(:receive_event, event, from)    
   end
 
   def send_event(event, to = nil)
     if (to)
       to.send_object(event)
     else
-      Network::send_all(event) if event.forward
+      Network::send_all(event) if event.forwarding
       notify(:receive_event, event, nil)
     end
   end
@@ -90,6 +94,7 @@ class ProxyGarden < GardenBase
     obj.set_linear_velocity(event.linear_vel)
     obj.set_angular_velocity(event.angular_vel)
     obj.set_rotation(event.quat)
+    obj.animation_info = event.animation_info
   end
 
   def sync_object_with_event(event, obj)
@@ -99,6 +104,7 @@ class ProxyGarden < GardenBase
 #    obj.set_angular_velocity(event.angular_vel)
     obj.set_angular_velocity_with_interpolation(event.angular_vel)
     obj.set_rotation(event.quat)
+    obj.animation_info = event.animation_info
   end
 
   # called by Garden class.

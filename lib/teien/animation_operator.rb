@@ -3,6 +3,9 @@ class AnimationOperator
   BL_MODE_CONCURRENT = 1  # cross fade, blend current animation out while blending next animation in.
   BL_MODE_FIRSTFRAME = 2  # blend current animation to first frame of next animation, when done, start next animation.
 
+  attr_accessor :name
+  attr_accessor :loop
+
   def initialize(entity)
     @entity = entity
     @state = nil
@@ -11,6 +14,8 @@ class AnimationOperator
     @duration = 0.2
     @timeLeft = 0
     @complete = false
+
+    @name = nil
     @loop = false
 
 #    @blender = Ogrelet::AnimationBlender.new(entity)
@@ -43,6 +48,7 @@ class AnimationOperator
   end
 
   def play(name, loop)
+    @name = name
     @loop = loop
 
     unless @state

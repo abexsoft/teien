@@ -109,6 +109,11 @@ class Physics < Bullet::TickListener
     end
   end
 
+  def del_rigid_body(rigid_body)
+    @rigid_bodies.delete(rigid_body)
+    @dynamics_world.remove_rigid_body(rigid_body)
+  end
+
   def update(delta)
     @dynamics_world.step_simulation(delta, @max_sub_steps, @fixed_time_step)
     return true

@@ -204,6 +204,10 @@ class View < Ogre::FrameListener
     @keyboard.capture()
     @mouse.capture()
 
+    @garden.objects.each_value {|obj|
+      obj.view_object.update_animation(evt.timeSinceLastFrame, obj.animation_info)
+    }
+
     @tray_mgr.frame_rendering_queued(evt)
     if (@adjustFlag != true)
       @tray_mgr.adjust_trays() # fix a caption invisible bug.

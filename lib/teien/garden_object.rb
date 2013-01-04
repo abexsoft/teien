@@ -1,5 +1,4 @@
 require "teien/tools.rb"
-require "teien/animation_operator.rb"
 require "teien/physics_object.rb"
 require "teien/view_object.rb"
 
@@ -16,6 +15,7 @@ class GardenObject < Bullet::BtMotionState
 
   attr_accessor :object_info
   attr_accessor :physics_info
+  attr_accessor :animation_info
 
   attr_accessor :garden
   attr_accessor :physics_object
@@ -32,11 +32,12 @@ class GardenObject < Bullet::BtMotionState
     @garden = nil
     @physics_object = nil
     @view_object = nil
-
+    @animation_info = Animation.new
   end
 
-  def create_animation_operator()
-    return AnimationOperator.new(@entity)
+  def finalize()
+    @view_object.finalize() if @view_object
+    @physics_object.finalize()
   end
 
   def set_activation_state(state)
@@ -123,6 +124,13 @@ class GardenObject < Bullet::BtMotionState
 
   def set_gravity(grav)
     @physics_object.rigid_body.set_gravity(grav)
+  end
+
+  def set_damping(linear_damping, angular_damping)
+    @physics_object.rigid_body.set_damping(linear_damping, angular_damping)
+    @physics_info.linear_damping = linear_damping
+    @physics_info.angular_damping = angular_damping
+    # notify?
   end
 
   def set_rotation(quad)

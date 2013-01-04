@@ -4,10 +4,11 @@ require_relative './user_event'
 include Teien
 
 class HelloGardenController
-  def initialize(ui)
+  def initialize(garden, ui)
+    @garden = garden
+    @garden.register_receiver(self)
     @ui = ui
     @ui.register_receiver(self)
-
     @quit = false
   end
 
@@ -19,7 +20,6 @@ class HelloGardenController
     puts "controller setup"
     @ui.set_window_title("SimpleGarden")
 
-    @garden = garden
     # set config files.
     fileDir = File.dirname(File.expand_path(__FILE__))
     @garden.plugins_cfg = "#{fileDir}/plugins.cfg"
@@ -86,12 +86,9 @@ class HelloGardenController
 
   def mouse_pressed(mouseEvent, mouseButtonID)
     @camera_mover.mouse_pressed(mouseEvent, mouseButtonID)
-
     event = Event::ShotBox.new(@ui.get_camera().get_position(), 
                                @ui.get_camera().get_direction())
-    event.forward = true
     @garden.send_event(event)
-
     return true
   end
 

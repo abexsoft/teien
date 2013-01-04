@@ -10,27 +10,17 @@ require "teienlib.so"
 require "teien/tools.rb"
 require 'teien/object_info'
 require 'teien/physics_info'
+require 'teien/animation'
 require 'teien/smooth_mover'
 require "teien/garden.rb"
-require 'teien/camera_mover'
 
 module Teien
 
-def start_standalone_garden(garden_script_klass, controller_script_klass)
-  require_relative 'teien/user_interface'
-
-  garden = Teien::Garden.new()
-  ui = Teien::UserInterface.new(garden)
-  garden_script = garden_script_klass.new(garden)
-  controller_script = controller_script_klass.new(ui)
-  garden.run
-end
-
-def start_server_garden(ip, port, garden_script_klass)
+def start_server_garden(ip, port, garden_script_klass, sync_period = 0.5)
   require "teien/synchronizer"
   garden = Teien::Garden.new()
   garden_script = garden_script_klass.new(garden)
-  sync = Synchronizer.new(garden)
+  sync = Synchronizer.new(garden, sync_period)
   garden.run(ip, port)
 end
 
@@ -40,18 +30,27 @@ def start_client_garden(ip, port, controller_script_klass)
 
   garden = Teien::ProxyGarden.new()
   ui = Teien::UserInterface.new(garden)
-  controller_script = controller_script_klass.new(ui)  
+  controller_script = controller_script_klass.new(garden, ui)  
   garden.run(ip, port)
 end
 
-=begin
-def create_garden(klass)
-  return Teien::Garden.new(klass)
-end
+def start_standalone_garden(garden_script_klass, controller_script_klass)
+  require_relative 'teien/user_interface'
 
-def create_proxy_garden(klass)
-  return Teien::ProxyGarden.new(klass)
-end
+  pid = Process.fork {
+    start_server_garden("0.0.0.0", 11922, garden_script_klass, 0.1)
+  }
+  start_client_garden("0.0.0.0", 11922, controller_script_klass)
+
+  Process.kill("TERM", pid)
+  
+=begin
+  garden = Teien::Garden.new()
+  ui = Teien::UserInterface.new(garden)
+  garden_script = garden_script_klass.new(garden)
+  controller_script = controller_script_klass.new(garden, ui)
+  garden.run
 =end
+end
 
 end

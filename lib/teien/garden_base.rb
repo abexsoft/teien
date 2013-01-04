@@ -16,8 +16,9 @@ class GardenBase
 
   attr_accessor :resources_cfg
   attr_accessor :plugins_cfg
-  attr_accessor :objects
   attr_accessor :physics
+  attr_accessor :objects
+  attr_accessor :actors
 
   attr_accessor :gravity
   attr_accessor :ambient_light_color
@@ -29,6 +30,7 @@ class GardenBase
     super()
 
     @physics = Physics.new()
+    @actors = Hash.new()
 
     @resources_cfg = nil
     @plugins_cfg = nil
@@ -82,19 +84,22 @@ class GardenBase
       @objects[obj.name] = obj
       obj.id = @object_num
       @object_num += 1
-#      @event_router.notify(Event::InternalAddObject.new(obj))
       @physics.add_physics_object(obj)
       notify(:create_object, obj)
     else
       raise RuntimeError, "There is a object with the same name (#{obj.name})"
     end
 
-=begin
-    event = Event::AddObject.new(name, objectInfo, physicsInfo)
-    @event_router.notify(event)
-=end
     return obj
-#    return @object_factory.create_object(name, objectInfo, physicsInfo)
+  end
+
+  def add_actor(actor)
+    if (@actors[actor.name] == nil)
+      actors[name] = actor
+      notify(:add_actor, actor)
+    else
+      raise RuntimeError, "There is an actor with the same name (#{actor.name})"
+    end
   end
 
   def check_collision(objectA, objectB)

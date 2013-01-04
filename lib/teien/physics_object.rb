@@ -21,6 +21,10 @@ class PhysicsObject
     @maxVerticalVelocity = 0
   end
 
+  def finalize()
+    @physics.del_rigid_body(@rigid_body)
+  end
+
   #
   # The offset changes the local position of the shape(collision shape) in Object.
   #

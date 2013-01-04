@@ -5,7 +5,6 @@ require "teien/event.rb"
 module Teien
 
 class Garden < GardenBase
-
   def initialize()
     super
   end
@@ -45,6 +44,9 @@ class Garden < GardenBase
 
   def update(delta)
     @physics.update(delta)
+    @actors.each_value {|actor|
+      actor.update(delta)
+    }
     notify(:update, delta)
     return !@quit
   end
@@ -53,7 +55,6 @@ class Garden < GardenBase
   def receive_event(event, from)
     case event
     when Event::ClientConnected
-      puts "A client is connected!"
       from.send_object(Event::SyncEnv.new(@gravity, @ambient_light_color, @sky_dome))      
       notify_objects()
     end
@@ -64,7 +65,7 @@ class Garden < GardenBase
     if (to)
       to.send_object(event)
     else
-      Network::send_all(event) if event.forward
+      Network::send_all(event) if event.forwarding
       notify(:receive_event, event, nil)
     end
   end
