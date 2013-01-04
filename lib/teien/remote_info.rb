@@ -9,7 +9,9 @@ class RemoteInfo
   attr_accessor :connection
 
   def initialize(con)
-    @port, @ip = Socket.unpack_sockaddr_in(con.get_peername)
+    @ip = nil
+    @port = 0
+    @port, @ip = Socket.unpack_sockaddr_in(con.get_peername) if con.get_peername
     @connection = con
     @id = @@total_cnt
     @@total_cnt += 1
