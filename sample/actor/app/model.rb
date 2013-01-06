@@ -16,7 +16,8 @@ class ActorModel
     @garden.register_receiver(self)
 
     @remote_to_actors = Hash.new
-
+    @sync_period = 0.5
+    @sync_timer = 0
 =begin
     # set config files.
     fileDir = File.dirname(File.expand_path(__FILE__))
@@ -49,6 +50,14 @@ class ActorModel
   end
 
   def update(delta)
+    @sync_timer += delta
+    if (@sync_timer > @sync_period)
+      @garden.actors.each_value {|actor|
+        event = actor.dump_event()
+        @garden.send_event(event)      
+      }
+      @sync_timer = 0
+    end
     return !@quit
   end
 
@@ -75,8 +84,12 @@ class ActorModel
       @garden.send_event(event, from)
 
     when Event::SetForwardDirection
+      return if (from == nil)
       @remote_to_actors[from].set_forward_direction(event.dir)
+      @garden.send_event(event)
     when Event::EnableAction
+      return if (from == nil)
+        
       if event.forward
         @remote_to_actors[from].move_forward(true)
       elsif event.backward
@@ -88,7 +101,10 @@ class ActorModel
       elsif event.jump
         @remote_to_actors[from].jump(true)
       end
+      @garden.send_event(event)
     when Event::DisableAction
+      return if (from == nil)
+
       if event.forward
         @remote_to_actors[from].move_forward(false)
       elsif event.backward
@@ -100,6 +116,7 @@ class ActorModel
       elsif event.jump
         @remote_to_actors[from].jump(false)
       end
+      @garden.send_event(event)
     end
   end
 end

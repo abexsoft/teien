@@ -42,6 +42,7 @@ class SyncObject < EventBase
   attr_accessor :linear_vel
   attr_accessor :angular_vel
   attr_accessor :quat
+  attr_accessor :accel
 
 
   def initialize(obj)
@@ -56,6 +57,7 @@ class SyncObject < EventBase
     @linear_vel = Vector3D.to_self(obj.get_linear_velocity())
     @angular_vel = Vector3D.to_self(obj.get_angular_velocity())
     @quat = Quaternion.to_self(obj.get_rotation())
+    @accel = obj.get_acceleration()
   end
 
   def print

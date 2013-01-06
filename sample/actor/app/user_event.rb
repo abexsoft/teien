@@ -30,15 +30,18 @@ module Event
   end
 
   class SetForwardDirection < EventBase
+    attr_accessor :actor_name
     attr_accessor :dir
 
-    def initialize(dir)
+    def initialize(name, dir)
       super(true)
+      @actor_name = name
       @dir = dir
     end
   end
 
   module Action
+    attr_accessor :actor_name
     attr_accessor :forward
     attr_accessor :backward
     attr_accessor :left
@@ -58,8 +61,9 @@ module Event
   class EnableAction < EventBase
     include Action
 
-    def initialize()
+    def initialize(name)
       super(true)
+      @actor_name = name
       reset()
     end
   end
@@ -67,8 +71,9 @@ module Event
   class DisableAction < EventBase
     include Action
 
-    def initialize()
+    def initialize(name)
       super(true)
+      @actor_name = name
       reset()
     end
   end

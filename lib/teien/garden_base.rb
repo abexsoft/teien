@@ -74,23 +74,24 @@ class GardenBase
   end
 
   def create_object(name, object_info, physics_info)
-    obj = GardenObject.new()
-    obj.name = name
-    obj.object_info = object_info
-    obj.physics_info = physics_info
+    if (@objects[name])
+      #raise RuntimeError, "There is a object with the same name (#{obj.name})"
+      puts "There is a object with the same name (#{name})"
+      return @objects[name]
+    else
+      obj = GardenObject.new()
+      obj.name = name
+      obj.object_info = object_info
+      obj.physics_info = physics_info
 
-    obj.garden = @garden
-    if (@objects[obj.name] == nil)
+      obj.garden = @garden
       @objects[obj.name] = obj
       obj.id = @object_num
       @object_num += 1
       @physics.add_physics_object(obj)
       notify(:create_object, obj)
-    else
-      raise RuntimeError, "There is a object with the same name (#{obj.name})"
+      return obj
     end
-
-    return obj
   end
 
   def add_actor(actor)

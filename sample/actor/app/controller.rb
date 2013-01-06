@@ -37,18 +37,20 @@ class ActorController
     @camera_mover.update(delta)
 
     if @actor
-      event = Event::SetForwardDirection.new(Vector3D.to_self(@camera_mover.camera.get_direction()))
+      event = Event::SetForwardDirection.new(@actor.name, Vector3D.to_self(@camera_mover.camera.get_direction()))
       @garden.send_event(event)
-      @actor.set_forward_direction(event.dir) 
+#      @actor.set_forward_direction(event.dir) 
     end
   end
 
   def receive_event(event, from)
     case event
     when Event::SyncSinbad
-      actor = Sinbad.load_event(@garden, event)
-      @garden.actors[event.actor_name] = actor
-      puts "SyncSindbad: #{event.actor_name}"
+      unless (@garden.actors[event.actor_name])
+        actor = Sinbad.load_event(@garden, event)
+        @garden.actors[event.actor_name] = actor
+      end
+#      puts "SyncSindbad: #{event.actor_name}"
     when Event::ControllableObject
       @actor = @garden.actors[event.actor_name]
       puts event.actor_name
@@ -56,6 +58,34 @@ class ActorController
 
       @camera_mover.set_style(CameraMover::CS_TPS)
       @camera_mover.set_target(@actor.object)
+    when Event::SetForwardDirection
+      if @garden.actors[event.actor_name]
+        @garden.actors[event.actor_name].set_forward_direction(event.dir)
+      end
+    when Event::EnableAction
+      if event.forward
+        @garden.actors[event.actor_name].move_forward(true)
+      elsif event.backward
+        @garden.actors[event.actor_name].move_backward(true)
+      elsif event.left
+        @garden.actors[event.actor_name].move_left(true)
+      elsif event.right
+        @garden.actors[event.actor_name].move_right(true)
+      elsif event.jump
+        @garden.actors[event.actor_name].jump(true)
+      end
+    when Event::DisableAction
+      if event.forward
+        @garden.actors[event.actor_name].move_forward(false)
+      elsif event.backward
+        @garden.actors[event.actor_name].move_backward(false)
+      elsif event.left
+        @garden.actors[event.actor_name].move_left(false)
+      elsif event.right
+        @garden.actors[event.actor_name].move_right(false)
+      elsif event.jump
+        @garden.actors[event.actor_name].jump(false)
+      end
     end
   end
 
@@ -68,25 +98,25 @@ class ActorController
     if (keyEvent.key == UI::KC_ESCAPE)
       @garden.quit()
     elsif (keyEvent.key == UI::KC_E)
-      event = Event::EnableAction.new
+      event = Event::EnableAction.new(@actor.name)
       event.forward = true
       @garden.send_event(event)
-      @actor.move_forward(true)
+#      @actor.move_forward(true)
     elsif (keyEvent.key == UI::KC_D)
-      event = Event::EnableAction.new
+      event = Event::EnableAction.new(@actor.name)
       event.backward = true
       @garden.send_event(event)
-      @actor.move_backward(true)
+#      @actor.move_backward(true)
     elsif (keyEvent.key == UI::KC_S)
-      event = Event::EnableAction.new
+      event = Event::EnableAction.new(@actor.name)
       event.left = true
       @garden.send_event(event)
-      @actor.move_left(true)
+#      @actor.move_left(true)
     elsif (keyEvent.key == UI::KC_F)
-      event = Event::EnableAction.new
+      event = Event::EnableAction.new(@actor.name)
       event.right = true
       @garden.send_event(event)
-      @actor.move_right(true)
+#      @actor.move_right(true)
 =begin
     elsif (keyEvent.key == UI::KC_R)
       @actor.press_gravity()
@@ -94,10 +124,10 @@ class ActorController
       @actor.stop_gravity()
 =end
     elsif (keyEvent.key == UI::KC_SPACE)
-      event = Event::EnableAction.new
+      event = Event::EnableAction.new(@actor.name)
       event.jump = true
       @garden.send_event(event)
-      @actor.jump(true)
+#      @actor.jump(true)
     end
 
     return true
@@ -105,30 +135,30 @@ class ActorController
 
   def key_released(keyEvent)
     if (keyEvent.key == UI::KC_E)
-      event = Event::DisableAction.new
+      event = Event::DisableAction.new(@actor.name)
       event.forward = true
       @garden.send_event(event)
-      @actor.move_forward(false)
+ #     @actor.move_forward(false)
     elsif (keyEvent.key == UI::KC_D)
-      event = Event::DisableAction.new
+      event = Event::DisableAction.new(@actor.name)
       event.backward = true
       @garden.send_event(event)
-      @actor.move_backward(false)
+#      @actor.move_backward(false)
     elsif (keyEvent.key == UI::KC_S)
-      event = Event::DisableAction.new
+      event = Event::DisableAction.new(@actor.name)
       event.left = true
       @garden.send_event(event)
-      @actor.move_left(false)
+#      @actor.move_left(false)
     elsif (keyEvent.key == UI::KC_F)
-      event = Event::DisableAction.new
+      event = Event::DisableAction.new(@actor.name)
       event.right = true
       @garden.send_event(event)
-      @actor.move_right(false)
+#      @actor.move_right(false)
     elsif (keyEvent.key == UI::KC_SPACE)
-      event = Event::DisableAction.new
+      event = Event::DisableAction.new(@actor.name)
       event.jump = true
       @garden.send_event(event)
-      @actor.jump(false)
+#      @actor.jump(false)
     end
     return true
   end

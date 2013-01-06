@@ -80,6 +80,7 @@ class Garden < GardenBase
     Network::send_all(Event::SyncObject.new(obj))
   end
 
+
   def finalize()
     @physics.finalize()
     @objects = {}

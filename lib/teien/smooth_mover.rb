@@ -12,7 +12,7 @@ class SmoothMover
     @turn_speed = TURN_SPEED
     @move_dir = Ogre::Vector3.new(0, 0, 0)
     @forward_dir = Ogre::Vector3.new(0, 0, 0)
-    @zero_vector = Bullet::BtVector3.new(0, 0, 0)
+    @zero_vector = Vector3D.new(0, 0, 0)
     clear_action()
     @movable = true
   end
@@ -76,7 +76,7 @@ class SmoothMover
 
     if (@movable)
       newAcc = @move_dir * @acceleration
-      @target_object.set_acceleration(Vector3D::to_bullet(newAcc))
+      @target_object.set_acceleration(Vector3D.to_self(newAcc))
     else
       @target_object.set_acceleration(@zero_vector)
     end

@@ -94,6 +94,7 @@ class ProxyGarden < GardenBase
     obj.set_linear_velocity(event.linear_vel)
     obj.set_angular_velocity(event.angular_vel)
     obj.set_rotation(event.quat)
+    obj.set_acceleration(event.accel)
     obj.animation_info = event.animation_info
   end
 
@@ -104,6 +105,7 @@ class ProxyGarden < GardenBase
 #    obj.set_angular_velocity(event.angular_vel)
     obj.set_angular_velocity_with_interpolation(event.angular_vel)
     obj.set_rotation(event.quat)
+    obj.set_acceleration(event.accel)
     obj.animation_info = event.animation_info
   end
 

@@ -143,7 +143,7 @@ class Physics < Bullet::TickListener
 
     @garden.objects.each {|name, obj|
       if (obj.get_mass() > 0)
-        newVel = obj.get_linear_velocity() + obj.get_acceleration() * delta
+        newVel = obj.get_linear_velocity() + Vector3D.to_bullet(obj.get_acceleration()) * delta
         obj.set_linear_velocity(obj.limit_velocity(newVel))
         lastVel = obj.get_linear_velocity()
       end
