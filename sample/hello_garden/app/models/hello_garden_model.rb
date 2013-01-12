@@ -1,27 +1,14 @@
 require 'teien'
 
-require_relative './user_event'
+require_relative '../helpers/user_event'
 
 include Teien
 
-class HelloGardenModel
-  def initialize(garden)
-    @garden = garden
-    @quit = false
-    @shot_num = 0
-
-    @garden.register_receiver(self)
-
-#    # set config files.
-#    fileDir = File.dirname(File.expand_path(__FILE__))
-#    @garden.plugins_cfg = "#{fileDir}/plugins.cfg"
-#    @garden.resources_cfg = "#{fileDir}/resources.cfg"
-  end
-
+class HelloGardenModel < Teien::Model
   def setup(garden)
     puts "model setup"
-
-    @garden = garden
+    @quit = false
+    @shot_num = 0
 
     @garden.set_ambient_light(Color.new(0.1, 0.1, 0.1))
     @garden.set_sky_dome(true, "Examples/CloudySky", 5, 8)
@@ -108,7 +95,7 @@ class HelloGardenModel
     @shot_num += 1
     force = dir * Vector3D.new(100.0, 100.0, 100.0)
     box.apply_impulse(force, Vector3D.new(0.0, 0.0, 0.0))
-    @garden.notify_object(box)
+    @garden.send_event(Event::SyncObject.new(box))
   end
 end
 

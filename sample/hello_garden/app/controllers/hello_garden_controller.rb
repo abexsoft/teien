@@ -1,23 +1,12 @@
-require 'teien'
-require_relative './user_event'
+require_relative '../helpers/user_event'
 
 include Teien
 
-class HelloGardenController
-  def initialize(garden, ui)
-    @garden = garden
-    @garden.register_receiver(self)
-    @ui = ui
-    @ui.register_receiver(self)
-    @quit = false
-  end
-
-  # called as a receiver by a dispatcher.
-
-  # By UserInterface
-
+class HelloGardenController < Teien::Controller
+  # handlers of Garden
   def setup(garden)
     puts "controller setup"
+    @quit = false
     @ui.set_window_title("SimpleGarden")
 
     # set config files.
@@ -43,6 +32,7 @@ class HelloGardenController
     return !@quit
   end
 
+  # handlers of UserInterface
   def key_pressed(keyEvent)
     if (keyEvent.key == UI::KC_E)
       @camera_mover.move_forward(true)

@@ -14,16 +14,18 @@ class Garden < GardenBase
 
     @last_time = 0
     EM.run do
-      EM.add_periodic_timer(0) do
-        @last_time = Time.now.to_f if @last_time == 0
+      EM.add_periodic_timer(0.01) do
+        if @last_time == 0
+          @last_time = Time.now.to_f 
+        else
+          now = Time.now.to_f
+          delta = now - @last_time
+          @last_time = now
 
-        now_time = Time.now.to_f
-        delta = now_time - @last_time
-        @last_time = now_time
-
-        unless update(delta)
-          EM.stop
-          self.finalize()
+          unless update(delta)
+            EM.stop
+            self.finalize()
+          end
         end
       end
 
@@ -56,7 +58,7 @@ class Garden < GardenBase
     case event
     when Event::ClientConnected
       from.send_object(Event::SyncEnv.new(@gravity, @ambient_light_color, @sky_dome))      
-      notify_objects()
+      notify_objects(from)
     end
     notify(:receive_event, event, from)
   end
@@ -65,21 +67,19 @@ class Garden < GardenBase
     if (to)
       to.send_object(event)
     else
-      Network::send_all(event) if event.forwarding
-      notify(:receive_event, event, nil)
+      Network::send_all(event)
     end
   end
 
-  def notify_objects()
+  def notify_objects(to = nil)
     @objects.each_value { |obj|
-      notify_object(obj)
+      if to == nil
+        Network::send_all(Event::SyncObject.new(obj))
+      else
+        to.send_object(Event::SyncObject.new(obj))
+      end
     }
   end
-
-  def notify_object(obj)
-    Network::send_all(Event::SyncObject.new(obj))
-  end
-
 
   def finalize()
     @physics.finalize()

@@ -1,23 +1,15 @@
 require 'teien'
-require_relative './user_event'
-require_relative 'sinbad/sinbad'
+require_relative '../helpers/user_event'
+require_relative '../helpers/sinbad/sinbad'
 
 include Teien
 
-class ActorController
-  def initialize(garden, ui)
-    @garden = garden
-    @garden.register_receiver(self)
-    @ui = ui
-    @ui.register_receiver(self)
-    @quit = false
-
-    @actor = nil
-
-    @first_update = true
-  end
-
+class ActorController < Teien::Controller
   def setup(garden)
+    @quit = false
+    @actor = nil
+    @first_update = true
+
     @camera_mover = @ui.get_camera().get_mover()
     @camera_mover.set_position(Vector3D.new(0, 10, 0))
     @camera_mover.look_at(Vector3D.new(0, 0, 0))
@@ -47,10 +39,11 @@ class ActorController
     case event
     when Event::SyncSinbad
       unless (@garden.actors[event.actor_name])
+        puts "new Sindbad: #{event.actor_name}"        
         actor = Sinbad.load_event(@garden, event)
         @garden.actors[event.actor_name] = actor
       end
-#      puts "SyncSindbad: #{event.actor_name}"
+
     when Event::ControllableObject
       @actor = @garden.actors[event.actor_name]
       puts event.actor_name
@@ -61,6 +54,10 @@ class ActorController
     when Event::SetForwardDirection
       if @garden.actors[event.actor_name]
         @garden.actors[event.actor_name].set_forward_direction(event.dir)
+
+#        puts "Event::SetForwardDirection" if event.actor_name != @actor.name
+      else
+        puts "no actor_name"
       end
     when Event::EnableAction
       if event.forward

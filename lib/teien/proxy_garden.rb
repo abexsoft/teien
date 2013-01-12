@@ -21,7 +21,7 @@ class ProxyGarden < GardenBase
     return false unless setup()
 
     EM.run do
-      EM.add_periodic_timer(0) do
+      EM.add_periodic_timer(0.001) do
         @last_time = Time.now.to_f if @last_time == 0
 
         now_time = Time.now.to_f
@@ -61,7 +61,7 @@ class ProxyGarden < GardenBase
   def receive_event(event, from)
     case event
     when Event::SyncEnv
-      puts "SyncEnv"
+#      puts "SyncEnv"
       set_gravity(event.gravity)
       set_ambient_light(event.ambient_light_color)
       set_sky_dome(event.sky_dome.enable, event.sky_dome.materialName)
@@ -71,7 +71,6 @@ class ProxyGarden < GardenBase
         sync_object_with_event(event, @objects[event.name])
       else
 #        puts "add"
-#        @object_factory.create_object_from_event(event)
         create_object_from_event(event)
       end
 
@@ -83,8 +82,7 @@ class ProxyGarden < GardenBase
     if (to)
       to.send_object(event)
     else
-      Network::send_all(event) if event.forwarding
-      notify(:receive_event, event, nil)
+      Network::send_all(event)
     end
   end
 
@@ -95,7 +93,7 @@ class ProxyGarden < GardenBase
     obj.set_angular_velocity(event.angular_vel)
     obj.set_rotation(event.quat)
     obj.set_acceleration(event.accel)
-    obj.animation_info = event.animation_info
+#    obj.animation_info = event.animation_info
   end
 
   def sync_object_with_event(event, obj)
@@ -106,7 +104,7 @@ class ProxyGarden < GardenBase
     obj.set_angular_velocity_with_interpolation(event.angular_vel)
     obj.set_rotation(event.quat)
     obj.set_acceleration(event.accel)
-    obj.animation_info = event.animation_info
+ #   obj.animation_info = event.animation_info
   end
 
   # called by Garden class.

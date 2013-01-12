@@ -1,23 +1,14 @@
 module Event
 
 # event
-class EventBase
-  # allows to forward to connected networks.
-  attr_accessor :forwarding
 
-  def initialize(forwarding = false)
-    @forwarding = forwarding
-  end
+class ClientConnected
 end
 
-class ClientConnected < EventBase
+class ClientUnbinded
 end
 
-class ClientUnbinded < EventBase
-end
-
-
-class SyncEnv < EventBase
+class SyncEnv
   attr_accessor :gravity
   attr_accessor :ambient_light_color
   attr_accessor :sky_dome
@@ -29,7 +20,7 @@ class SyncEnv < EventBase
   end
 end
 
-class SyncObject < EventBase
+class SyncObject
   attr_accessor :id
   attr_accessor :name
   attr_accessor :mode

@@ -1,33 +1,21 @@
 require 'teien'
 
-require_relative './user_event'
-require_relative 'sinbad/sinbad'
-require_relative 'controller'
+require_relative '../helpers/user_event'
+require_relative '../helpers/sinbad/sinbad'
 
 include Teien
 
-class ActorModel
+class ActorModel < Teien::Model
   attr_accessor :info
   attr_accessor :quit
 
-  def initialize(garden)
-    @garden = garden
-    @quit = false
-    @garden.register_receiver(self)
-
+  def setup(garden)
+    puts "model::setup"
     @remote_to_actors = Hash.new
     @sync_period = 0.5
     @sync_timer = 0
-=begin
-    # set config files.
-    fileDir = File.dirname(File.expand_path(__FILE__))
-    @garden.plugins_cfg = "#{fileDir}/plugins.cfg"
-    @garden.resources_cfg = "#{fileDir}/resources.cfg"
-=end
-  end
+    @quit = false
 
-  def setup(garden)
-    puts "model::setup"
     # environment
     @garden.set_gravity(Vector3D.new(0.0, -9.8, 0.0))
     @garden.set_ambient_light(Color.new(0.4, 0.4, 0.4))
@@ -84,12 +72,9 @@ class ActorModel
       @garden.send_event(event, from)
 
     when Event::SetForwardDirection
-      return if (from == nil)
       @remote_to_actors[from].set_forward_direction(event.dir)
       @garden.send_event(event)
     when Event::EnableAction
-      return if (from == nil)
-        
       if event.forward
         @remote_to_actors[from].move_forward(true)
       elsif event.backward

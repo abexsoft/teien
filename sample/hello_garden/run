@@ -1,7 +1,6 @@
 #!/bin/sh
 
-FILE_PATH=`dirname "$0"`
-../../bin/teien  $FILE_PATH/standalone.rb
-#teien  $FILE_PATH/standalone.rb
+teien local
+
 
 

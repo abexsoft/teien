@@ -33,9 +33,9 @@ class Sinbad
     @sm_mover = SmoothMover.new(@object)
     @sm_mover.acceleration = 50
 
-    @animTop = @object.animation_info.create_operator("IdeleTop", 1.0, true)
-    @animBase = @object.animation_info.create_operator("IdleBase", 1.0, true)
-    @animHands = @object.animation_info.create_operator("HandsRelaxed", 1.0, true)
+    @object.animation_info.create_operator("TopAnim", "IdeleTop", 1.0, true)
+    @object.animation_info.create_operator("BaseAnim", "IdleBase", 1.0, true)
+    @object.animation_info.create_operator("HandsAnim", "HandsRelaxed", 1.0, true)
 
     @mover = @sm_mover
     @state = SinbadState.new(self)
@@ -161,17 +161,17 @@ class Sinbad
   end
 
   def play_top_animation(name, loop = true)
-    @animTop.name = name 
-    @animTop.loop = loop
+    @object.animation_info.operators["TopAnim"].name = name
+    @object.animation_info.operators["TopAnim"].loop = loop
   end
 
   def play_base_animation(name, loop = true)
-    @animBase.name = name
-    @animBase.loop = loop
+    @object.animation_info.operators["BaseAnim"].name = name
+    @object.animation_info.operators["BaseAnim"].loop = loop
   end
 
   def play_hands_animation(name, loop = true)
-    @animHands.name = name
-    @animHands.loop = loop
+    @object.animation_info.operators["HandsAnim"].name = name
+    @object.animation_info.operators["HnadsAnim"].loop = loop
   end
 end

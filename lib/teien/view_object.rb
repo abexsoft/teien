@@ -15,7 +15,7 @@ class ViewObject
     @pivot_scene_node = nil
     @scene_node = nil
     @entity = nil
-    @animation_operators = Array.new
+    @animation_operators = Hash.new
   end
 
   def finalize()
@@ -27,19 +27,19 @@ class ViewObject
   end
 
   def update_animation(delta, animation)
-    animation.operators.each_with_index {|operator, i|
-      unless @animation_operators[i]
+    animation.operators.each_pair{|key, value|
+      unless @animation_operators[key]
         @entity.get_skeleton().set_blend_mode(animation.blend_mode)
         ani_ope = AnimationOperator.new(@entity)
-        ani_ope.init(operator.name, operator.loop)
-        @animation_operators.push(ani_ope)
+        ani_ope.init(value.name, value.loop)
+        @animation_operators[key] = ani_ope
       end
 
-      if (operator.name != @animation_operators[i].name ||
-          operator.loop != @animation_operators[i].loop)
-        @animation_operators[i].play(operator.name, operator.loop)
+      if (value.name != @animation_operators[key].name ||
+          value.loop != @animation_operators[key].loop)
+        @animation_operators[key].play(value.name, value.loop)
       end
-      @animation_operators[i].add_time(delta * operator.speed)
+      @animation_operators[key].add_time(delta * value.speed)
     }
   end
 

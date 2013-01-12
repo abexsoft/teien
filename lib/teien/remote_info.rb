@@ -1,4 +1,3 @@
-
 module Teien
 
 class RemoteInfo

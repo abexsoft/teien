@@ -20,13 +20,14 @@ class Animation
   def initialize()
     @enable = false
     @blend_mode = Ogre::ANIMBLEND_CUMULATIVE
-    @operators = Array.new
+    @operators = Hash.new
   end
 
-  def create_operator(name, speed, loop)
-    operator = Operator.new(name, speed, loop)
-    @operators.push(operator)
-    return operator
+  def create_operator(operator_name, animation_name, speed, loop)
+    unless @operators[operator_name] 
+      @operators[operator_name] = Operator.new(animation_name, speed, loop)
+    end
+    return @operators[operator_name]
   end
 end
 

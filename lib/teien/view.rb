@@ -37,8 +37,8 @@ class View < Ogre::FrameListener
   def setup(garden)
     puts "view setup"
     @garden = garden
-    @plugins_cfg   = @garden.plugins_cfg ? @garden.plugins_cfg : "plugins.cfg"
-    @resources_cfg = @garden.resources_cfg ? @garden.resources_cfg : "resources.cfg"
+    @plugins_cfg   = @garden.plugins_cfg ? @garden.plugins_cfg : "config/plugins.cfg"
+    @resources_cfg = @garden.resources_cfg ? @garden.resources_cfg : "config/resources.cfg"
 
     @root = Ogre::Root.new("")
     load_plugins()
