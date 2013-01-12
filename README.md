@@ -25,7 +25,10 @@ Or install it yourself as:
 
 Run a sample application.
 
-     $ /var/lib/gems/1.9.1/gems/teien-<version>/sample/hello_garden/run
+     $ mkdir mywork/ 
+     $ cp -r <gems>/teien-<version>/sample/   mywork/
+     $ cd mywork/sample/hello_garden/
+     $ ./run
 
 ## Contributing
 

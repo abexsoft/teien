@@ -1,5 +1,4 @@
 require_relative "sinbad_state"
-require_relative "../gravity_mover"
 
 class ClosestNotMe < Bullet::ClosestRayResultCallback
   def initialize(rb)

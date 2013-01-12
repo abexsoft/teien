@@ -68,9 +68,9 @@ def self.start_local_garden()
   require_relative 'teien/user_interface'
 
   pid = Process.fork {
-    start_server_garden("0.0.0.0", 11922, 0.1)
+    start_client_garden("0.0.0.0", 11922)
   }
-  start_client_garden("0.0.0.0", 11922)
+  start_server_garden("0.0.0.0", 11922, 0.1)
 
   Process.kill("TERM", pid)
   
