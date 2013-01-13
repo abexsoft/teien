@@ -20,6 +20,10 @@ class Network < EM::Connection
     @@garden.receive_event(Event::ClientConnected.new, self)
   end
 
+  def connection_completed
+    puts "The connection is completed."
+  end
+
   def unbind
     puts "A client has unbinded."
     @@garden.receive_event(Event::ClientUnbinded.new, self)

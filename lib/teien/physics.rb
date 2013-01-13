@@ -88,8 +88,8 @@ class Physics < Bullet::TickListener
   def add_physics_object(obj)
     obj.physics_object = @object_factory.create_object(obj)
 
-    if (obj.physics_object.rigid_body != nil && 
-        obj.object_info.class != LightObjectInfo)
+    if (obj.object_info.use_physics &&
+        obj.physics_object.rigid_body != nil)
       
       if (obj.physics_info.collision_filter)
         add_rigid_body(obj.physics_object.rigid_body, 

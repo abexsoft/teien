@@ -205,7 +205,9 @@ class View < Ogre::FrameListener
     @mouse.capture()
 
     @garden.objects.each_value {|obj|
-      obj.view_object.update_animation(evt.timeSinceLastFrame, obj.animation_info)
+      if obj.object_info.use_view
+        obj.view_object.update_animation(evt.timeSinceLastFrame, obj.animation_info)
+      end
     }
 
     @tray_mgr.frame_rendering_queued(evt)

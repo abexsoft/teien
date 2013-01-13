@@ -53,7 +53,9 @@ class GardenObject < Bullet::BtMotionState
     
 #    @pivot_scene_node.set_position(aPos.x, aPos.y, aPos.z) unless @garden.is_server
     @physics_object.transform.set_origin(Bullet::BtVector3.new(aPos.x, aPos.y, aPos.z))
-    @physics_object.rigid_body.set_center_of_mass_transform(@physics_object.transform) if (@physics_object.rigid_body != nil)
+    if @physics_object.rigid_body != nil
+      @physics_object.rigid_body.set_center_of_mass_transform(@physics_object.transform) 
+    end
 
     # view
     if (@view_object)
@@ -68,7 +70,9 @@ class GardenObject < Bullet::BtMotionState
   def set_position_with_interpolation(pos)
     ip_pos = (get_position() + Vector3D.to_bullet(pos)) / 2
     @physics_object.transform.set_origin(ip_pos)
-    @physics_object.rigid_body.set_center_of_mass_transform(@physics_object.transform) if (@physics_object.rigid_body != nil)
+    if @physics_object.rigid_body != nil
+      @physics_object.rigid_body.set_center_of_mass_transform(@physics_object.transform) 
+    end
   end
 
   # Set a linear velocity.

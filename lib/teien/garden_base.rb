@@ -1,8 +1,6 @@
 require "teien/garden_object.rb"
 require "teien/sky_dome.rb"
 require "teien/physics.rb"
-#require "teien/user_interface.rb"
-#require "teien/event_router.rb"
 require "teien/dispatcher.rb"
 
 require "eventmachine"
