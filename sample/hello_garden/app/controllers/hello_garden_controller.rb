@@ -1,12 +1,14 @@
-require_relative '../helpers/user_event'
+require_relative '../common/user_event'
 
 include Teien
 
 class HelloGardenController < Teien::Controller
-  # handlers of Garden
-  def setup(garden)
+  def setup()
     puts "controller setup"
     @quit = false
+
+    @ui = Teien::get_component("ui")
+    @ui.register_receiver(self)
     @ui.set_window_title("SimpleGarden")
 
     # set config files.
@@ -32,6 +34,9 @@ class HelloGardenController < Teien::Controller
     return !@quit
   end
 
+  def receive_event(event, from)
+  end
+
   # handlers of UserInterface
   def key_pressed(keyEvent)
     if (keyEvent.key == UI::KC_E)
@@ -49,7 +54,7 @@ class HelloGardenController < Teien::Controller
         @ui.set_debug_draw(true)
       end
     elsif (keyEvent.key == UI::KC_ESCAPE)
-      @garden.quit()
+      @event_router.quit = true
     end
     return true
   end
@@ -78,7 +83,7 @@ class HelloGardenController < Teien::Controller
     @camera_mover.mouse_pressed(mouseEvent, mouseButtonID)
     event = Event::ShotBox.new(@ui.get_camera().get_position(), 
                                @ui.get_camera().get_direction())
-    @garden.send_event(event)
+    @event_router.send_event(event)
     return true
   end
 

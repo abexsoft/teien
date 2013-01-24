@@ -3,61 +3,26 @@ require "teien/garden_base.rb"
 module Teien
 
 class ProxyGarden < GardenBase
-  attr_accessor :view
-  attr_accessor :ui
-
-  def initialize()
-    super
+  def initialize(event_router)
+    super(event_router)
   end
 
-  def set_window_title(title)
-    @view.window_title = title
-  end
-
-  #
-  # mainloop
-  #
-  def run(ip = nil, port = 11922)
-    return false unless setup()
-
-    EM.run do
-      EM.add_periodic_timer(0.001) do
-        @last_time = Time.now.to_f if @last_time == 0
-
-        now_time = Time.now.to_f
-        delta = now_time - @last_time
-        @last_time = now_time
-
-        unless update(delta)
-          EM.stop
-          self.finalize()
-        end
-      end
-
-      Signal.trap("INT")  { EM.stop; self.finalize() }
-      Signal.trap("TERM") { EM.stop; self.finalize() }
-
-      if (ip)
-        EM.connect(ip, port, Network, self)
-      end
-    end
-  end    
-
+  # EventRouter handler
   def setup()
     @physics.setup(self)
-    notify(:setup, self)
     return true
   end
 
+  # EventRouter handler
   def update(delta)
     @physics.update(delta)
     @actors.each_value {|actor|
       actor.update(delta)
     }
-    notify(:update, delta)
     return !@quit
   end
 
+  # EventRouter handler
   def receive_event(event, from)
     case event
     when Event::SyncEnv
@@ -73,16 +38,6 @@ class ProxyGarden < GardenBase
 #        puts "add"
         create_object_from_event(event)
       end
-
-    end
-    notify(:receive_event, event, from)    
-  end
-
-  def send_event(event, to = nil)
-    if (to)
-      to.send_object(event)
-    else
-      Network::send_all(event)
     end
   end
 

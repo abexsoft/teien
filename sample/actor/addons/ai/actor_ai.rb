@@ -1,10 +1,15 @@
 require 'teien'
-require_relative '../helpers/user_event'
-require_relative '../helpers/sinbad/sinbad'
+require_relative '../../app/helpers/user_event'
+require_relative '../../app/helpers/sinbad/sinbad'
 
 include Teien
 
-class ActorAi < Teien::Ai
+class ActorAi
+  def initialize(garden)
+    @garden = garden
+    @garden.register_receiver(self)
+  end
+
   def setup(garden)
     @quit = false
     @actor = nil

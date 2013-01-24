@@ -30,10 +30,18 @@ module Event
     attr_accessor :actor_name
     attr_accessor :dir
 
-    def initialize(name, dir)
+    def initialize(name = nil, dir = nil)
       @actor_name = name
       @dir = dir
     end
+
+    def copy(event)
+      @actor_name = event.actor_name
+      @dir = event.dir
+    end
+  end
+
+  class RequestSetForwardDirection < SetForwardDirection
   end
 
   module Action
@@ -52,6 +60,15 @@ module Event
       @jump = false
     end
 
+    def copy(event)
+      @actor_name = event.actor_name
+      @forward = event.forward
+      @backward = event.backward
+      @left = event.left
+      @right = event.right
+      @jump = event.jump
+    end
+
   end
 
   class EnableAction
@@ -63,6 +80,9 @@ module Event
     end
   end
 
+  class RequestEnableAction < EnableAction
+  end
+
   class DisableAction
     include Action
 
@@ -72,4 +92,7 @@ module Event
     end
   end
     
+  class RequestDisableAction < DisableAction
+  end
+
 end

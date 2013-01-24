@@ -33,7 +33,6 @@ class Physics < Bullet::TickListener
   def initialize()
     super()
 
-    @object_factory = PhysicsObjectFactory.new(self)
     @rigid_bodies = []
 
     @max_sub_steps = 1
@@ -86,7 +85,7 @@ class Physics < Bullet::TickListener
   end
 
   def add_physics_object(obj)
-    obj.physics_object = @object_factory.create_object(obj)
+    obj.physics_object = PhysicsObjectFactory::create_object(obj, self)
 
     if (obj.object_info.use_physics &&
         obj.physics_object.rigid_body != nil)

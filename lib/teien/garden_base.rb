@@ -1,10 +1,6 @@
 require "teien/garden_object.rb"
 require "teien/sky_dome.rb"
 require "teien/physics.rb"
-require "teien/dispatcher.rb"
-
-require "eventmachine"
-require "teien/network.rb"
 
 module Teien
 
@@ -14,6 +10,7 @@ class GardenBase
 
   attr_accessor :resources_cfg
   attr_accessor :plugins_cfg
+
   attr_accessor :physics
   attr_accessor :objects
   attr_accessor :actors
@@ -24,21 +21,23 @@ class GardenBase
   #
   # _script_klass_:: : set a user define class.
   # 
-  def initialize()
+  def initialize(event_router)
     super()
+
+    @event_router = event_router
+    @event_router.register_receiver(self)
 
     @physics = Physics.new()
     @actors = Hash.new()
 
-    @resources_cfg = nil
-    @plugins_cfg = nil
-
     @objects = {}
     @object_num = 0
 
-    @debug_draw = false
     @quit = false
-    @last_time = 0
+    @debug_draw = false
+
+    @resources_cfg = nil
+    @plugins_cfg = nil
 
     # environment value
     @gravity = nil

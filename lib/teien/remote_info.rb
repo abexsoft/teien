@@ -10,7 +10,12 @@ class RemoteInfo
   def initialize(con)
     @ip = nil
     @port = 0
-    @port, @ip = Socket.unpack_sockaddr_in(con.get_peername) if con.get_peername
+    if con
+      @port, @ip = Socket.unpack_sockaddr_in(con.get_peername) if con.get_peername
+    else
+      @port = 0
+      @ip = "dummy ip"
+    end
     @connection = con
     @id = @@total_cnt
     @@total_cnt += 1

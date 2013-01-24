@@ -1,11 +1,11 @@
 require 'teien'
 
-require_relative '../helpers/user_event'
+require_relative '../common/user_event'
 
 include Teien
 
 class HelloGardenModel < Teien::Model
-  def setup(garden)
+  def setup()
     puts "model setup"
     @quit = false
     @first_connection = true
@@ -28,23 +28,17 @@ class HelloGardenModel < Teien::Model
     object_info.material_name = "Examples/Rockwall"
     floor = @garden.create_object("Floor", object_info, PhysicsInfo.new(0))
     floor.set_position(Vector3D.new(0, 0, 0))
-
   end
 
   def update(delta)
-#    print "Garden tick is called: ", evt.timeSinceLastFrame * 1000, "\n"
     return !@quit
   end
 
-  def receive_event(event, from)
-    case event
-    when Event::ClientConnected
-      if @first_connection
-        create_objects()
-        @first_connection = false
-      end
-    when Event::ShotBox
-      shot_box(event.pos, event.dir)
+  def connection_binded(from)
+    puts "connection_binded"
+    if @first_connection
+      create_objects()
+      @first_connection = false
     end
   end
 
@@ -96,6 +90,14 @@ class HelloGardenModel < Teien::Model
 =end
   end
 
+  def receive_event(event, from)
+    case event
+    when Event::ShotBox
+      shot_box(event.pos, event.dir)
+    end
+  end
+
+
   def shot_box(pos, dir)
     object_info = BoxObjectInfo.new(Vector3D.new(1, 1, 1))
     object_info.material_name = "Examples/SphereMappedRustySteel"
@@ -104,7 +106,7 @@ class HelloGardenModel < Teien::Model
     @shot_num += 1
     force = dir * Vector3D.new(100.0, 100.0, 100.0)
     box.apply_impulse(force, Vector3D.new(0.0, 0.0, 0.0))
-    @garden.send_event(Event::SyncObject.new(box))
+    @event_router.send_event(Event::SyncObject.new(box))
   end
 end
 

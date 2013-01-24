@@ -30,8 +30,6 @@ class View < Ogre::FrameListener
     @tray_mgr = nil
     @inputManager = nil
     @window_title = ""
-
-    @object_factory = ViewObjectFactory.new(self)
   end
 
   def setup(garden)
@@ -176,7 +174,7 @@ class View < Ogre::FrameListener
   end
 
   def add_view_object(obj)
-    obj.view_object = @object_factory.create_object(obj)
+    obj.view_object = ViewObjectFactory::create_object(obj, self)
   end
 
   # Takes a screen shot.

@@ -6,9 +6,9 @@ class Model
   @@models = Array.new
   @@loaded_models = Array.new
 
-  @garden = nil
-
-  def initialize(garden)
+  def initialize(event_router, garden)
+    @event_router = event_router
+    @event_router.register_receiver(self)
     @garden = garden
     @garden.register_receiver(self)
 
@@ -24,10 +24,14 @@ class Model
     @@models.push(klass)
   end
 
-  def self.load(garden)
+  def self.load(event_router, garden)
     @@models.each {|ctl|
-      @@loaded_models.push(ctl.new(garden))
+      @@loaded_models.push(ctl.new(event_router, garden))
     }
+  end
+
+  def self.loaded_models
+    return @@loaded_models
   end
 end
 

@@ -6,23 +6,20 @@ class Controller
   @@controllers = Array.new
   @@loaded_controllers = Array.new
 
-  @garden = nil
-  @ui = nil
-
-  def initialize(garden, ui)
+  def initialize(event_router, garden)
+    @event_router = event_router
+    @event_router.register_receiver(self)
     @garden = garden
     @garden.register_receiver(self)
-    @ui = ui
-    @ui.register_receiver(self)
   end
 
   def self.inherited(klass)
     @@controllers.push(klass)
   end
 
-  def self.load(garden, ui)
+  def self.load(event_router, garden)
     @@controllers.each {|ctl|
-      @@loaded_controllers.push(ctl.new(garden, ui))
+      @@loaded_controllers.push(ctl.new(event_router, garden))
     }
   end
 end

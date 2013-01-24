@@ -1,14 +1,17 @@
 require 'teien'
-require_relative '../helpers/user_event'
-require_relative '../helpers/sinbad/sinbad'
+require_relative '../common/user_event'
+require_relative '../common/sinbad/sinbad'
 
 include Teien
 
 class ActorController < Teien::Controller
-  def setup(garden)
+  def setup()
     @quit = false
     @actor = nil
     @first_update = true
+
+    @ui = Teien::get_component("ui")
+    @ui.register_receiver(self)
 
     @camera_mover = @ui.get_camera().get_mover()
     @camera_mover.set_position(Vector3D.new(0, 10, 0))
@@ -22,15 +25,16 @@ class ActorController < Teien::Controller
   def update(delta)
     if @first_update
       event = Event::RequestControllable.new()
-      @garden.send_event(event)
+      @event_router.send_event(event)
       @first_update = false
     end
 
     @camera_mover.update(delta)
 
     if @actor
-      event = Event::SetForwardDirection.new(@actor.name, Vector3D.to_self(@camera_mover.camera.get_direction()))
-      @garden.send_event(event)
+      event = Event::RequestSetForwardDirection.new(@actor.name, 
+                                                    Vector3D.to_self(@camera_mover.camera.get_direction()))
+      @event_router.send_event(event)
 #      @actor.set_forward_direction(event.dir) 
     end
   end
@@ -93,26 +97,26 @@ class ActorController < Teien::Controller
 #    puts "key_pressed"
 
     if (keyEvent.key == UI::KC_ESCAPE)
-      @garden.quit()
+      @event_router.quit = true
     elsif (keyEvent.key == UI::KC_E)
-      event = Event::EnableAction.new(@actor.name)
+      event = Event::RequestEnableAction.new(@actor.name)
       event.forward = true
-      @garden.send_event(event)
+      @event_router.send_event(event)
 #      @actor.move_forward(true)
     elsif (keyEvent.key == UI::KC_D)
-      event = Event::EnableAction.new(@actor.name)
+      event = Event::RequestEnableAction.new(@actor.name)
       event.backward = true
-      @garden.send_event(event)
+      @event_router.send_event(event)
 #      @actor.move_backward(true)
     elsif (keyEvent.key == UI::KC_S)
-      event = Event::EnableAction.new(@actor.name)
+      event = Event::RequestEnableAction.new(@actor.name)
       event.left = true
-      @garden.send_event(event)
+      @event_router.send_event(event)
 #      @actor.move_left(true)
     elsif (keyEvent.key == UI::KC_F)
-      event = Event::EnableAction.new(@actor.name)
+      event = Event::RequestEnableAction.new(@actor.name)
       event.right = true
-      @garden.send_event(event)
+      @event_router.send_event(event)
 #      @actor.move_right(true)
 =begin
     elsif (keyEvent.key == UI::KC_R)
@@ -121,9 +125,9 @@ class ActorController < Teien::Controller
       @actor.stop_gravity()
 =end
     elsif (keyEvent.key == UI::KC_SPACE)
-      event = Event::EnableAction.new(@actor.name)
+      event = Event::RequestEnableAction.new(@actor.name)
       event.jump = true
-      @garden.send_event(event)
+      @event_router.send_event(event)
 #      @actor.jump(true)
     end
 
@@ -132,29 +136,29 @@ class ActorController < Teien::Controller
 
   def key_released(keyEvent)
     if (keyEvent.key == UI::KC_E)
-      event = Event::DisableAction.new(@actor.name)
+      event = Event::RequestDisableAction.new(@actor.name)
       event.forward = true
-      @garden.send_event(event)
+      @event_router.send_event(event)
  #     @actor.move_forward(false)
     elsif (keyEvent.key == UI::KC_D)
-      event = Event::DisableAction.new(@actor.name)
+      event = Event::RequestDisableAction.new(@actor.name)
       event.backward = true
-      @garden.send_event(event)
+      @event_router.send_event(event)
 #      @actor.move_backward(false)
     elsif (keyEvent.key == UI::KC_S)
-      event = Event::DisableAction.new(@actor.name)
+      event = Event::RequestDisableAction.new(@actor.name)
       event.left = true
-      @garden.send_event(event)
+      @event_router.send_event(event)
 #      @actor.move_left(false)
     elsif (keyEvent.key == UI::KC_F)
-      event = Event::DisableAction.new(@actor.name)
+      event = Event::RequestDisableAction.new(@actor.name)
       event.right = true
-      @garden.send_event(event)
+      @event_router.send_event(event)
 #      @actor.move_right(false)
     elsif (keyEvent.key == UI::KC_SPACE)
-      event = Event::DisableAction.new(@actor.name)
+      event = Event::RequestDisableAction.new(@actor.name)
       event.jump = true
-      @garden.send_event(event)
+      @event_router.send_event(event)
 #      @actor.jump(false)
     end
     return true

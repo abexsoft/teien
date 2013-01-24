@@ -1,20 +1,16 @@
 require 'teien'
 
-require_relative '../helpers/user_event'
-require_relative '../helpers/sinbad/sinbad'
+require_relative '../common/user_event'
+require_relative '../common/sinbad/sinbad'
 
 include Teien
 
 class ActorModel < Teien::Model
-  attr_accessor :info
-  attr_accessor :quit
-
-  def setup(garden)
+  def setup()
     puts "model::setup"
     @remote_to_actors = Hash.new
     @sync_period = 0.5
     @sync_timer = 0
-    @quit = false
 
     # environment
     @garden.set_gravity(Vector3D.new(0.0, -9.8, 0.0))
@@ -34,7 +30,6 @@ class ActorModel < Teien::Model
     object_info.material_name = "Examples/Rockwall"
     floor = @garden.create_object("Floor", object_info, PhysicsInfo.new(0))
     floor.set_position(Vector3D.new(0, 0, 0))
-
   end
 
   def update(delta)
@@ -42,39 +37,42 @@ class ActorModel < Teien::Model
     if (@sync_timer > @sync_period)
       @garden.actors.each_value {|actor|
         event = actor.dump_event()
-        @garden.send_event(event)      
+        @event_router.send_event(event)      
       }
       @sync_timer = 0
     end
-    return !@quit
+  end
+
+  def connection_binded(from)
+  end
+
+  def connection_unbinded(from)
+    actor = @remote_to_actors[from]
+    @remote_to_actors.delete(from)
+    @garden.actors.delete(actor.name)
+    actor.finalize()
   end
 
   def receive_event(event, from)
 #    puts event
     case event
-    when Event::ClientUnbinded
-      actor = @remote_to_actors[from]
-      @remote_to_actors.delete(from)
-      @garden.actors.delete(actor.name)
-      actor.finalize()
     when Event::RequestControllable
       puts "Event::RequestControllable"
 
-      remote_info = Network.connected_clients[from]
+      remote_info = Network.connections[from]
       actor = Sinbad.new(@garden, "Sinbad-#{remote_info.id}")
       @garden.actors[actor.name] = actor
       @remote_to_actors[from] = actor
       event = actor.dump_event()
-      @garden.send_event(event)
+      @event_router.send_event(event)
 
       @sinbad = actor
       event = Event::ControllableObject.new(@sinbad.name, @sinbad.object.name)
-      @garden.send_event(event, from)
-
-    when Event::SetForwardDirection
+      @event_router.send_event(event, from)
+    when Event::RequestSetForwardDirection
       @remote_to_actors[from].set_forward_direction(event.dir)
-      @garden.send_event(event)
-    when Event::EnableAction
+      @event_router.send_event(Event::SetForwardDirection.new.copy(event))
+    when Event::RequestEnableAction
       if event.forward
         @remote_to_actors[from].move_forward(true)
       elsif event.backward
@@ -86,10 +84,8 @@ class ActorModel < Teien::Model
       elsif event.jump
         @remote_to_actors[from].jump(true)
       end
-      @garden.send_event(event)
-    when Event::DisableAction
-      return if (from == nil)
-
+      @event_router.send_event(Event::EnableAction.new(event.actor_name).copy(event))
+    when Event::RequestDisableAction
       if event.forward
         @remote_to_actors[from].move_forward(false)
       elsif event.backward
@@ -101,7 +97,7 @@ class ActorModel < Teien::Model
       elsif event.jump
         @remote_to_actors[from].jump(false)
       end
-      @garden.send_event(event)
+      @event_router.send_event(Event::DisableAction.new(event.actor_name).copy(event))
     end
   end
 end

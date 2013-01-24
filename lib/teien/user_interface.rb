@@ -10,9 +10,11 @@ class UserInterface
   attr_accessor :garden
   attr_accessor :debug_draw
 
-  def initialize(garden)
+  def initialize(event_router, garden)
     super()
 
+    @event_router = event_router
+    @event_router.register_receiver(self)
     @garden = garden
     @garden.register_receiver(self)
 
@@ -73,8 +75,8 @@ class UserInterface
     @view.scene_mgr.set_sky_dome(enable, materialName, curvature, tiling, distance)
   end
 
-  def setup(garden)
-    @view.setup(garden)
+  def setup()
+    @view.setup(@garden)
   end
 
   def create_object(obj)

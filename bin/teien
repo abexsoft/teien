@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# This script is a environment setting helper on the startup.
+# This script is an environment setting helper on the startup.
 # 1. set a LD_LIBRARY_PATH(or PATH) value for dynamic libraries.
 # 2. restart with above value.
 # 3. set a LOAD_PATH value for ruby libraries.
@@ -10,54 +10,42 @@ if (ARGV[0] == "-h" || ARGV[0] == "--help")
   exit
 end
 
-#
-# require this file directly at first line, unless you set 
-# RUBYLIB and LD_LIBRARY_PATH. (check sample code)
-#
 require 'rbconfig'
 require 'ogre_config'
 
-$topDir = File.dirname(File.dirname(File.expand_path(__FILE__)))
-libPath  = $topDir  + "/lib"
-extPath  = OgreConfig::get_deps_lib_path
+top_dir = File.dirname(File.dirname(File.expand_path(__FILE__)))
+lib_path  = top_dir  + "/lib"
+ext_path  = OgreConfig::get_deps_lib_path
 
-# needed by dynamic library.
+# needed by dynamic libraries.
 if (/mingw/ =~ RUBY_PLATFORM)
-  ldLibPath = extPath + ";" + OgreConfig::get_lib + ";" + libPath
+  ld_lib_path = ext_path + ";" + OgreConfig::get_lib + ";" + lib_path
   if (ENV["PATH"] == nil)
-    ENV["PATH"] =  ldLibPath
+    ENV["PATH"] =  ld_lib_path
     exec("ruby #{$0} #{ARGV.join(" ")}")
-  elsif (!ENV["PATH"].include?(ldLibPath))
-    ENV["PATH"] = ldLibPath + ";" +ENV["PATH"]
+  elsif (!ENV["PATH"].include?(ld_lib_path))
+    ENV["PATH"] = ld_lib_path + ";" +ENV["PATH"]
     exec("ruby #{$0} #{ARGV.join(" ")}")
   end
 else
-  ldLibPath = extPath + ":" + libPath
+  ld_lib_path = ext_path + ":" + lib_path
   if (ENV["LD_LIBRARY_PATH"] == nil)
-    ENV["LD_LIBRARY_PATH"] = ldLibPath
+    ENV["LD_LIBRARY_PATH"] = ld_lib_path
     exec($0, *ARGV)
-  elsif(!ENV["LD_LIBRARY_PATH"].include?(ldLibPath))
-    ENV["LD_LIBRARY_PATH"] = ldLibPath + ":" + ENV["LD_LIBRARY_PATH"]
+  elsif(!ENV["LD_LIBRARY_PATH"].include?(ld_lib_path))
+    ENV["LD_LIBRARY_PATH"] = ld_lib_path + ":" + ENV["LD_LIBRARY_PATH"]
     exec($0, *ARGV)
   end
 end
 
-$LOAD_PATH.push(libPath)
-$LOAD_PATH.push("./")
+$LOAD_PATH.push(lib_path)
 
-require 'teien'
+require "teien/launcher.rb"
+require "teien/std_command.rb"
 
-case ARGV[0]
-when "server"
-  Teien::start_server_garden("0.0.0.0", 11922)
-when "client"
-  ip = ARGV[1] ? ARGV[1] : "0.0.0.0"
-  port = ARGV[2] ? ARGV[2].to_i : 11922
-  Teien::start_client_garden(ip, port)
-when "ai"
-  ip = ARGV[1] ? ARGV[1] : "0.0.0.0"
-  port = ARGV[2] ? ARGV[2].to_i : 11922
-  Teien::start_ai_garden(ip, port)
-when "local"
-  Teien::start_local_garden()
-end
+Dir.glob("#{Dir.getwd}/addons/*.rb") {|file|
+  require "#{file}"
+}
+
+Teien::Launcher::launch(ARGV)
+

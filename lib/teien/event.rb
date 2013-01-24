@@ -2,6 +2,16 @@ module Event
 
 # event
 
+class RpcCallToModel
+  attr_accessor :method
+  attr_accessor :args
+
+  def initialize(method, *args)
+    @method = method
+    @args = args
+  end
+end
+
 class ClientConnected
 end
 
