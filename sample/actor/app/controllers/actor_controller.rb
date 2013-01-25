@@ -22,13 +22,12 @@ class ActorController < Teien::Controller
     @ui.hide_cursor()
   end
 
-  def update(delta)
-    if @first_update
-      event = Event::RequestControllable.new()
-      @event_router.send_event(event)
-      @first_update = false
-    end
+  def connection_completed(from)
+    event = Event::RequestControllable.new()
+    @event_router.send_event(event)
+  end
 
+  def update(delta)
     @camera_mover.update(delta)
 
     if @actor
