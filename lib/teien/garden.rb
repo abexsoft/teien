@@ -17,9 +17,6 @@ class Garden < GardenBase
   # EventRouter handler
   def update(delta)
     @physics.update(delta)
-    @actors.each_value {|actor|
-      actor.update(delta)
-    }
     return !@quit
   end
 

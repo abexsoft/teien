@@ -49,12 +49,12 @@ class Sinbad
     return Event::SyncSinbad.new(self)
   end
 
-  def self.load_event(garden, event)
-    actor = garden.actors[event.actor_name]
+  def self.load_event(garden, actors, event)
+    actor = actors[event.actor_name]
     if actor == nil
       actor = Sinbad.new(garden, event.actor_name)
     else
-      actor = garden.actors[event.actor_name]
+      actor = actors[event.actor_name]
     end
 
     return actor

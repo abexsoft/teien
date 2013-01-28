@@ -9,6 +9,8 @@ class ActorModel < Teien::Model
   def setup()
     puts "model::setup"
     @remote_to_actors = Hash.new
+    @actors = Hash.new()
+
     @sync_period = 0.5
     @sync_timer = 0
 
@@ -33,9 +35,13 @@ class ActorModel < Teien::Model
   end
 
   def update(delta)
+    @actors.each_value {|actor|
+      actor.update(delta)
+    }
+
     @sync_timer += delta
     if (@sync_timer > @sync_period)
-      @garden.actors.each_value {|actor|
+      @actors.each_value {|actor|
         event = actor.dump_event()
         @event_router.send_event(event)      
       }
@@ -49,7 +55,7 @@ class ActorModel < Teien::Model
   def connection_unbinded(from)
     actor = @remote_to_actors[from]
     @remote_to_actors.delete(from)
-    @garden.actors.delete(actor.name)
+    @actors.delete(actor.name)
     actor.finalize()
   end
 
@@ -61,7 +67,7 @@ class ActorModel < Teien::Model
 
       remote_info = Network.connections[from]
       actor = Sinbad.new(@garden, "Sinbad-#{remote_info.id}")
-      @garden.actors[actor.name] = actor
+      @actors[actor.name] = actor
       @remote_to_actors[from] = actor
       event = actor.dump_event()
       @event_router.send_event(event)

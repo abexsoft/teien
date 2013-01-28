@@ -13,7 +13,6 @@ class GardenBase
 
   attr_accessor :physics
   attr_accessor :objects
-  attr_accessor :actors
 
   attr_accessor :gravity
   attr_accessor :ambient_light_color
@@ -28,7 +27,6 @@ class GardenBase
     @event_router.register_receiver(self)
 
     @physics = Physics.new()
-    @actors = Hash.new()
 
     @objects = {}
     @object_num = 0
