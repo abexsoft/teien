@@ -1,4 +1,4 @@
-require 'teien/garden_object'
+require 'teien/base_object/base_object'
 
 module Teien
 
@@ -9,6 +9,7 @@ class ViewObjectFactory
     if @creators[obj.object_info.class] != nil
       return @creators[obj.object_info.class].call(obj, view)
     else
+      puts "not a supported object: #{obj.object_info.class}"
       return nil
     end
   end

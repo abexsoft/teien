@@ -25,11 +25,12 @@ class BaseObjectManagerProxy < BaseObjectManagerBase
   def receive_event(event, from)
     case event
     when Event::BaseObject::SyncEnv
-      puts "SyncEnv"
+ #     puts "SyncEnv"
       set_gravity(event.gravity)
       set_ambient_light(event.ambient_light_color)
       set_sky_dome(event.sky_dome.enable, event.sky_dome.materialName)
     when Event::BaseObject::SyncObject
+#      puts "SyncObject"
       if @objects[event.name]
 #        puts "sync"
         sync_object_with_event(event, @objects[event.name])
@@ -37,6 +38,10 @@ class BaseObjectManagerProxy < BaseObjectManagerBase
 #        puts "add"
         create_object_from_event(event)
       end
+=begin
+    else
+      puts "get a event #{event}"
+=end
     end
   end
 

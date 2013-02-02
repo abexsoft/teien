@@ -12,17 +12,16 @@ class BrowserCommand
 
   def self.start_browser(ip, port)
     require "teien/base_object/base_object_manager_proxy.rb"
+    require 'teien/animation/animation'
+    require 'teien/action/smooth_mover'
     require 'teien/ui/user_interface'
     require 'teien/browser/browser'
-
-    Dir.glob("#{Dir.getwd}/addons/*/browser/*.rb") {|file|
-      require "#{file}"
-    }
+    Dir.glob("#{Dir.getwd}/addons/*/browser/*.rb") {|file| require "#{file}" }
 
     event_router = Teien::EventRouter.new()
     Teien::register_component("event_router", event_router)
 
-    base_object_manager = Teien::BaseObjectManager.new(event_router)
+    base_object_manager = Teien::BaseObjectManagerProxy.new(event_router)
     Teien::register_component("base_object_manager", base_object_manager)
 
     ui = Teien::UserInterface.new(event_router, base_object_manager)

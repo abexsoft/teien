@@ -2,6 +2,16 @@ require 'teien/ui/ui_listener'
 require "teien/ui/view_object_factory.rb"
 require "teien/core/dispatcher.rb"
 
+require_relative "std_objects/light_object_info"
+require_relative "std_objects/floor_object_info"
+require_relative "std_objects/mesh_bb_object_info"
+require_relative "std_objects/mesh_object_info"
+require_relative "std_objects/box_object_info"
+require_relative "std_objects/sphere_object_info"
+require_relative "std_objects/capsule_object_info"
+require_relative "std_objects/cone_object_info"
+require_relative "std_objects/cylinder_object_info"
+
 module Teien
 
 class View < Ogre::FrameListener
@@ -33,11 +43,11 @@ class View < Ogre::FrameListener
     @objects = Hash.new
   end
 
-  def setup(garden)
+  def setup(base_object_manager)
     puts "view setup"
-    @garden = garden
-    @plugins_cfg   = @garden.plugins_cfg ? @garden.plugins_cfg : "config/plugins.cfg"
-    @resources_cfg = @garden.resources_cfg ? @garden.resources_cfg : "config/resources.cfg"
+    @base_object_manager = base_object_manager
+    @plugins_cfg   = @base_object_manager.plugins_cfg ? @base_object_manager.plugins_cfg : "config/plugins.cfg"
+    @resources_cfg = @base_object_manager.resources_cfg ? @base_object_manager.resources_cfg : "config/resources.cfg"
 
     @root = Ogre::Root.new("")
     load_plugins()
@@ -66,7 +76,7 @@ class View < Ogre::FrameListener
 
     cfg.each_settings {|secName, keyName, valueName|
       fullPath = pluginDir + valueName
-      fullPath.sub!("<ConfigFileFolder>", File.dirname(@garden.plugins_cfg)) if @garden.resources_cfg
+      fullPath.sub!("<ConfigFileFolder>", File.dirname(@base_object_manager.plugins_cfg)) if @base_object_manager.resources_cfg
       fullPath.sub!("<SystemPluginFolder>", OgreConfig::get_plugin_folder)
       @root.load_plugin(fullPath) if (keyName == "Plugin")
     }
@@ -85,8 +95,8 @@ class View < Ogre::FrameListener
       next if (keyName == "ResourceFolder")
 
       fullPath = resourceDir + valueName
-      if @garden.resources_cfg
-        fullPath.sub!("<ConfigFileFolder>", File.dirname(@garden.resources_cfg)) 
+      if @base_object_manager.resources_cfg
+        fullPath.sub!("<ConfigFileFolder>", File.dirname(@base_object_manager.resources_cfg)) 
       end
       fullPath.sub!("<SystemResourceFolder>", OgreConfig::get_resource_folder)
 
@@ -175,8 +185,11 @@ class View < Ogre::FrameListener
   end
 
   def create_object(obj)
+    puts "View::create_object"
     view_object = ViewObjectFactory::create_object(obj, self)
+
     obj.register_receiver(view_object)
+    view_object.object = obj
 
     @objects[obj.name] = view_object if view_object
   end
@@ -207,7 +220,7 @@ class View < Ogre::FrameListener
     @mouse.capture()
 
 =begin
-    @garden.objects.each_value {|obj|
+    @base_object_manager.objects.each_value {|obj|
       if obj.object_info.use_view
         obj.view_object.update_animation(evt.timeSinceLastFrame, obj.animation_info)
       end
@@ -215,7 +228,7 @@ class View < Ogre::FrameListener
 
 =end
     @objects.each_value {|obj|
-      obj.update_animation(evt.timeSinceLastFrame, obj.animation_info)
+      obj.update_animation(evt.timeSinceLastFrame, obj.object.animation_info)
     }
 
     @tray_mgr.frame_rendering_queued(evt)

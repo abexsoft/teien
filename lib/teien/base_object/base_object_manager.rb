@@ -5,18 +5,28 @@ require "teien/base_object/base_object_event.rb"
 module Teien
 
 class BaseObjectManager < BaseObjectManagerBase
-  def initialize(event_router)
+  def initialize(event_router, sync_period)
     super(event_router)
+    @sync_period = sync_period
+    @sync_timer = sync_period
   end
 
   # EventRouter handler
   def setup()
+    
     @physics.setup(self)
   end
 
   # EventRouter handler
   def update(delta)
     @physics.update(delta)
+
+    @sync_timer += delta
+    if (@sync_timer > @sync_period)
+      notify_objects()
+      @sync_timer = 0
+    end
+
     return !@quit
   end
 

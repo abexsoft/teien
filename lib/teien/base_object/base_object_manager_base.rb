@@ -1,3 +1,6 @@
+require 'teien/base_object/object_info'
+require 'teien/base_object/physics_info'
+require "teien/base_object/physics_object_factory"
 require "teien/base_object/base_object"
 require "teien/base_object/sky_dome"
 require "teien/base_object/physics"
@@ -22,6 +25,8 @@ class BaseObjectManagerBase
   # 
   def initialize(event_router)
     super()
+
+    puts "initialize base_object_manager_base"
 
     @event_router = event_router
     @event_router.register_receiver(self)

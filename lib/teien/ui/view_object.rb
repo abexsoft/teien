@@ -10,6 +10,8 @@ class ViewObject
   attr_accessor :entity
   attr_accessor :animation_operators
 
+  attr_accessor :object
+
   def initialize(view)
     @view = view
     @pivot_scene_node = nil
@@ -66,10 +68,11 @@ class ViewObject
   # handlers of BaseObject
 
   def set_position(aPos)
-    if (object_info.class == LightObjectInfo)
-      @entity.set_position(Vector3D.to_ogre(aPos))
-    else        
+    if @pivot_scene_node
       @pivot_scene_node.set_position(aPos.x, aPos.y, aPos.z)
+    else
+      # object_info.class == LightObjectInfo
+      @entity.set_position(Vector3D.to_ogre(aPos))
     end
   end
 

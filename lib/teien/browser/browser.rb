@@ -12,8 +12,11 @@ class Browser
   end
 
   def setup()
+    puts "browser setup"
     @camera_mover = @ui.get_camera().get_mover()
-    @camera_mover.set_position(Vector3D.new(0, 10, 0))
+
+    # REVISIT: There is a bug which set_position must set same parameters(x, y, z).
+    @camera_mover.set_position(Vector3D.new(50, 50, 50))
     @camera_mover.look_at(Vector3D.new(0, 0, 0))
 
     @ui.show_frame_stats(UI::TL_BOTTOMLEFT)
@@ -22,6 +25,10 @@ class Browser
   end
 
   # handler of EventRouter.
+  def update(delta)
+    @camera_mover.update(delta)
+  end
+
   def receive_event(event, from)
   end
   

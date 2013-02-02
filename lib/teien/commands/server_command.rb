@@ -8,7 +8,10 @@ class ServerCommand
   end
 
   def self.start_server(ip, port, sync_period = 0.5)
-    require "teien/base_object/synchronizer"
+    require "teien/base_object/base_object_manager.rb"
+    require 'teien/animation/animation'
+    require 'teien/action/smooth_mover'
+    require "teien/core/model"
     require 'teien/browser/browser_event'
     Dir.glob("#{Dir.getwd}/addons/*/server/*.rb") {|file| require "#{file}" }
     Dir.glob("#{Dir.getwd}/app/*.rb") {|file| require "#{file}" }
@@ -16,11 +19,8 @@ class ServerCommand
     event_router = Teien::EventRouter.new()
     Teien::register_component("event_router", event_router)
 
-    base_object_manager = Teien::BaseObjectManager.new(event_router)
+    base_object_manager = Teien::BaseObjectManager.new(event_router, sync_period)
     Teien::register_component("base_object_manager", base_object_manager)
-
-    sync = Teien::Synchronizer.new(event_router, base_object_manager, sync_period)
-    Teien::register_component("synchronizer", sync)
 
 #    Teien::Addon.load(event_router, base_object_manager)
     Teien::Model.load(event_router, base_object_manager)

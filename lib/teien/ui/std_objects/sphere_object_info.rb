@@ -1,5 +1,5 @@
-requier "teien/ui/view_object_factory"
-require "teien/core/std_object/sphere_object_info"
+require "teien/ui/view_object_factory"
+require "teien/base_object/std_objects/sphere_object_info"
 
 module Teien
 

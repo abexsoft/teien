@@ -17,8 +17,6 @@ class CameraMover
     @camera.set_position(0, 0, 0)
     @camera.set_near_clip_distance(0.1)
 
-    @style = CS_FREELOOK
-
     # CS_FREELOOK, CS_ORBIT, CS_MANUAL
     @sdk_camera_man = Ogrebites::SdkCameraMan.new(@camera)
     @evt_frame = Ogre::FrameEvent.new
@@ -33,6 +31,7 @@ class CameraMover
 
     @pivot_pitch = 0
 
+    set_style(CS_FREELOOK)
   end
 
   def set_style(style)
