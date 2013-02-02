@@ -7,16 +7,22 @@ require "ois.so"
 require "ogrebites.so"
 require "teienlib.so"
 
-require "teien/tools.rb"
-require "teien/physics_object_factory.rb"
-require "teien/view_object_factory.rb"
-require 'teien/object_info'
-require 'teien/physics_info'
-require 'teien/animation'
-require 'teien/smooth_mover'
+require "teien/core/tools.rb"
+require "teien/core/component_manager"
+require "teien/core/event_router"
 
-require 'teien/component_manager'
-require 'teien/event_router'
-require "teien/garden.rb"
-require "teien/model.rb"
-require "teien/controller.rb"
+require 'teien/base_object/object_info'
+require 'teien/base_object/physics_info'
+require "teien/base_object/physics_object_factory"
+require "teien/base_object/base_object_manager"
+
+require 'teien/animation/animation'
+require 'teien/action/smooth_mover'
+
+require "teien/core/model"
+
+require "teien/ui/view_object_factory.rb"
+
+
+
+

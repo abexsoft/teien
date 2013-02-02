@@ -40,10 +40,12 @@ end
 
 $LOAD_PATH.push(lib_path)
 
-require "teien/launcher.rb"
-require "teien/std_command.rb"
+require "teien/core/launcher.rb"
+require "teien/commands/browser_command"
+require "teien/commands/server_command"
 
-Dir.glob("#{Dir.getwd}/addons/*.rb") {|file|
+# require for user commands.
+Dir.glob("#{Dir.getwd}/commands/*.rb") {|file|
   require "#{file}"
 }
 
