@@ -41,10 +41,12 @@ end
 $LOAD_PATH.push(lib_path)
 
 require "teien/core/launcher.rb"
+
+# include standard commands.
 require "teien/commands/browser_command"
 require "teien/commands/server_command"
 
-# require for user commands.
+# include user commands.
 Dir.glob("#{Dir.getwd}/commands/*.rb") {|file|
   require "#{file}"
 }

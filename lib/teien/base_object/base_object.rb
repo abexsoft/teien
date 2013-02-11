@@ -14,7 +14,7 @@ class BaseObject < Bullet::BtMotionState
 
   attr_accessor :object_info
   attr_accessor :physics_info
-  attr_accessor :animation_info
+#  attr_accessor :animation_info
 
   attr_accessor :manager
   attr_accessor :physics_object
@@ -29,7 +29,7 @@ class BaseObject < Bullet::BtMotionState
 
     @manager = nil
     @physics_object = nil
-    @animation_info = Animation.new
+#    @animation_info = Animation.new
   end
 
   def finalize()
@@ -40,10 +40,9 @@ class BaseObject < Bullet::BtMotionState
   def set_activation_state(state)
     @physics_object.rigid_body.set_activation_state(state)
   end
-
-
+  
   # Set a position.
-  # 
+  #
   # ==== Args
   # [aPos: Vector3D] 
   def set_position(aPos)

@@ -94,15 +94,6 @@ class BaseObjectManagerBase
     end
   end
 
-  def add_actor(actor)
-    if (@actors[actor.name] == nil)
-      actors[name] = actor
-      notify(:add_actor, actor)
-    else
-      raise RuntimeError, "There is an actor with the same name (#{actor.name})"
-    end
-  end
-
   def check_collision(objectA, objectB)
     result = @physics.contact_pair_test(objectA.rigid_body, objectB.rigid_body)
     return result.collided?()

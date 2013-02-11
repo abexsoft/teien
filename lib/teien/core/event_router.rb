@@ -96,13 +96,14 @@ class EventRouter
 
           if @quit
             EM.stop 
-            Teien::get_component("base_object_manager").finalize()
+            notify_reversely(:finalize)
+#            Teien::get_component("base_object_manager").finalize()
           end
         end
       end
         
-      Signal.trap("INT")  { EM.stop; Teien::get_component("base_object_manager").finalize() }
-      Signal.trap("TERM") { EM.stop; Teien::get_component("base_object_manager").finalize() }
+      Signal.trap("INT")  { EM.stop; notify_reversely(:finalize) }
+      Signal.trap("TERM") { EM.stop; notify_reversely(:finalize) }
 
       if (ip)
         EM.connect(ip, port, ClientNetwork, self)

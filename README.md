@@ -28,7 +28,8 @@ Run a sample application.
      $ mkdir mywork/ 
      $ cp -r <gems>/teien-<version>/sample/   mywork/
      $ cd mywork/sample/hello_garden/
-     $ ./run
+     $ ../../bin/teien server &
+     $ ../../bin/teien browser 
 
 ## Contributing
 

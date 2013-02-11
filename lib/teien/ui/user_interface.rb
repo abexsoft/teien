@@ -23,6 +23,10 @@ class UserInterface
     @debug_draw = false
   end
 
+  def finalize
+    @view.finalize
+  end
+
   def set_window_title(title)
     @view.window_title = title
   end

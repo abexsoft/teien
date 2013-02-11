@@ -1,6 +1,7 @@
 module Teien
   class AiCommand
     def self.ai_command(argv)
+=begin
       require "teien/proxy_garden.rb"
       require_relative "ai/actor_ai.rb"
 
@@ -11,8 +12,9 @@ module Teien
       ai = ActorAi.new(garden)
 
       garden.run(ip, port)
+=end
     end
   end
 
-  Teien::Launcher::set_command("ai", AiCommand.method(:ai_command))
+  Teien::Launcher::register_command("ai", AiCommand.method(:ai_command))
 end

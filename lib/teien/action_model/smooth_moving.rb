@@ -1,13 +1,17 @@
-class SmoothMover
+module Teien
+
+class SmoothMoving
   ACCELERATION = 5.0
   TURN_SPEED = 500.0
 
+  attr_accessor :target_object_name
   attr_accessor :acceleration
   attr_accessor :turn_speed
   attr_accessor :movable
 
-  def initialize(target_object)
-    @target_object = target_object
+  def initialize(target_object_name)
+    @target_object_name = target_object_name
+    @target_object = Teien::get_component("base_object_manager").objects[target_object_name]
     @acceleration = ACCELERATION
     @turn_speed = TURN_SPEED
     @move_dir = Ogre::Vector3.new(0, 0, 0)
@@ -15,6 +19,8 @@ class SmoothMover
     @zero_vector = Vector3D.new(0, 0, 0)
     clear_action()
     @movable = true
+
+    @event_router = Teien::get_component("event_router")
   end
 
   def clear_action()
@@ -26,6 +32,14 @@ class SmoothMover
 
   def moving?()
     return (@forward || @backward || @left || @right)
+  end
+
+  def set_acceleration(accel)
+    @acceleration = accel
+  end
+
+  def set_turn_speed(turn_speed)
+    @turn_speed = turn_speed
   end
 
   #
@@ -94,4 +108,6 @@ class SmoothMover
 
     @target_object.yaw(Ogre::Degree.new(yawToGoal).value_radians())
   end
+end
+
 end

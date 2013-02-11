@@ -1,18 +1,24 @@
 require_relative "browser_event"
 
-module Teien
+include Teien
 
-class Browser
-  def initialize(event_router, base_object_manager, user_interface)
-    @event_router = event_router
-    @event_router.register_receiver(self)
-    @base_object_manager = base_object_manager
-    @ui = user_interface
+class BrowserApplication < Teien::Application
+  def initialize()
+    super
+
+    @ui = Teien::get_component("user_interface")
     @ui.register_receiver(self)
+    @camera_mover = nil
   end
+
+  ##
+  # handlers of EventRouter.
+  #
 
   def setup()
     puts "browser setup"
+    @controllable_actor_name = nil
+
     @camera_mover = @ui.get_camera().get_mover()
 
     # REVISIT: There is a bug which set_position must set same parameters(x, y, z).
@@ -24,25 +30,26 @@ class Browser
     @ui.hide_cursor()
   end
 
-  # handler of EventRouter.
+  def connection_completed(from)
+    event = Teien::Event::Browser::ReadyToGo.new
+    @event_router.send_event(event, from)
+  end
+
   def update(delta)
     @camera_mover.update(delta)
   end
 
-  def receive_event(event, from)
-  end
-  
+  ##
   # handlers of UserInterface.
-  def key_pressed(keyEvent)
-    event = Event::Browser::KeyPressed.new(keyEvent.key)
-    @event_router.send_event(event)
+  #
 
+  def key_pressed(keyEvent)
     if (keyEvent.key == UI::KC_E)
       @camera_mover.move_forward(true)
     elsif (keyEvent.key == UI::KC_D)
       @camera_mover.move_backward(true)
     elsif (keyEvent.key == UI::KC_S)
-      @camera_mover.move_left(true)
+      @camera_mover.move_left(true) 
     elsif (keyEvent.key == UI::KC_F)
       @camera_mover.move_right(true)
     elsif (keyEvent.key == UI::KC_G)
@@ -54,13 +61,14 @@ class Browser
     elsif (keyEvent.key == UI::KC_ESCAPE)
       @event_router.quit = true
     end
+
+    event = Event::Browser::KeyPressed.new(keyEvent.key)
+    @event_router.send_event(event)
+
     return true
   end
 
   def key_released(keyEvent)
-    event = Event::Browser::KeyReleased.new(keyEvent.key)
-    @event_router.send_event(event)
-
     if (keyEvent.key == UI::KC_ESCAPE)
       @quit =true
     elsif (keyEvent.key == UI::KC_E)
@@ -68,10 +76,14 @@ class Browser
     elsif (keyEvent.key == UI::KC_D)
       @camera_mover.move_backward(false)
     elsif (keyEvent.key == UI::KC_S)
-      @camera_mover.move_left(false)
+      @camera_mover.move_left(false) 
     elsif (keyEvent.key == UI::KC_F)
-      @camera_mover.move_right(false)
+      @camera_mover.move_right(false) 
     end
+
+    event = Event::Browser::KeyReleased.new(keyEvent.key)
+    @event_router.send_event(event)
+
     return true
   end
 
@@ -81,14 +93,21 @@ class Browser
   end
 
   def mouse_pressed(mouseEvent, mouseButtonID)
-    @camera_mover.mouse_pressed(mouseEvent, mouseButtonID)
+    @camera_mover.mouse_pressed(mouseEvent, mouseButtonID) 
+
+    event = Event::Browser::MousePressed.new(mouseEvent, mouseButtonID, @ui.get_camera())
+    @event_router.send_event(event)
+
     return true
   end
 
   def mouse_released(mouseEvent, mouseButtonID)
-    @camera_mover.mouse_released(mouseEvent, mouseButtonID)
+    @camera_mover.mouse_released(mouseEvent, mouseButtonID) 
+
+    event = Event::Browser::MouseReleased.new(mouseEvent, mouseButtonID, @ui.get_camera())
+    @event_router.send_event(event)
+
     return true
   end
 end
 
-end

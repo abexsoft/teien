@@ -21,7 +21,7 @@ class SyncObject
 
   attr_accessor :object_info
   attr_accessor :physics_info
-  attr_accessor :animation_info
+#  attr_accessor :animation_info
 
   attr_accessor :pos
   attr_accessor :linear_vel
@@ -36,7 +36,7 @@ class SyncObject
 
     @object_info = obj.object_info
     @physics_info = obj.physics_info
-    @animation_info = obj.animation_info
+#    @animation_info = obj.animation_info
 
     @pos = Vector3D.to_self(obj.get_position())
     @linear_vel = Vector3D.to_self(obj.get_linear_velocity())

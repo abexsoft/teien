@@ -1,10 +1,8 @@
-require 'teien'
-
-require_relative 'user_event'
+require_relative '../browser/browser_event'
 
 include Teien
 
-class HelloGardenModel < Teien::Model
+class ServerApplication < Teien::Application
   def setup()
     puts "model setup"
     @quit = false
@@ -36,10 +34,6 @@ class HelloGardenModel < Teien::Model
 
   def connection_binded(from)
     puts "connection_binded"
-    if @first_connection
-      create_objects()
-      @first_connection = false
-    end
   end
 
   def create_objects()
@@ -92,11 +86,15 @@ class HelloGardenModel < Teien::Model
 
   def receive_event(event, from)
     case event
-    when Event::ShotBox
-      shot_box(event.pos, event.dir)
+    when Teien::Event::Browser::ReadyToGo
+      if @first_connection
+        create_objects()
+        @first_connection = false
+      end
+    when Teien::Event::Browser::MousePressed
+      shot_box(event.camera_pos, event.camera_dir)
     end
   end
-
 
   def shot_box(pos, dir)
     object_info = BoxObjectInfo.new(Vector3D.new(1, 1, 1))
@@ -106,7 +104,7 @@ class HelloGardenModel < Teien::Model
     @shot_num += 1
     force = dir * Vector3D.new(100.0, 100.0, 100.0)
     box.apply_impulse(force, Vector3D.new(0.0, 0.0, 0.0))
-    @event_router.send_event(Event::SyncObject.new(box))
+    @event_router.send_event(Teien::Event::BaseObject::SyncObject.new(box))
   end
 end
 

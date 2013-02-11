@@ -7,6 +7,7 @@ module Teien
 class BaseObjectManagerProxy < BaseObjectManagerBase
   def initialize(event_router)
     super(event_router)
+    @quit = false
   end
 
   # EventRouter handler
@@ -23,25 +24,22 @@ class BaseObjectManagerProxy < BaseObjectManagerBase
 
   # EventRouter handler
   def receive_event(event, from)
+
+    # There was a case which this manager gets a new sync packet 
+    # after finalizing.
+    return if @quit
+      
     case event
     when Event::BaseObject::SyncEnv
- #     puts "SyncEnv"
       set_gravity(event.gravity)
       set_ambient_light(event.ambient_light_color)
       set_sky_dome(event.sky_dome.enable, event.sky_dome.materialName)
     when Event::BaseObject::SyncObject
-#      puts "SyncObject"
       if @objects[event.name]
-#        puts "sync"
         sync_object_with_event(event, @objects[event.name])
       else
-#        puts "add"
         create_object_from_event(event)
       end
-=begin
-    else
-      puts "get a event #{event}"
-=end
     end
   end
 
@@ -71,6 +69,7 @@ class BaseObjectManagerProxy < BaseObjectManagerBase
   def finalize()
     @physics.finalize()
     @objects = {}
+    @quit = true
   end
 end
 

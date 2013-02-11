@@ -185,7 +185,6 @@ class View < Ogre::FrameListener
   end
 
   def create_object(obj)
-    puts "View::create_object"
     view_object = ViewObjectFactory::create_object(obj, self)
 
     obj.register_receiver(view_object)
@@ -219,16 +218,10 @@ class View < Ogre::FrameListener
     @keyboard.capture()
     @mouse.capture()
 
-=begin
-    @base_object_manager.objects.each_value {|obj|
-      if obj.object_info.use_view
-        obj.view_object.update_animation(evt.timeSinceLastFrame, obj.animation_info)
-      end
-    }
-
-=end
+    animation_manager = Teien::get_component("animation_manager")
     @objects.each_value {|obj|
-      obj.update_animation(evt.timeSinceLastFrame, obj.object.animation_info)
+      animation = animation_manager.animations[obj.object.name]
+      obj.update_animation(evt.timeSinceLastFrame, animation) if animation
     }
 
     @tray_mgr.frame_rendering_queued(evt)

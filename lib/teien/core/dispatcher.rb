@@ -17,6 +17,14 @@ module Dispatcher
       end
     }
   end
+
+  def notify_reversely(method, *argv)
+    @dispatch_receivers.reverse_each {|recv|
+      if (recv.respond_to?(method))
+        recv.method(method).call(*argv)
+      end
+    }
+  end
 end
 
 end

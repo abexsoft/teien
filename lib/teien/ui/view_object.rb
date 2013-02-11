@@ -1,4 +1,4 @@
-require "teien/animation_operator.rb"
+require "teien/animation/animation_operator.rb"
 
 module Teien
 

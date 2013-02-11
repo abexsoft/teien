@@ -29,6 +29,7 @@ class Animation
     end
     return @operators[operator_name]
   end
+
 end
 
 end

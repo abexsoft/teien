@@ -32,7 +32,8 @@ class BaseObjectManager < BaseObjectManagerBase
 
   # EventRouter handler
   def connection_binded(from)
-    @event_router.send_event(Event::BaseObject::SyncEnv.new(@gravity, @ambient_light_color, @sky_dome), from)
+    event = Event::BaseObject::SyncEnv.new(@gravity, @ambient_light_color, @sky_dome)
+    @event_router.send_event(event, from)
     notify_objects(from)
   end
 
