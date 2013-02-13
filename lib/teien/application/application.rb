@@ -26,7 +26,7 @@ class Application
 
   def self.load(command)
     require "teien/application/application"
-    Dir.glob("#{Dir.getwd}/app/#{command}/*.rb") {|file| require "#{file}" }
+    Dir.glob("#{Dir.getwd}/apps/#{command}/*.rb") {|file| require "#{file}" }
   end
 
   def self.instantiate()

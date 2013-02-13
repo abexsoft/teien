@@ -7,7 +7,7 @@ class ServerCommand
     start_server("0.0.0.0", 11922)
   end
 
-  def self.start_server(ip, port, sync_period = 0.1)
+  def self.start_server(ip, port, sync_period = 0.3)
     event_router = Teien::EventRouter.new()
     Teien::register_component("event_router", event_router)
 

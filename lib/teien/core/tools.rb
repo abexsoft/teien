@@ -47,7 +47,7 @@ class Vector3D < Bullet::BtVector3
     return Vector3D.new(vec.x, vec.y, vec.z)
   end
 
-  def self.to_s(vec)
+  def self.to_string(vec)
     return sprintf("(%f, %f, %f)", vec.x, vec.y, vec.z)
   end
 
@@ -80,7 +80,7 @@ class Quaternion < Bullet::BtQuaternion
     return Quaternion.new(qt.x, qt.y, qt.z, qt.w)
   end
 
-  def self.to_s(qt)
+  def self.to_string(qt)
     return sprintf("(%f, %f, %f, %f)", qt.x, qt.y, qt.z, qt.w)
   end
 

@@ -1,4 +1,4 @@
-require_relative "../browser/browser_event"
+require_relative "../common/browser_event"
 
 include Teien
 

@@ -1,4 +1,4 @@
-require_relative "browser_event"
+require_relative "../common/browser_event"
 
 include Teien
 
@@ -37,23 +37,6 @@ class BrowserApplication < Teien::Application
 
   def update(delta)
     @camera_mover.update(delta)
-
-    if @controllable_actor_name
-      camera_dir = Vector3D.to_self(@camera_mover.camera.get_direction())
-      event = Teien::Event::Actor::RequestSetForwardDirection.new(@controllable_actor_name, camera_dir)
-      @event_router.send_event(event)
-    end
-  end
-
-  def receive_event(event, from)
-    case event
-    when Teien::Event::Browser::ControllableActor
-      @controllable_actor_name = event.actor_name
-
-      actor = Teien::get_component("actor_manager").actors[@controllable_actor_name]
-      @camera_mover.set_style(CameraMover::CS_TPS)
-      @camera_mover.set_target(actor.object)
-    end
   end
 
   ##
@@ -63,38 +46,12 @@ class BrowserApplication < Teien::Application
   def key_pressed(keyEvent)
     if (keyEvent.key == UI::KC_E)
       @camera_mover.move_forward(true)
-      if @controllable_actor_name
-        event = Teien::Event::Actor::RequestEnableAction.new(@controllable_actor_name)
-        event.forward = true
-        @event_router.send_event(event)
-      end
     elsif (keyEvent.key == UI::KC_D)
       @camera_mover.move_backward(true)
-      if @controllable_actor_name
-        event = Teien::Event::Actor::RequestEnableAction.new(@controllable_actor_name)
-        event.backward = true
-        @event_router.send_event(event)
-      end
     elsif (keyEvent.key == UI::KC_S)
       @camera_mover.move_left(true) 
-      if @controllable_actor_name
-        event = Teien::Event::Actor::RequestEnableAction.new(@controllable_actor_name)
-        event.left = true
-        @event_router.send_event(event)
-      end
     elsif (keyEvent.key == UI::KC_F)
       @camera_mover.move_right(true)
-      if @controllable_actor_name
-        event = Teien::Event::Actor::RequestEnableAction.new(@controllable_actor_name)
-        event.right = true
-        @event_router.send_event(event)
-      end
-    elsif (keyEvent.key == UI::KC_SPACE)
-      if @controllable_actor_name
-        event = Teien::Event::Actor::RequestEnableAction.new(@controllable_actor_name)
-        event.jump = true
-        @event_router.send_event(event)
-      end
     elsif (keyEvent.key == UI::KC_G)
       if @ui.debug_draw
         @ui.set_debug_draw(false)
@@ -116,41 +73,12 @@ class BrowserApplication < Teien::Application
       @quit =true
     elsif (keyEvent.key == UI::KC_E)
       @camera_mover.move_forward(false)
-
-      if @controllable_actor_name
-        event = Teien::Event::Actor::RequestDisableAction.new(@controllable_actor_name)
-        event.forward = true
-        @event_router.send_event(event)
-      end
     elsif (keyEvent.key == UI::KC_D)
       @camera_mover.move_backward(false)
-
-      if @controllable_actor_name
-        event = Teien::Event::Actor::RequestDisableAction.new(@controllable_actor_name)
-        event.backward = true
-        @event_router.send_event(event)
-      end
     elsif (keyEvent.key == UI::KC_S)
       @camera_mover.move_left(false) 
-
-      if @controllable_actor_name
-        event = Teien::Event::Actor::RequestDisableAction.new(@controllable_actor_name)
-        event.left = true
-        @event_router.send_event(event)
-      end
     elsif (keyEvent.key == UI::KC_F)
       @camera_mover.move_right(false) 
-      if @controllable_actor_name
-        event = Teien::Event::Actor::RequestDisableAction.new(@controllable_actor_name)
-        event.right = true
-        @event_router.send_event(event)
-      end
-    elsif (keyEvent.key == UI::KC_SPACE)
-      if @controllable_actor_name
-        event = Teien::Event::Actor::RequestDisableAction.new(@controllable_actor_name)
-        event.jump = true
-        @event_router.send_event(event)
-      end
     end
 
     event = Event::Browser::KeyReleased.new(keyEvent.key)

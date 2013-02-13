@@ -20,21 +20,6 @@ class Addon
       @@loaded_addons.push(addon.new())
     }
   end
-
-=begin
-  def self.update(delta)
-    @@loaded_addons.each {|addon|
-      addon.update(delta)
-    }
-  end
-
-  def self.receive_event(event, from)
-    @@loaded_addons.each {|addon|
-      addon.receive_event(event, from)
-    }
-  end
-  Teien::get_component("event_router").register_receiver(self)
-=end
 end
 
 end

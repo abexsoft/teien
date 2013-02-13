@@ -7,7 +7,7 @@ class ClosestNotMe < Bullet::ClosestRayResultCallback
     @rigidBody = rb
   end
 
-  def addSingleResult(rayResult, normalInWorldSpace)
+  def add_single_result(rayResult, normalInWorldSpace)
     return 1.0 if (rayResult.m_collisionObject == @rigedBody)
     return super(rayResult, normalInWorldSpace)
   end

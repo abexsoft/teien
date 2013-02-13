@@ -46,8 +46,8 @@ class View < Ogre::FrameListener
   def setup(base_object_manager)
     puts "view setup"
     @base_object_manager = base_object_manager
-    @plugins_cfg   = @base_object_manager.plugins_cfg ? @base_object_manager.plugins_cfg : "config/plugins.cfg"
-    @resources_cfg = @base_object_manager.resources_cfg ? @base_object_manager.resources_cfg : "config/resources.cfg"
+    @plugins_cfg   = @base_object_manager.plugins_cfg ? @base_object_manager.plugins_cfg : "configs/plugins.cfg"
+    @resources_cfg = @base_object_manager.resources_cfg ? @base_object_manager.resources_cfg : "configs/resources.cfg"
 
     @root = Ogre::Root.new("")
     load_plugins()
@@ -76,7 +76,9 @@ class View < Ogre::FrameListener
 
     cfg.each_settings {|secName, keyName, valueName|
       fullPath = pluginDir + valueName
-      fullPath.sub!("<ConfigFileFolder>", File.dirname(@base_object_manager.plugins_cfg)) if @base_object_manager.resources_cfg
+      if @base_object_manager.resources_cfg
+        fullPath.sub!("<ConfigFileFolder>", File.dirname(@base_object_manager.plugins_cfg)) 
+      end
       fullPath.sub!("<SystemPluginFolder>", OgreConfig::get_plugin_folder)
       @root.load_plugin(fullPath) if (keyName == "Plugin")
     }

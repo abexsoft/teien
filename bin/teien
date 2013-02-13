@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+#!/usr/bin/env ./rprof
+
 # This script is an environment setting helper on the startup.
 # 1. set a LD_LIBRARY_PATH(or PATH) value for dynamic libraries.
 # 2. restart with above value.
@@ -45,6 +47,7 @@ require "teien/core/launcher.rb"
 # include standard commands.
 require "teien/commands/browser_command"
 require "teien/commands/server_command"
+require "teien/commands/local_command"
 
 # include user commands.
 Dir.glob("#{Dir.getwd}/commands/*.rb") {|file|
