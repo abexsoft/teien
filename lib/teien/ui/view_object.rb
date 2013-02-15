@@ -18,6 +18,8 @@ class ViewObject
     @scene_node = nil
     @entity = nil
     @animation_operators = Hash.new
+    @attached_objects = Hash.new
+    @base_object_manager = Teien::get_component("base_object_manager")
   end
 
   def finalize()
@@ -26,6 +28,50 @@ class ViewObject
     @view.scene_mgr.get_root_scene_node.remove_child(@pivot_scene_node)
     @view.scene_mgr.destroySceneNode(@pivot_scene_node)
     @view.scene_mgr.destroyEntity(@entity)
+  end
+
+  def update_attached_objects(view)
+    # attached
+    @object.attached_objects.each_pair {|key, info|
+      unless @attached_objects[key]
+        attached_object = @base_object_manager.objects[info.object_name]
+        attached_entity = view.objects[attached_object.name].entity
+        attached_scene_node = view.objects[attached_object.name].scene_node
+
+        puts "attached: #{info.bone_name}, #{attached_entity}"
+
+        attached_scene_node.detach_object(attached_entity)
+        tag = @entity.attach_object_to_bone(info.bone_name, attached_entity)
+#        @manager.physics.dynamics_world.remove_rigid_body(obj.rigid_body)
+        attached_object.mode = Teien::BaseObject::MODE_ATTACHED
+        @attached_objects[key] = info
+      end
+    }
+
+    # detached
+    @attached_objects.each_pair {|key, info|
+      unless @object.attached_objects[key]
+        detached_object = @base_object_manager.objects[info.object_name]
+        detached_entity = view.objects[detached_object.name]
+        detached_scene_node = view.objects[detached_object.name].scene_node
+
+        @entity.detach_object_from_bone(detached_entity)
+        detached_scene_node.attach_object(obj.entity)
+=begin
+        if obj.physics_info.collision_filter
+          @manager.physics.dynamics_world.add_rigid_body(obj.rigid_body, 
+                                                         obj.physics_info.collision_filter.group,
+                                                         obj.physics_info.collision_filter.mask)
+        else
+          @manager.physics.dynamics_world.add_rigid_body(obj.rigid_body)
+        end
+=end
+        detached_object.mode = Teien::BaseObject::MODE_FREE
+        @attached_objects.delete(key)
+      end
+    }
+
+
   end
 
   def update_animation(delta, animation)

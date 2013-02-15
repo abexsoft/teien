@@ -50,7 +50,7 @@ class BaseObjectManagerProxy < BaseObjectManagerBase
     obj.set_angular_velocity(event.angular_vel)
     obj.set_rotation(event.quat)
     obj.set_acceleration(event.accel)
-#    obj.animation_info = event.animation_info
+    obj.attached_objects  = event.attached_objects
   end
 
   def sync_object_with_event(event, obj)
@@ -61,7 +61,7 @@ class BaseObjectManagerProxy < BaseObjectManagerBase
     obj.set_angular_velocity_with_interpolation(event.angular_vel)
     obj.set_rotation(event.quat)
     obj.set_acceleration(event.accel)
- #   obj.animation_info = event.animation_info
+    obj.attached_objects  = event.attached_objects
   end
 
   # called by Garden class.

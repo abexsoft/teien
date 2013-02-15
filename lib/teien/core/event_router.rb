@@ -79,7 +79,8 @@ class EventRouter
     end
   end
 
-  def connect_to_server(ip = nil, port = 11922, tick_period = 0.001)
+#  def connect_to_server(ip = nil, port = 11922, tick_period = 0.001)
+  def connect_to_server(ip = nil, port = 11922, tick_period = 0)
     notify(:setup)
 
     @last_time = 0

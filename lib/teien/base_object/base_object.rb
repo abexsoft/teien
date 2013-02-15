@@ -1,6 +1,7 @@
 require "teien/core/tools.rb"
 require "teien/base_object/physics_object.rb"
-require "teien/ui/view_object.rb"
+require "teien/base_object/attachment_info.rb"
+
 
 module Teien
 
@@ -14,7 +15,8 @@ class BaseObject < Bullet::BtMotionState
 
   attr_accessor :object_info
   attr_accessor :physics_info
-#  attr_accessor :animation_info
+
+  attr_accessor :attached_objects
 
   attr_accessor :manager
   attr_accessor :physics_object
@@ -26,6 +28,7 @@ class BaseObject < Bullet::BtMotionState
     super()
     @id = -1
     @mode = MODE_FREE
+    @attached_objects = Hash.new
 
     @manager = nil
     @physics_object = nil
@@ -245,6 +248,16 @@ class BaseObject < Bullet::BtMotionState
 
     notify(:set_rotation, @newRot)
   end
+
+  def attach_object_to_bone(bone_name, obj, 
+                            offset_quat = Quaternion.new(1, 0, 0, 0), 
+                            offset_pos = Vector3D.new(0, 0, 0))
+
+    attached_objects[bone_name] = AttachmentInfo.new(bone_name, obj.name, offset_quat, offset_pos)
+    obj.mode = MODE_ATTACHED
+  end
+
+
   
 =begin
   def attach_object_to_bone(boneName, obj)

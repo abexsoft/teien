@@ -99,33 +99,6 @@ class SinbadState
     end
   end
 
-  class GravityFree
-    def initialize(parent)
-      @parent = parent
-    end
-
-    def init()
-      @parent.play_top_animation("IdleTop")
-      @parent.play_base_animation("IdleBase")
-      @parent.object.set_damping(0, 0)
-
-      grav = @parent.object.get_gravity()
-      puts "gravity: (#{grav.x}, #{grav.y}, #{grav.z})"
-      @parent.object.set_gravity(Vector3D.new(0, 0, 0))
-
-      @parent.mover = @parent.grav_mover
-    end
-
-    def update(delta)
-      @parent.mover.update_target(delta)
-    end
-
-    def fini()
-      @parent.object.set_gravity(Vector3D.new(0, -9.8, 0))
-      @parent.mover = @parent.sm_mover
-    end
-  end
-
   class InAir
     def initialize(parent)
       @parent = parent

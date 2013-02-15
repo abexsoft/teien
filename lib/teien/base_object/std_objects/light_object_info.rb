@@ -29,6 +29,7 @@ class LightObjectInfo < ObjectInfo
     cShape = Bullet::BtSphereShape.new(0.1)
     inertia = Bullet::BtVector3.new()
     cShape.calculate_local_inertia(0, inertia)
+    obj.physics_info = PhysicsInfo.new(0)
     physics_object.set_rigid_body(obj, cShape, inertia)
     return physics_object
   end

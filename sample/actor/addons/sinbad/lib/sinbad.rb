@@ -22,7 +22,6 @@ class Sinbad < Teien::Actor
   attr_accessor :object
   attr_accessor :actor
   attr_accessor :mover
-  attr_accessor :grav_mover
   attr_accessor :state
 
   def initialize(sinbad_info)
@@ -38,6 +37,8 @@ class Sinbad < Teien::Actor
 
   def finalize()
     @base_object_manager.objects.delete(@object.name)
+    @base_object_manager.objects.delete("SinbadSword1")
+    @base_object_manager.objects.delete("SinbadSword2")
     @object.finalize()
   end
 
@@ -91,18 +92,17 @@ class Sinbad < Teien::Actor
       Teien::get_component("event_router").send_event(event)
     end
 
-=begin
+
     # swords
     object_info = MeshObjectInfo.new("Sword.mesh")
     object_info.scale = Vector3D.new(1.0 / 2.0, 1.0 / 2.0, 1.0 / 2.0)
-    @sword1 = @base_object_manager.create_object("SinbadSword1", object_info, PhysicsInfo.new(1.0))
+    @sword1 = @base_object_manager.create_object("SinbadSword1", object_info)
     @object.attach_object_to_bone("Sheath.L", @sword1)
 
     object_info = MeshObjectInfo.new("Sword.mesh")
     object_info.scale = Vector3D.new(1.0 / 2.0, 1.0 / 2.0, 1.0 / 2.0)
-    @sword2 = @base_object_manager.create_object("SinbadSword2", object_info, PhysicsInfo.new(1.0))
-    #@object.entity.attach_object_to_bone("Sheath.R", @sword2)
-=end
+    @sword2 = @base_object_manager.create_object("SinbadSword2", object_info)
+    @object.attach_object_to_bone("Sheath.R", @sword2)
   end
 
   def receive_event(event, from)
@@ -148,9 +148,7 @@ class Sinbad < Teien::Actor
 
   def jump(bl)
     if bl
-      if @state.state?("GravityFree")
-      elsif @state.state?("JumpLoop")
-      else
+      unless @state.state?("JumpLoop")
         @state.set_state("Jump")
       end
     end
@@ -163,18 +161,6 @@ class Sinbad < Teien::Actor
 
   def action_right
     @state.set_state("Attack")
-  end
-
-  def press_gravity
-    @state.set_state("GravityFree")
-  end
-
-  def release_gravity
-  end
-
-  def stop_gravity
-    @object.set_gravity(Vector3D.new(0, -9.8, 0))
-    @state.set_state("InAir")
   end
 
   def play_top_animation(name, loop = true)

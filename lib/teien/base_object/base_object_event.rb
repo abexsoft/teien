@@ -21,7 +21,6 @@ class SyncObject
 
   attr_accessor :object_info
   attr_accessor :physics_info
-#  attr_accessor :animation_info
 
   attr_accessor :pos
   attr_accessor :linear_vel
@@ -29,6 +28,7 @@ class SyncObject
   attr_accessor :quat
   attr_accessor :accel
 
+  attr_accessor :attached_objects
 
   def initialize(obj)
     @id = obj.id
@@ -36,13 +36,15 @@ class SyncObject
 
     @object_info = obj.object_info
     @physics_info = obj.physics_info
-#    @animation_info = obj.animation_info
 
     @pos = Vector3D.to_self(obj.get_position())
     @linear_vel = Vector3D.to_self(obj.get_linear_velocity())
     @angular_vel = Vector3D.to_self(obj.get_angular_velocity())
     @quat = Quaternion.to_self(obj.get_rotation())
     @accel = obj.get_acceleration()
+
+    @attached_objects = obj.attached_objects
+
   end
 
   def print

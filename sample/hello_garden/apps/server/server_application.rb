@@ -18,7 +18,7 @@ class ServerApplication < Teien::Application
     object_info.diffuse_color = Color.new(1.0, 1.0, 1.0)
     object_info.specular_color = Color.new(0.25, 0.25, 0)
     object_info.direction = Vector3D.new( -1, -1, -1 )
-    light = @base_object_manager.create_object("light", object_info, PhysicsInfo.new(0))
+    light = @base_object_manager.create_object("light", object_info)
     light.set_position(Vector3D.new(0, 0, 0))
 
     # create a floor.

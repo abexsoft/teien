@@ -73,7 +73,7 @@ class BaseObjectManagerBase
     notify(:set_sky_dome, enable, materialName, curvature, tiling, distance)
   end
 
-  def create_object(name, object_info, physics_info)
+  def create_object(name, object_info, physics_info = nil)
     if (@objects[name])
       #raise RuntimeError, "There is a object with the same name (#{obj.name})"
       puts "There is a object with the same name (#{name})"

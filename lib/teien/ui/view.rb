@@ -25,7 +25,7 @@ class View < Ogre::FrameListener
   attr_accessor :scene_mgr
   attr_accessor :tray_mgr
   attr_accessor :window_title
-
+  attr_accessor :objects
 
   def initialize()
     super()
@@ -215,13 +215,17 @@ class View < Ogre::FrameListener
     return @root.render_one_frame(delta)
   end
 
-  # Called through @root.renderOneFrame(delta).
+  # Called through @root.render_one_frame(delta).
   def frame_rendering_queued(evt)
     @keyboard.capture()
     @mouse.capture()
 
     animation_manager = Teien::get_component("animation_manager")
     @objects.each_value {|obj|
+      if obj.object.attached_objects.length > 0
+        obj.update_attached_objects(self)
+      end
+
       animation = animation_manager.animations[obj.object.name]
       obj.update_animation(evt.timeSinceLastFrame, animation) if animation
     }

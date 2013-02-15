@@ -1,4 +1,5 @@
 require 'teien/base_object/base_object'
+require 'teien/ui/view_object'
 
 module Teien
 
