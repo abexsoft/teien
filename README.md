@@ -15,21 +15,22 @@ And then execute:
 Or install it yourself as:
 
     $ gem install eventmachine 
+    $ gem install ruby-ois
     $ gem install ruby-ogre 
+    $ gem install ruby-procedural 
     $ gem install ruby-bullet 
     $ gem install teienlib 
-    $ rake build 
-    $ gem install pkg/teien-<version>.gem 
+    $ gem build teine.gemspec
+    $ gem install teien-<version>.gem 
 
 ## Usage
 
 Run a sample application.
 
      $ mkdir mywork/ 
-     $ cp -r <gems>/teien-<version>/sample/   mywork/
-     $ cd mywork/sample/hello_garden/
-     $ ../../bin/teien server &
-     $ ../../bin/teien browser 
+     $ cp -r <gems>/teien-<version>/mods/   mywork/
+     $ cd mywork/mods/hello_garden/
+     $ teien local 
 
 ## Contributing
 

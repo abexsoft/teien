@@ -79,7 +79,7 @@ class View < Ogre::FrameListener
       if @base_object_manager.resources_cfg
         fullPath.sub!("<ConfigFileFolder>", File.dirname(@base_object_manager.plugins_cfg)) 
       end
-      fullPath.sub!("<SystemPluginFolder>", OgreConfig::get_plugin_folder)
+      fullPath.sub!("<SystemPluginFolder>", Ruby::Ogre::get_plugin_folder)
       @root.load_plugin(fullPath) if (keyName == "Plugin")
     }
   end
@@ -100,7 +100,7 @@ class View < Ogre::FrameListener
       if @base_object_manager.resources_cfg
         fullPath.sub!("<ConfigFileFolder>", File.dirname(@base_object_manager.resources_cfg)) 
       end
-      fullPath.sub!("<SystemResourceFolder>", OgreConfig::get_resource_folder)
+      fullPath.sub!("<SystemResourceFolder>", Ruby::Ogre::get_resource_folder)
 
       Ogre::ResourceGroupManager::get_singleton().add_resource_location(fullPath, 
                                                                         keyName, 
