@@ -18,7 +18,7 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'eventmachine'
   gem.add_dependency 'ruby-ois'
-  gem.add_dependency 'ruby-ogre'
+  gem.add_dependency 'ruby-ogre-installer'
   gem.add_dependency 'ruby-procedural'
   gem.add_dependency 'ruby-bullet'
   gem.add_dependency 'teienlib'
