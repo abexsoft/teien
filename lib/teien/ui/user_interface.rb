@@ -4,17 +4,15 @@ require 'teien/ui/view'
 module Teien
 
 class UserInterface
-#  include Dispatcher  
-
   attr_accessor :base_object_manager
   attr_accessor :debug_draw
 
-  def initialize(event_router, base_object_manager)
+  def initialize()
     super()
 
-    @event_router = event_router
+    @event_router = Teien::get_component("event_router")
     @event_router.register_receiver(self)
-    @base_object_manager = base_object_manager
+    @base_object_manager = Teien::get_component("base_object_manager")
     @base_object_manager.register_receiver(self)
 
     @view = View.new()

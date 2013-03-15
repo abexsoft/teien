@@ -15,6 +15,10 @@ class Network < EM::Connection
     @@connections
   end
 
+  def self.add_dummy_connection(from)
+    @@connections[from] = RemoteInfo.new(from)
+  end
+
   include EM::P::ObjectProtocol
 
 

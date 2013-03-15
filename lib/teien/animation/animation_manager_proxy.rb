@@ -6,9 +6,9 @@ module Teien
 class AnimationManagerProxy
   attr_accessor :animations
 
-  def initialize(event_router)
+  def initialize()
     @animations = Hash.new
-    @event_router = event_router
+    @event_router = Teien::get_component("event_router")
     @event_router.register_receiver(self)
   end
 

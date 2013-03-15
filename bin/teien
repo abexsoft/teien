@@ -46,12 +46,16 @@ end
 
 $LOAD_PATH.push(lib_path)
 
+load ARGV[0]
+
+=begin
 require "teien/core/launcher.rb"
 
 # include standard commands.
 require "teien/commands/browser_command"
 require "teien/commands/server_command"
 require "teien/commands/local_command"
+require "teien/commands/new_command"
 
 # include user commands.
 Dir.glob("#{Dir.getwd}/commands/*.rb") {|file|
@@ -59,4 +63,4 @@ Dir.glob("#{Dir.getwd}/commands/*.rb") {|file|
 }
 
 Teien::Launcher::launch(ARGV)
-
+=end

@@ -46,14 +46,17 @@ class View < Ogre::FrameListener
   def setup(base_object_manager)
     puts "view setup"
     @base_object_manager = base_object_manager
-    @plugins_cfg   = @base_object_manager.plugins_cfg ? @base_object_manager.plugins_cfg : "configs/plugins.cfg"
-    @resources_cfg = @base_object_manager.resources_cfg ? @base_object_manager.resources_cfg : "configs/resources.cfg"
+    @plugins_cfg   = @base_object_manager.plugins_cfg ? @base_object_manager.plugins_cfg : "config/plugins.cfg"
+    @resources_cfg = @base_object_manager.resources_cfg ? @base_object_manager.resources_cfg : "config/resources.cfg"
 
     @root = Ogre::Root.new("")
     load_plugins()
 
-#    return false unless (@root.restoreConfig())
-    return false unless (@root.show_config_dialog())
+    if File.exist?("ogre.cfg")
+      return false unless (@root.restore_config())
+    else
+      return false unless (@root.show_config_dialog())
+    end
 
     @window = @root.initialise(true, @window_title)
     

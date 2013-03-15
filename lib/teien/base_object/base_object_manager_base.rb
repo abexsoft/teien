@@ -23,15 +23,15 @@ class BaseObjectManagerBase
   #
   # _script_klass_:: : set a user define class.
   # 
-  def initialize(event_router)
+  def initialize()
     super()
 
     puts "initialize base_object_manager_base"
 
-    @event_router = event_router
+    @event_router = Teien::get_component("event_router")
     @event_router.register_receiver(self)
 
-    @physics = Physics.new()
+    @physics = Physics.new(self)
 
     @objects = {}
     @object_num = 0

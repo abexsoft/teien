@@ -50,12 +50,6 @@ class EventRouter
       EM.add_periodic_timer(tick_period) do
         if @last_time == 0
           @last_time = Time.now.to_f 
-          if ip == nil  
-            # dummy connection for alone 
-            Network::connections[nil] = RemoteInfo.new(nil)
-            notify(:connection_binded, nil)
-            notify(:connection_completed, nil)
-          end
         else
           now = Time.now.to_f
           delta = now - @last_time
@@ -111,6 +105,38 @@ class EventRouter
       end
     end
   end
-end
 
+  def start_application(tick_period = 0.001)
+    notify(:setup)
+
+    @last_time = 0
+    EM.run do
+      EM.add_periodic_timer(tick_period) do
+        if @last_time == 0
+          @last_time = Time.now.to_f 
+
+          # dummy connection for local
+          Network::add_dummy_connection(nil)
+          notify(:connection_binded, nil)
+          notify(:connection_completed, nil)
+        else
+          now = Time.now.to_f
+          delta = now - @last_time
+          @last_time = now
+
+          notify(:update, delta)
+
+          if @quit
+            EM.stop 
+            Teien::get_component("base_object_manager").finalize()
+          end
+        end
+      end
+
+      Signal.trap("INT")  { EM.stop; Teien::get_component("base_object_manager").finalize() }
+      Signal.trap("TERM") { EM.stop; Teien::get_component("base_object_manager").finalize() }
+    end
+  end
+
+end
 end

@@ -6,6 +6,8 @@ module Teien
   end
 
   def self.get_component(name)
-    return @@components[name]
+    component = @@components[name]
+    return component if component
+    raise RuntimeError, "There is no such component registered: '#{name}'."
   end
 end

@@ -5,15 +5,13 @@ require "teien/base_object/base_object_event.rb"
 module Teien
 
 class BaseObjectManagerProxy < BaseObjectManagerBase
-  def initialize(event_router)
-    super(event_router)
+  def initialize()
+    super()
     @quit = false
   end
 
   # EventRouter handler
   def setup()
-    @physics.setup(self)
-    return true
   end
 
   # EventRouter handler

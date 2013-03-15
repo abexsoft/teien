@@ -30,21 +30,15 @@ class Physics < Bullet::TickListener
   attr_accessor :fixed_time_step
 #  attr_accessor :softBodyWorldInfo
 
-  def initialize()
+  def initialize(object_manager)
     super()
 
     @rigid_bodies = []
 
     @max_sub_steps = 1
     @fixed_time_step = 1.0 / 60.0
-  end
 
-  def set_gravity(vec)
-    @dynamics_world.set_gravity(vec)
-  end
-
-  def setup(garden)
-    @garden = garden
+    @object_manager = object_manager
     @collision_config = Bullet::BtDefaultCollisionConfiguration.new()
     @collision_dispatcher = Bullet::BtCollisionDispatcher.new(@collision_config)
 
@@ -72,6 +66,11 @@ class Physics < Bullet::TickListener
     softBodyWorldInfo.m_gravity.setValue(0, -9.8, 0)
 #    softBodyWorldInfo.m_sparsesdf.Initialize();
 =end
+
+  end
+
+  def set_gravity(vec)
+    @dynamics_world.set_gravity(vec)
   end
 
   def finalize
@@ -140,7 +139,7 @@ class Physics < Bullet::TickListener
 #    print "pre_tick_callback: ", timeStep * 1000, "ms\n"
     delta = Bullet::BtVector3.new(timeStep, timeStep, timeStep)
 
-    @garden.objects.each {|name, obj|
+    @object_manager.objects.each {|name, obj|
       if (obj.get_mass() > 0)
         newVel = obj.get_linear_velocity() + Vector3D.to_bullet(obj.get_acceleration()) * delta
         obj.set_linear_velocity(obj.limit_velocity(newVel))

@@ -5,16 +5,14 @@ require "teien/base_object/base_object_event.rb"
 module Teien
 
 class BaseObjectManager < BaseObjectManagerBase
-  def initialize(event_router, sync_period)
-    super(event_router)
+  def initialize(sync_period)
+    super()
     @sync_period = sync_period
     @sync_timer = sync_period
   end
 
   # EventRouter handler
   def setup()
-    
-    @physics.setup(self)
   end
 
   # EventRouter handler
