@@ -20,7 +20,7 @@ Or install it yourself as:
     $ gem install ruby-procedural 
     $ gem install ruby-bullet 
     $ gem install teienlib 
-    $ gem build teine.gemspec
+    $ gem build teien.gemspec
     $ gem install teien-<version>.gem 
 
 ## Usage
@@ -28,9 +28,9 @@ Or install it yourself as:
 Run a sample application.
 
      $ mkdir mywork/ 
-     $ cp -r <gems>/teien-<version>/mods/   mywork/
-     $ cd mywork/mods/hello_garden/
-     $ teien local 
+     $ cp -r <gems>/teien-<version>/samples/   mywork/
+     $ cd mywork/samples/hello_garden/
+     $ ./local 
 
 ## Contributing
 

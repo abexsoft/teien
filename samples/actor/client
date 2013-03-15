@@ -1,1 +1,2 @@
-../../bin/teien lib/client.rb
+teien lib/client.rb
+#../../bin/teien lib/client.rb
