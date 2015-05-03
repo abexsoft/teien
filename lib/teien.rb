@@ -1,13 +1,20 @@
-require "teien/version"
+require 'logger'
+require 'faye/websocket'
 
-require "bullet.so"
-require "ogre.so"
-require "procedural.so"
-require "ois.so"
-require "ogrebites.so"
-require "teienlib.so"
+require_relative "teien/tools"
+require_relative "teien/actor"
+require_relative "teien/server"
 
-require "teien/core/tools.rb"
-require "teien/core/component_manager"
-require "teien/core/event_router"
+module Teien
+  @@log = Logger.new(STDOUT)
+  @@log.level = Logger::DEBUG
+
+  @@log.formatter = proc do |severity, datetime, progname, msg|
+    "[#{datetime.strftime("%Y-%m-%d %H:%M:%S")}] #{severity} #{progname}: #{msg}\n"
+  end
+
+  def self.log
+    @@log
+  end
+end
 
