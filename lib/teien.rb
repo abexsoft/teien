@@ -1,7 +1,7 @@
 require 'logger'
 require 'faye/websocket'
 
-require_relative "teien/tools"
+require_relative "teien/utils"
 require_relative "teien/actor"
 require_relative "teien/server"
 

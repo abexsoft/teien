@@ -1,19 +1,20 @@
 module Teien
   class BoxActor < Teien::Actor
-    def initialize(name, vec = Teien::Vector3D.new(1, 1, 1), mass = 1)
-      super(name)              
+    
+    def initialize(name, vec = Teien::Vector3D.new(1, 1, 1), physics_info = nil, ext_info = nil)
+      super(name, physics_info, ext_info)              
       @type = 'Box'
       @vec = vec
-      @mass = mass  
     end     
             
     def setup(physics)
       # create a physics object.
       @col_obj = Bullet::BtBoxShape.new(Bullet::BtVector3.new(@vec.x / 2.0, @vec.y / 2.0, @vec.z / 2.0))
       inertia = Bullet::BtVector3.new
-      @col_obj.calculate_local_inertia(@mass, inertia)
+      @col_obj.calculate_local_inertia(@physics_info[:mass], inertia)
       
-      @rigid_body = Bullet::BtRigidBody.new(@mass, self, @col_obj, inertia)
+      @rigid_body = Bullet::BtRigidBody.new(@physics_info[:mass], self, @col_obj, inertia)
+      super(physics)      
       physics.add_rigid_body(@rigid_body)      
     end
 
@@ -27,7 +28,6 @@ module Teien
       hash[:x] = @vec.x
       hash[:y] = @vec.y
       hash[:z] = @vec.z      
-      hash[:mass] = @mass
       hash
     end
     
@@ -36,7 +36,6 @@ module Teien
       @vec.x = hash[:x]
       @vec.y = hash[:y]
       @vec.z = hash[:z]
-      @mass  = hash[:mass]
     end
   end
 end

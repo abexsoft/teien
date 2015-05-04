@@ -4,14 +4,17 @@ module Teien
   class Actor < Bullet::BtMotionState
     attr_accessor :name
     attr_accessor :state
-    attr_accessor :ext_info
 
-    def initialize(name)
+    attr_accessor :physics_info
+    attr_accessor :ext_info
+    
+    def initialize(name, physics_info = nil, ext_info = nil)
       super() # This is ultimate important for detecting overloaded method.
       
       @name = name
       @state = "none"
-      @ext_info = {}
+      @physics_info = check_physics_info(physics_info)
+      @ext_info = ext_info ? ext_info : {}
 
       @transform = Bullet::BtTransform.new()
       @transform.set_identity()
@@ -19,6 +22,34 @@ module Teien
       @rigid_body = nil
     end
 
+    def check_physics_info(physics_info)
+      @physics_info = {}
+      @physics_info[:use_physics] = physics_info == nil ? false : true
+      return @physics_info if (physics_info == nil)
+      
+      @physics_info[:mass] = physics_info[:mass] == nil ? 0 : physics_info[:mass]
+      @physics_info[:restitution] = physics_info[:restitution] == nil ? 0.2 : physics_info[:restitution]
+      @physics_info[:friction] = physics_info[:friction] == nil ? 1.0 : physics_info[:friction]
+      @physics_info[:linear_damping] = physics_info[:linear_damping] == nil ? 0.0 : physics_info[:linear_damping]
+      @physics_info[:angular_damping] = physics_info[:angular_damping] == nil ? 0.0 : physics_info[:angular_damping]
+      
+      @physics_info
+    end
+
+    def setup(physics)
+      if(@rigid_body)
+        @rigid_body.set_restitution(@physics_info[:restitution])
+        @rigid_body.set_friction(@physics_info[:friction])
+        @rigid_body.set_damping(@physics_info[:linear_damping],
+                                @physics_info[:angular_damping])
+=begin         
+        rigid_body.setAngularFactor(new Ammo.btVector3(actorInfo.angularFactor.x,
+                                                      actorInfo.angularFactor.y,
+                                                      actorInfo.angularFactor.z));
+=end
+      end
+    end
+    
     def set_world_transform(worldTrans)
       @transform = Bullet::BtTransform.new(worldTrans)
 #      rot = @transform.get_rotation();
@@ -64,6 +95,7 @@ module Teien
       { 
         :name => @name,
         :state => @state,
+        :physics_info => @physics_info,
         :transform => {
           :position => {
             :x => pos.x,
@@ -86,7 +118,7 @@ module Teien
           :x => angular_vel.x,
           :y => angular_vel.y,
           :z => angular_vel.z          
-        },        
+        },
         :ext_info => @ext_info
       }
     end

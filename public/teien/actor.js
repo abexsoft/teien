@@ -3,6 +3,7 @@ teien.Actor = function(param) {
     
 	this.name = param.name;
     this.state = param.state;
+    this.physics_info = param.physics_info;    
     this.ext_info = param.ext_info;
 
     this.transform = new Ammo.btTransform();
@@ -14,26 +15,13 @@ teien.Actor = function(param) {
 };
 
 teien.Actor.prototype.setup = function(physics) {
+    if (this.rigidBody){
+        this.rigidBody.setRestitution(this.physics_info.restitution);
+        this.rigidBody.setFriction(this.physics_info.friction);
+        this.rigidBody.setDamping(this.physics_info.linear_damping,
+                                  this.physics_info.angular_damping);
+    }
     this.fromHash(this.param);
-/*
-    var pos = new teien.Vector3D(this.param.transform.position.x,
-                                 this.param.transform.position.y,
-                                 this.param.transform.position.z);
-    this.setPosition(pos);
-    var rot = new teien.Quaternion(this.param.transform.rotation.x,
-                                   this.param.transform.rotation.y,
-                                   this.param.transform.rotation.z,
-                                   this.param.transform.rotation.w);
-    this.setRotation(rot);
-
-    this.setLinearVelocity(new teien.Vector3D(this.param.linear_vel.x,
-                                              this.param.linear_vel.y,
-                                              this.param.linear_vel.z));
-    
-    this.setAngularVelocity(new teien.Vector3D(this.param.angular_vel.x,
-                                               this.param.angular_vel.y,
-                                               this.param.angular_vel.z));
-*/
 };
 
 // vec: teien.Vector3D
@@ -89,6 +77,7 @@ teien.Actor.prototype.getWorldTransform = function(worldTrans){
 teien.Actor.prototype.fromHash = function(param){
 	this.name = param.name;
     this.state = param.state;
+    this.physics_info = param.physics_info;
     this.ext_info = param.ext_info;
     
     var pos = new teien.Vector3D(param.transform.position.x,
