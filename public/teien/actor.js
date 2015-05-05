@@ -109,14 +109,14 @@ teien.Actor.prototype.applyImpulse = function(imp, rel) {
 };
 */
 
-teien.Actor.prototype.updateTransform = function() {
+teien.Actor.prototype.updateTransform = function(delta) {
     if (this.rigidBody){
         this.transform = this.rigidBody.getCenterOfMassTransform();
         // This function don't return the right value of @mass == 0.
         //this.rigidBody.getMotionState().getWorldTransform(this.transform); 
         //console.log(this.transform.getOrigin().y() + "\n");
-        this.notify();
     }
+    this.notify(delta);    
 };
 
 // Objserver
@@ -136,8 +136,8 @@ teien.Actor.prototype.detach = function(observer){
     }    
 };
 
-teien.Actor.prototype.notify = function(){
+teien.Actor.prototype.notify = function(delta){
     for(i=0; i < this.observers.length; i++){
-        this.observers[i].update();
+        this.observers[i].update(delta);
     }
 }

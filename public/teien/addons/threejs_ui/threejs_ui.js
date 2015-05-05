@@ -9,15 +9,20 @@
 })();
 
 
-teien.ThreejsUi = function(container){
+teien.ThreejsUi = function(container, options){
     this.container = container;
+
+    this.options = options || {}
+    
+    this.options.shadow = this.options.shadow !== undefined ? this.options.shadow : false;
 };
 
 teien.ThreejsUi.prototype.setup = function(){
     this.renderer = new THREE.WebGLRenderer({antialias:true});
     this.renderer.setSize( window.innerWidth, window.innerHeight );
-    this.renderer.shadowMapEnabled = true;
-    this.renderer.shadowCameraNear = 3;
+
+    if (this.options.shadow)
+        this.renderer.shadowMapEnabled = true;
         
     if (typeof this.container === 'undefined') 
         document.body.appendChild( this.renderer.domElement );
@@ -38,6 +43,11 @@ teien.ThreejsUi.prototype.setup = function(){
     this.controls = new THREE.OrbitControls(this.camera);
     
     this.viewActors = {}
+
+// for testing    
+//    pointLight = new THREE.PointLight( 0xff4400, 5, 30 );
+//    pointLight.position.set(5, 0, 0 );
+///    this.scene.add( pointLight );
 };
 
 teien.ThreejsUi.prototype.onWindowResize = function(s){
@@ -52,7 +62,7 @@ teien.ThreejsUi.prototype.update = function(delta, actors) {
         var actor = actors[i];
         if (actor.ext_info.threejs){
             if (this.viewActors[actor.name] == undefined){
-                viewActor = teien.ThreejsUi.createViewActor(actor);
+                viewActor = teien.ThreejsUi.createViewActor(actor, this.scene);
                 viewActor.setup(this.scene);
                 actor.attach(viewActor);
                 this.viewActors[actor.name] = viewActor;
@@ -65,13 +75,17 @@ teien.ThreejsUi.prototype.update = function(delta, actors) {
     this.renderer.render(this.scene, this.camera);
 };
 
-teien.ThreejsUi.createViewActor = function(actor){
+teien.ThreejsUi.createViewActor = function(actor, scene){
     var viewActor = null;
 
-    if (actor.ext_info.threejs.sport_light){
+    if (actor.ext_info.threejs.spot_light){
+        viewActor = new teien.ThreejsUi.SpotLightViewActor(actor);                
     }
-    else if(actor.ext_info.threejs.mesh){
+    else if (actor.ext_info.threejs.mesh){
         viewActor = new teien.ThreejsUi.MeshViewActor(actor);        
+    }
+    else if (actor.ext_info.threejs.json){
+        viewActor = new teien.ThreejsUi.JsonViewActor(actor, scene);        
     }
     else{
         console.log("No such view actor tyep: " + actor.ext_info.threejs.type + "\n");        
@@ -104,7 +118,51 @@ teien.ThreejsUi.createTexture = function(params){
 // LightViewActor
 //
 teien.ThreejsUi.SpotLightViewActor = function(actor){
+    this.actor = actor;
+    
+    var params = actor.ext_info.threejs.spot_light;
+
+    this.light = new THREE.SpotLight(params.hex,
+                                     params.intensity,
+                                     params.distance,
+                                     params.angle,
+                                     params.exponent);
 };
+
+teien.ThreejsUi.SpotLightViewActor.prototype.setup = function(scene){
+    var pos = this.actor.getPosition();
+    this.light.position.x = pos.x;
+    this.light.position.y = pos.y;
+    this.light.position.z = pos.z;
+
+    var rot = this.actor.getRotation();
+    this.light.quaternion.x = rot.x;
+    this.light.quaternion.y = rot.y;
+    this.light.quaternion.z = rot.z;
+    this.light.quaternion.w = rot.w;    
+    
+//    this.mesh.castShadow = true;
+    scene.add( this.light );
+    
+    console.log('add light');
+};
+
+teien.ThreejsUi.SpotLightViewActor.prototype.update = function(delta){
+    //console.log(this.actor.name + " update()\n");
+    
+    var pos = this.actor.getPosition();
+    
+    this.light.position.x = pos.x;
+    this.light.position.y = pos.y;
+    this.light.position.z = pos.z;
+
+    var rot = this.actor.getRotation();
+    this.light.quaternion.x = rot.x;
+    this.light.quaternion.y = rot.y;
+    this.light.quaternion.z = rot.z;
+    this.light.quaternion.w = rot.w;        
+};
+
 
 //
 // MeshViewActor
@@ -168,13 +226,13 @@ teien.ThreejsUi.MeshViewActor.prototype.setup = function(scene){
     this.mesh.quaternion.z = rot.z;
     this.mesh.quaternion.w = rot.w;    
     
-    this.mesh.castShadow = true;
+//    this.mesh.castShadow = true;
     scene.add( this.mesh );
     
     console.log('add mesh');
 };
 
-teien.ThreejsUi.MeshViewActor.prototype.update = function(){
+teien.ThreejsUi.MeshViewActor.prototype.update = function(delta){
     //console.log(this.actor.name + " update()\n");
     
     var pos = this.actor.getPosition();
@@ -190,3 +248,78 @@ teien.ThreejsUi.MeshViewActor.prototype.update = function(){
     this.mesh.quaternion.w = rot.w;        
 };
 
+//
+// JsonViewActor
+//
+teien.ThreejsUi.JsonViewActor = function(actor, scene){
+    this.actor = actor;
+    this.scene = scene;
+
+    console.log("JsonViewActor");
+    
+    var json_params = actor.ext_info.threejs.json;
+
+    var loader = new THREE.JSONLoader();
+    loader.load(json_params.url, this.loadHandler.bind(this));
+};
+
+teien.ThreejsUi.JsonViewActor.prototype.loadHandler = function(geometry, materials){
+    console.log("loadHandler is called.");
+    
+    // adjust color a bit
+    var material = materials[ 0 ];
+    material.morphTargets = true;
+    material.color.setHex( 0xffaaaa );
+    
+    var faceMaterial = new THREE.MeshFaceMaterial( materials );
+    this.morph = new THREE.MorphAnimMesh( geometry, faceMaterial );
+    
+    // one second duration
+    this.morph.duration = 1;
+    
+    // random animation offset
+    this.morph.time = 1000 * Math.random();
+    
+    this.morph.scale.set(0.5, 0.5, 0.5);
+
+    // setup
+    var pos = this.actor.getPosition();
+    this.morph.position.x = pos.x;
+    this.morph.position.y = pos.y;
+    this.morph.position.z = pos.z;
+    
+    var rot = this.actor.getRotation();
+    this.morph.quaternion.x = rot.x;
+    this.morph.quaternion.y = rot.y;
+    this.morph.quaternion.z = rot.z;
+    this.morph.quaternion.w = rot.w;    
+    
+    //this.morph.castShadow = true;
+    this.scene.add(this.morph);
+    
+    console.log('add morph');        
+};
+
+teien.ThreejsUi.JsonViewActor.prototype.setup = function(scene){
+    // move into loadHandler because of loading delay.
+};
+
+teien.ThreejsUi.JsonViewActor.prototype.update = function(delta){
+    //console.log(this.actor.name + " update()\n");
+    if (this.morph) {
+        var pos = this.actor.getPosition();
+        
+        this.morph.position.x = pos.x;
+        this.morph.position.y = pos.y;
+        this.morph.position.z = pos.z;
+        
+        var rot = this.actor.getRotation();
+        this.morph.quaternion.x = rot.x;
+        this.morph.quaternion.y = rot.y;
+        this.morph.quaternion.z = rot.z;
+        this.morph.quaternion.w = rot.w;
+        
+        //THREE.AnimationHandler.update( delta );
+        this.morph.updateAnimation(delta);
+    }
+};

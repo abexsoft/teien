@@ -1,16 +1,21 @@
 function MyUi(world){
     this.world = world;
     this.container = document.getElementById('threejs_canvas');
-    this.threejs_ui = new teien.ThreejsUi(this.container);
+    this.threejs_ui = new teien.ThreejsUi(this.container, {option : true});
+    
+    this.stats = new Stats();
+    this.stats.domElement.style.position = 'absolute';
+    this.stats.domElement.style.top = '10px';
+    this.container.appendChild(this.stats.domElement);
 
     this.setup = function(){
-
         this.threejs_ui.setup();
-        
     };
 
     this.update = function(delta) {
         this.threejs_ui.update(delta, this.world.actors)
+
+        this.stats.update();
         
         if (this.freeze) return;
 /*

@@ -8,14 +8,16 @@ module Teien
     end     
             
     def setup(physics)
-      # create a physics object.
-      @col_obj = Bullet::BtBoxShape.new(Bullet::BtVector3.new(@vec.x / 2.0, @vec.y / 2.0, @vec.z / 2.0))
-      inertia = Bullet::BtVector3.new
-      @col_obj.calculate_local_inertia(@physics_info[:mass], inertia)
-      
-      @rigid_body = Bullet::BtRigidBody.new(@physics_info[:mass], self, @col_obj, inertia)
-      super(physics)      
-      physics.add_rigid_body(@rigid_body)      
+      if (@physics_info[:use_physics])
+        # create a physics object.
+        @col_obj = Bullet::BtBoxShape.new(Bullet::BtVector3.new(@vec.x / 2.0, @vec.y / 2.0, @vec.z / 2.0))
+        inertia = Bullet::BtVector3.new
+        @col_obj.calculate_local_inertia(@physics_info[:mass], inertia)
+        
+        @rigid_body = Bullet::BtRigidBody.new(@physics_info[:mass], self, @col_obj, inertia)
+        super(physics)      
+        physics.add_rigid_body(@rigid_body)
+      end
     end
 
     def set_angular_factor(vec)

@@ -4,6 +4,9 @@ require 'faye/websocket'
 require_relative "teien/utils"
 require_relative "teien/actor"
 require_relative "teien/server"
+require_relative 'teien/actors/sphere_actor'
+require_relative 'teien/actors/box_actor'
+require_relative 'teien/actors/ghost_actor'
 
 module Teien
   @@log = Logger.new(STDOUT)

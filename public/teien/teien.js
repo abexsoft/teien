@@ -7,7 +7,8 @@ function importJs() {
         'teien/utils.js',
         'teien/actor.js',
         'teien/actors/sphere_actor.js',
-        'teien/actors/box_actor.js',        
+        'teien/actors/box_actor.js',
+        'teien/actors/ghost_actor.js',        
         'teien/physics.js',        
         'teien/world.js',
         'teien/browser.js'

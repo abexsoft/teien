@@ -64,7 +64,7 @@ module Teien
       actors_event[:type] = "actors"
       actors_event[:data] = actors
 
-      puts actors_event.to_json
+      #puts actors_event.to_json
       ws.send(actors_event.to_json)
     end
 

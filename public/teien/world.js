@@ -49,7 +49,10 @@ teien.World.prototype.createActor = function(actor_param){
         break;
     case 'Box':
         actor = new BoxActor(actor_param);
-        break;        
+        break;
+    case 'Ghost':
+        actor = new GhostActor(actor_param);
+        break;                
     default:
         console.log("No such actor type: " + actor_param['type'] + "\n");
     }
@@ -111,7 +114,7 @@ teien.World.prototype.update = function(delta) {
     // Physics update
     this.physics.update(delta);
     for (var i in this.actors){
-        this.actors[i].updateTransform();
+        this.actors[i].updateTransform(delta);
     }
     
     // App update

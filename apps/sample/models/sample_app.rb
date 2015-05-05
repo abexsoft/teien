@@ -1,6 +1,4 @@
 require_relative '../../../lib/teien'
-require_relative '../../../lib/teien/actors/sphere_actor'
-require_relative '../../../lib/teien/actors/box_actor'
 
 class SampleApp
   def initialize(world)
@@ -10,17 +8,31 @@ class SampleApp
   def setup
     Teien::log.debug("log testing")
 
+    # Light
+    actor = Teien::GhostActor.new("light")
+    actor.ext_info = {
+      :threejs => {
+        :spot_light => {
+          :hex => 0xff4400,
+          :intensity => 5,
+          :distance => 100
+        }
+      }
+    }
+    @world.add_actor(actor)
+    actor.set_position(Teien::Vector3D.new(30, 30, 0))    
+    
     # Sphere
-    actor = Teien::SphereActor.new("sphere", 1, {:mass => 1})
+    actor = Teien::SphereActor.new("sphere", 3, {:mass => 1})
     actor.ext_info = {
       :threejs => {
         :mesh => {
-          :geometry => {:sphere => {:radius => 1}},
+          :geometry => {:sphere => {:radius => 3, :widthSegments => 32, :heightSegments => 32}},
           :material => {
             :mesh_basic_material => {
               :map => {
                 :texture => {
-                  :image => 'teien/addons/threejs_ui/three.js/examples/textures/sprite.png'
+                  :image => 'teien/addons/threejs_ui/three.js/examples/textures/land_ocean_ice_cloud_2048.jpg'
                 }
               }
             }
@@ -31,6 +43,7 @@ class SampleApp
     @world.add_actor(actor)
     actor.set_position(Teien::Vector3D.new(0, 20, 0))    
 
+=begin
     # Box
     actor = Teien::BoxActor.new("box", Teien::Vector3D.new(2, 2, 2), {:mass => 1})
     actor.ext_info = {
@@ -51,13 +64,28 @@ class SampleApp
     }
     @world.add_actor(actor)
     actor.set_position(Teien::Vector3D.new(0, 1, 0))
+=end
 
+    # Json
+    #actor = Teien::BoxActor.new("json", Teien::Vector3D.new(2, 2, 2), {:mass => 0})
+    actor = Teien::GhostActor.new("json")
+    actor.ext_info = {
+      :threejs => {
+        :json => {
+          #:url => 'teien/addons/threejs_ui/three.js/examples/models/animated/monster/monster.js'
+          :url => 'teien/addons/threejs_ui/three.js/examples/models/animated/ogro/ogro-light.js'          
+        }
+      }
+    }
+    @world.add_actor(actor)
+
+                                                                       
     10.times {|i|
       actor = Teien::SphereActor.new("sphere-#{i}", 1, {:mass => 1})
       actor.ext_info = {
         :threejs => {
           :mesh => {
-            :geometry => {:sphere => {:radius => 1}},
+            :geometry => {:sphere => {:radius => 1, :widthSegments => 32, :heightSegments => 32}},
             :material => {
               :mesh_basic_material => {
                 :map => {
