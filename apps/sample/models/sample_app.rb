@@ -8,19 +8,46 @@ class SampleApp
   def setup
     Teien::log.debug("log testing")
 
-    # Light
-    actor = Teien::GhostActor.new("light")
+    # Ambient Light
+    actor = Teien::GhostActor.new("ambient_light")
     actor.ext_info = {
       :threejs => {
-        :spot_light => {
-          :hex => 0xff4400,
-          :intensity => 5,
-          :distance => 100
+        :ambient_light => {
+          :hex => 0x404040
         }
       }
     }
     @world.add_actor(actor)
-    actor.set_position(Teien::Vector3D.new(30, 30, 0))    
+    
+=begin
+    # Spot Light
+    actor = Teien::GhostActor.new("spot_light")
+    actor.ext_info = {
+      :threejs => {
+        :spot_light => {
+          :hex => 0xffffff,
+          :intensity => 2,
+          :distance => 0
+        }
+      }
+    }
+    @world.add_actor(actor)
+    actor.set_position(Teien::Vector3D.new(100, 100, 100))
+=end
+    
+    # Directional Light
+    actor = Teien::GhostActor.new("directional_light")
+    actor.ext_info = {
+      :threejs => {
+        :directional_light => {
+          :hex => 0xffffff,
+          :intensity => 1.5
+        }
+      }
+    }
+    @world.add_actor(actor)
+    actor.set_position(Teien::Vector3D.new(1, 1, 1))    
+    
     
     # Sphere
     actor = Teien::SphereActor.new("sphere", 3, {:mass => 1})
@@ -29,7 +56,7 @@ class SampleApp
         :mesh => {
           :geometry => {:sphere => {:radius => 3, :widthSegments => 32, :heightSegments => 32}},
           :material => {
-            :mesh_basic_material => {
+            :mesh_lambert_material => {
               :map => {
                 :texture => {
                   :image => 'teien/addons/threejs_ui/three.js/examples/textures/land_ocean_ice_cloud_2048.jpg'
@@ -42,6 +69,21 @@ class SampleApp
     }
     @world.add_actor(actor)
     actor.set_position(Teien::Vector3D.new(0, 20, 0))    
+
+    # Json, animation
+    actor = Teien::GhostActor.new("json")
+    actor.ext_info = {
+      :threejs => {
+        :json => {
+          :url => 'teien/addons/threejs_ui/three.js/examples/models/animated/monster/monster.js',
+          :morph_anim_mesh => {
+            :duration => 1,
+            :scale => {:x => 0.005, :y => 0.005, :z => 0.005},            
+          }
+        }
+      }
+    }
+    @world.add_actor(actor)
 
 =begin
     # Box
@@ -64,7 +106,7 @@ class SampleApp
     }
     @world.add_actor(actor)
     actor.set_position(Teien::Vector3D.new(0, 1, 0))
-=end
+
 
     # Json
     #actor = Teien::BoxActor.new("json", Teien::Vector3D.new(2, 2, 2), {:mass => 0})
@@ -78,7 +120,7 @@ class SampleApp
       }
     }
     @world.add_actor(actor)
-
+=end
                                                                        
     10.times {|i|
       actor = Teien::SphereActor.new("sphere-#{i}", 1, {:mass => 1})
@@ -87,7 +129,7 @@ class SampleApp
           :mesh => {
             :geometry => {:sphere => {:radius => 1, :widthSegments => 32, :heightSegments => 32}},
             :material => {
-              :mesh_basic_material => {
+              :mesh_lambert_material => {
                 :map => {
                   :texture => {
                     :image => 'teien/addons/threejs_ui/three.js/examples/textures/planets/earth_atmos_2048.jpg'
@@ -109,7 +151,7 @@ class SampleApp
         :mesh => {
           :geometry => {:box => {:width => 100, :height => 1,:depth => 100}},
           :material => {
-            :mesh_basic_material => {
+            :mesh_lambert_material => {
               :map => {
                 :texture => {
                   :image => 'teien/addons/threejs_ui/three.js/examples/textures/brick_bump.jpg'                  

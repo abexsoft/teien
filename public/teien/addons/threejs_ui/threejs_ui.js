@@ -78,9 +78,15 @@ teien.ThreejsUi.prototype.update = function(delta, actors) {
 teien.ThreejsUi.createViewActor = function(actor, scene){
     var viewActor = null;
 
-    if (actor.ext_info.threejs.spot_light){
+    if (actor.ext_info.threejs.ambient_light){
+        viewActor = new teien.ThreejsUi.AmbientLightViewActor(actor);                
+    }
+    else if (actor.ext_info.threejs.spot_light){
         viewActor = new teien.ThreejsUi.SpotLightViewActor(actor);                
     }
+    else if (actor.ext_info.threejs.directional_light){
+        viewActor = new teien.ThreejsUi.DirectionalLightViewActor(actor);                
+    }    
     else if (actor.ext_info.threejs.mesh){
         viewActor = new teien.ThreejsUi.MeshViewActor(actor);        
     }
@@ -115,7 +121,28 @@ teien.ThreejsUi.createTexture = function(params){
 
 
 //
-// LightViewActor
+// Ambient Light
+//
+
+teien.ThreejsUi.AmbientLightViewActor = function(actor){
+    this.actor = actor;
+    
+    var params = actor.ext_info.threejs.ambient_light;
+
+    this.light = new THREE.AmbientLight(params.hex);
+};
+
+teien.ThreejsUi.AmbientLightViewActor.prototype.setup = function(scene){
+    scene.add( this.light );
+    console.log('add ambiet light');
+};
+
+teien.ThreejsUi.AmbientLightViewActor.prototype.update = function(delta){
+    //console.log(this.actor.name + " update()\n");
+};
+
+//
+// SpotLight
 //
 teien.ThreejsUi.SpotLightViewActor = function(actor){
     this.actor = actor;
@@ -148,6 +175,53 @@ teien.ThreejsUi.SpotLightViewActor.prototype.setup = function(scene){
 };
 
 teien.ThreejsUi.SpotLightViewActor.prototype.update = function(delta){
+    //console.log(this.actor.name + " update()\n");
+    
+    var pos = this.actor.getPosition();
+    
+    this.light.position.x = pos.x;
+    this.light.position.y = pos.y;
+    this.light.position.z = pos.z;
+
+    var rot = this.actor.getRotation();
+    this.light.quaternion.x = rot.x;
+    this.light.quaternion.y = rot.y;
+    this.light.quaternion.z = rot.z;
+    this.light.quaternion.w = rot.w;        
+};
+
+//
+// Directional Light
+//
+teien.ThreejsUi.DirectionalLightViewActor = function(actor){
+    this.actor = actor;
+    
+    var params = actor.ext_info.threejs.directional_light;
+
+    this.light = new THREE.DirectionalLight(params.hex,
+                                            params.intensity);
+};
+
+teien.ThreejsUi.DirectionalLightViewActor.prototype.setup = function(scene){
+    var pos = this.actor.getPosition();
+    this.light.position.x = pos.x;
+    this.light.position.y = pos.y;
+    this.light.position.z = pos.z;
+/*
+    var rot = this.actor.getRotation();
+    this.light.quaternion.x = rot.x;
+    this.light.quaternion.y = rot.y;
+    this.light.quaternion.z = rot.z;
+    this.light.quaternion.w = rot.w;    
+*/
+    
+//    this.mesh.castShadow = true;
+    scene.add( this.light );
+    
+    console.log('add directional light');
+};
+
+teien.ThreejsUi.DirectionalLightViewActor.prototype.update = function(delta){
     //console.log(this.actor.name + " update()\n");
     
     var pos = this.actor.getPosition();
@@ -208,6 +282,14 @@ teien.ThreejsUi.MeshViewActor = function(actor){
 
         material = new THREE.MeshBasicMaterial(threejs_params);
     }
+    else if (material_params.mesh_lambert_material) {
+        if (material_params.mesh_lambert_material.color)
+            threejs_params['color'] = material_params.mesh_lambert_material.color;
+        if (material_params.mesh_lambert_material.map)
+            threejs_params['map'] = teien.ThreejsUi.createTexture(material_params.mesh_lambert_material.map)
+
+        material = new THREE.MeshLambertMaterial(threejs_params);        
+    }
     else {
         console.log("Error: no such material.\n");        
     }
@@ -265,22 +347,36 @@ teien.ThreejsUi.JsonViewActor = function(actor, scene){
 
 teien.ThreejsUi.JsonViewActor.prototype.loadHandler = function(geometry, materials){
     console.log("loadHandler is called.");
+
+    var json_params = this.actor.ext_info.threejs.json;
+
+    if (json_params.morph_anim_mesh){
+        // adjust color a bit
+        var material = materials[ 0 ];
+        material.morphTargets = true;
+        //material.color.setHex( 0xffaaaa );
     
-    // adjust color a bit
-    var material = materials[ 0 ];
-    material.morphTargets = true;
-    material.color.setHex( 0xffaaaa );
+        var faceMaterial = new THREE.MeshFaceMaterial( materials );
+        this.morph = new THREE.MorphAnimMesh( geometry, faceMaterial );
     
-    var faceMaterial = new THREE.MeshFaceMaterial( materials );
-    this.morph = new THREE.MorphAnimMesh( geometry, faceMaterial );
+        // one second duration
+        if (json_params.morph_anim_mesh.duration) {    
+            this.morph.duration = json_params.morph_anim_mesh.duration;
+        }
+        
+        // random animation offset
+        if (json_params.morph_anim_mesh.time) {        
+            this.morph.time = json_params.morph_anim_mesh.time;
+        }
+
+        //this.morph.scale.set(0.5, 0.5, 0.5);
+        if (json_params.morph_anim_mesh.scale) {
+            this.morph.scale.set(json_params.morph_anim_mesh.scale.x,
+                                 json_params.morph_anim_mesh.scale.y,
+                                 json_params.morph_anim_mesh.scale.z);
+        }
+    }
     
-    // one second duration
-    this.morph.duration = 1;
-    
-    // random animation offset
-    this.morph.time = 1000 * Math.random();
-    
-    this.morph.scale.set(0.5, 0.5, 0.5);
 
     // setup
     var pos = this.actor.getPosition();
