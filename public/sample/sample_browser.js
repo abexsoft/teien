@@ -1,7 +1,7 @@
 function MyUi(world){
     this.world = world;
     this.container = document.getElementById('threejs_canvas');
-    this.threejs_ui = new teien.ThreejsUi(this.container, {option : true});
+    this.threejs_ui = new teien.ThreejsUi(this.container, {'shadow' : true});
     
     this.stats = new Stats();
     this.stats.domElement.style.position = 'absolute';
@@ -12,13 +12,18 @@ function MyUi(world){
         this.threejs_ui.setup();
     };
 
+    this.connected = function() {
+        this.threejs_ui.update(0, this.world.actors)        
+    };
+    
     this.update = function(delta) {
         this.threejs_ui.update(delta, this.world.actors)
 
         this.stats.update();
-        
+
+/*        
         if (this.freeze) return;
-/*
+
         var actualMoveSpeed = delta * this.movementSpeed;
 
         if ( this.moveForward )

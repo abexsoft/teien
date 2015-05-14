@@ -1,28 +1,30 @@
-teien.World = function World(ws, app_klass) {
-    this.ws = ws;
+teien.World = function World(app_klass) {
+    var that = this;
     this.physics = new teien.Physics(this);
-    
     this.app = new app_klass(this);
     
     this.updatePeriod = 1.0 / 60.0; // sec
     this.actors = {};
 };
-/*
-teien.World.prototype.run = function(ws_uri) {
-    this.setup(ws_uri);
-};
-*/
-teien.World.prototype.setup = function() {
+
+teien.World.prototype.setup = function(ws_uri) {
+    this.ws_uri = ws_uri;
+    this.ws = new WebSocket(ws_uri);
+    this.ws.onmessage = this.receiveMessage.bind(this);
+    
     this.physics.setup();
     
     if (typeof(this.app.setup) == 'function')
         this.app.setup();
 
 	this.lastUpdate = 0;
-	setInterval(this.intervalHandler.bind(this), this.updatePeriod * 1000);
+	//setInterval(this.intervalHandler.bind(this), this.updatePeriod * 1000.0);
+    requestAnimationFrame(this.intervalHandler.bind(this));
 };
 
 teien.World.prototype.intervalHandler = function() {
+    requestAnimationFrame(this.intervalHandler.bind(this));
+    
     if (this.lastUpdate == 0){
         this.lastUpdate = Date.now();
         return;
@@ -31,8 +33,47 @@ teien.World.prototype.intervalHandler = function() {
     var now = Date.now();
     var delta = now - this.lastUpdate;
     this.lastUpdate = now;
-    this.update(delta / 1000);  // sec
+    this.update(delta / 1000.0);  // sec
+
+    //console.log("delta: " + delta);
 };
+
+teien.World.prototype.receiveMessage = function(ws_msg){
+    var event = JSON.parse(ws_msg.data);
+    switch(event.type){
+    case "client_connected":
+        this.clientConnected(event);
+        break;
+    case "client_disconnected":
+        this.clientDisconnected(event);
+        break;
+    case "connected":
+        for (var i = 0; i < event.data.length; i++) {
+            //console.log("actor: " + event.data[i].name + "\n");
+            this.addActor(event.data[i]);
+        }
+        
+        if (typeof(this.app.connected) == 'function')
+            this.app.connected();
+        
+        this.ws.send(JSON.stringify({type: 'ready'}));
+        break;        
+    case "actors":
+        for (var i = 0; i < event.data.length; i++) {
+            //console.log("actor: " + event.data[i].name + "\n");
+            if (!this.hasActor(event.data[i].name)){
+                this.addActor(event.data[i]);
+            }
+            else {
+                this.actors[event.data[i].name].fromHash(event.data[i]);
+            }
+        }
+        break;
+    default:
+        //console.log("No such an event: " + event.type + "\n");        
+    }
+};
+
 
 teien.World.prototype.hasActor = function(name){
     if (this.actors[name] == undefined)
@@ -65,48 +106,20 @@ teien.World.prototype.addActor = function(actor_param){
         actor.setup(this.physics);
         this.actors[actor_param.name] = actor;
         console.log("addActor: " + actor_param.name + "\n");
-        if (typeof(this.app.addActor) == 'function')
-            this.app.addActor(actor);            
+//        if (typeof(this.app.addActor) == 'function')
+//            this.app.addActor(actor);            
     }
     return true;
 }
 
 
-teien.World.prototype.connected = function(event) {
-    console.log("connected: " + event.total_clients + "\n");
-
-    if (typeof(this.app.connected) == 'function')
-        this.app.connected(this.ws, event);
+teien.World.prototype.clientConnected = function(event) {
+    console.log("A client is connected: " + event.total_clients + "\n");
 };
 
-teien.World.prototype.disconnected = function(event) {
-    console.log("disconnected: " + event.total_clients + "\n");
-
-    if (typeof(this.app.disconnected) == 'function')
-        this.app.connected(this.ws, event);    
+teien.World.prototype.clientDisconnected = function(event) {
+    console.log("A client is disconnected: " + event.total_clients + "\n");
 };
-
-teien.World.prototype.receiveMessage = function(event) {
-    switch(event.type){
-    case "actors":
-        for (var i = 0; i < event.data.length; i++) {
-            //console.log("actor: " + event.data[i].name + "\n");
-            if (!this.hasActor(event.data[i].name)){
-                this.addActor(event.data[i]);
-            }
-            else {
-                this.actors[event.data[i].name].fromHash(event.data[i]);
-            }
-        }
-        break;
-    default:
-        //console.log("No such an event: " + event.type + "\n");
-    }
-
-    if (typeof(this.app.receiveMessage) == 'function')
-        this.app.receiveMessage(this.ws, event);    
-};
-
 
 teien.World.prototype.update = function(delta) {
     //console.log("World::update is called: " + delta + "\n");
@@ -117,12 +130,7 @@ teien.World.prototype.update = function(delta) {
         this.actors[i].updateTransform(delta);
     }
     
-    // App update
     if (typeof(this.app.update) == 'function')
-        this.app.update(delta);
+        this.app.update(delta);    
 };
-
-
-
-
 

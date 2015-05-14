@@ -28,6 +28,16 @@ BoxActor.prototype.fromHash = function(param){
     this.z = param.z;    
 };
 
+BoxActor.prototype.toHash = function(){
+    hash = teien.Actor.prototype.toHash.call(this);
+    hash.type = this.type;
+    hash.x = this.x;
+    hash.y = this.y;
+    hash.z = this.z;
+    return hash;
+};
+
+
 BoxActor.prototype.update = function(params){
     
 };

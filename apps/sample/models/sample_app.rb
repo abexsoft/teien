@@ -50,11 +50,11 @@ class SampleApp
     
     
     # Sphere
-    actor = Teien::SphereActor.new("sphere", 3, {:mass => 1})
+    actor = Teien::SphereActor.new("sphere", 2, {:mass => 1.0})
     actor.ext_info = {
       :threejs => {
         :mesh => {
-          :geometry => {:sphere => {:radius => 3, :widthSegments => 32, :heightSegments => 32}},
+          :geometry => {:sphere => {:radius => 2, :widthSegments => 32, :heightSegments => 32}},
           :material => {
             :mesh_lambert_material => {
               :map => {
@@ -68,8 +68,9 @@ class SampleApp
       }
     }
     @world.add_actor(actor)
-    actor.set_position(Teien::Vector3D.new(0, 20, 0))    
+    actor.set_position(Teien::Vector3D.new(1, 20, 0))    
 
+=begin    
     # Json, animation
     actor = Teien::GhostActor.new("json")
     actor.ext_info = {
@@ -85,29 +86,6 @@ class SampleApp
     }
     @world.add_actor(actor)
 
-=begin
-    # Box
-    actor = Teien::BoxActor.new("box", Teien::Vector3D.new(2, 2, 2), {:mass => 1})
-    actor.ext_info = {
-      :threejs => {
-        :mesh => {
-          :geometry => {:box => {:width => 2, :height => 2, :depth => 2}},
-          :material => {
-            :mesh_basic_material => {
-              :map => {
-                :texture => {
-                  :image => 'teien/addons/threejs_ui/three.js/examples/textures/brick_diffuse.jpg'
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    @world.add_actor(actor)
-    actor.set_position(Teien::Vector3D.new(0, 1, 0))
-
-
     # Json
     #actor = Teien::BoxActor.new("json", Teien::Vector3D.new(2, 2, 2), {:mass => 0})
     actor = Teien::GhostActor.new("json")
@@ -121,27 +99,33 @@ class SampleApp
     }
     @world.add_actor(actor)
 =end
-                                                                       
-    10.times {|i|
-      actor = Teien::SphereActor.new("sphere-#{i}", 1, {:mass => 1})
-      actor.ext_info = {
-        :threejs => {
-          :mesh => {
-            :geometry => {:sphere => {:radius => 1, :widthSegments => 32, :heightSegments => 32}},
-            :material => {
-              :mesh_lambert_material => {
-                :map => {
-                  :texture => {
-                    :image => 'teien/addons/threejs_ui/three.js/examples/textures/planets/earth_atmos_2048.jpg'
+
+    #4.times {|y|
+    2.times {|y|    
+      5.times {|z|
+        5.times {|x|
+          # Box
+          actor = Teien::BoxActor.new("box-#{x}-#{y}-#{z}", Teien::Vector3D.new(2, 2, 2), {:mass => 1.0})
+          actor.ext_info = {
+            :threejs => {
+              :mesh => {
+                :geometry => {:box => {:width => 2, :height => 2, :depth => 2}},
+                :material => {
+                  :mesh_lambert_material => {
+                    :map => {
+                      :texture => {
+                        :image => 'teien/addons/threejs_ui/three.js/examples/textures/brick_diffuse.jpg'
+                      }
+                    }
                   }
                 }
               }
             }
           }
+          @world.add_actor(actor)
+          actor.set_position(Teien::Vector3D.new(-4 + 2 * x, 2 * y, -4 + 2 * z))
         }
       }
-      @world.add_actor(actor)
-      actor.set_position(Teien::Vector3D.new(-16 + 3 * i, 40, 0))
     }
 
     # Floor
@@ -164,63 +148,9 @@ class SampleApp
     }
     @world.add_actor(actor)
     actor.set_position(Teien::Vector3D.new(0, -0.5, 0))
-    
-=begin
-    actor = Teien::SphereActor.new("sphere2", 1, 0)
-    actor.set_position(Teien::Vector3D.new(0, 0, 0))
-    @world.add_actor(actor)    
-=end
-=begin
-    actor = Teien::Actor.new("actor1")
-    view_object = Teien::Module::Renderer::Mesh.new
-    actor.set_view_object(view_object)
-    actor.set_position(Teien::Vector3D.new(0, 0, 2))
-    @world.add_actor(actor)
 
-    actor = Teien::Actor.new("actor2")
-    # view_object
-    g_params = {
-      :type => 'box',
-      :height => 1,
-      :width => 1,
-      :depth => 1
-    }
-    m_params = {
-      :type => 'basic_material',
-      :color => 0xffffff,
-      :map => {
-        :type => 'texture',
-        :url => 'teien/module/renderer/three.js/examples/textures/crate.gif'
-      }
-    }
-    view_object = Teien::Module::Renderer::Mesh.new(g_params, m_params)
-    actor.set_view_object(view_object)
-    # physics_object
-
-    actor.set_position(Teien::Vector3D.new(1, 1, 3))
-    actor.set_rotation(Teien::Quaternion.new(0.1, 0.1, 0.1, 0.1))
-    @world.add_actor(actor)
-
-    actor = Teien::Actor.new("floor")
-    g_params = {
-      :type => 'box',
-      :height => 50,
-      :width => 50,
-      :depth => 0.1
-    }
-    m_params = {
-      :type => 'basic_material',
-      :color => 0xffffff,
-      :map => {
-        :type => 'texture',
-        :url => 'teien/module/renderer/three.js/examples/textures/brick_diffuse.jpg'
-      }
-    }
-    view_object = Teien::Module::Renderer::Mesh.new(g_params, m_params)
-    actor.set_view_object(view_object)
-    actor.set_position(Teien::Vector3D.new(0, 0, 0))
-    @world.add_actor(actor)
-=end
+    @next_time = 10
+    @sphere_num = 0
   end
 
   def connected(ws, event)
@@ -233,6 +163,30 @@ class SampleApp
   end
   
   def update (delta)
+    @next_time -= delta
+    if (@next_time < 0)
+      @next_time = 3
+      @sphere_num += 1
+      actor = Teien::SphereActor.new("sphere-#{@sphere_num}", 1, {:mass => 1})
+      actor.ext_info = {
+        :threejs => {
+          :mesh => {
+            :geometry => {:sphere => {:radius => 1, :widthSegments => 32, :heightSegments => 32}},
+            :material => {
+              :mesh_lambert_material => {
+                :map => {
+                  :texture => {
+                    :image => 'teien/addons/threejs_ui/three.js/examples/textures/planets/earth_atmos_2048.jpg'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      @world.add_actor(actor)
+      actor.set_position(Teien::Vector3D.new(0, 40, 0))
+    end
   end
 end
 

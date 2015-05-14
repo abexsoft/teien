@@ -29,25 +29,44 @@ teien.Actor.prototype.setPosition = function(vec) {
     this.transform.setOrigin(new Ammo.btVector3(vec.x, vec.y, vec.z));
     if (this.rigidBody) {
         this.rigidBody.setCenterOfMassTransform(this.transform);
+	    //this.rigidBody.setWorldTransform(this.transform);        
+        this.rigidBody.activate();
     }
 };
+
+teien.Actor.prototype.setInterpolatePosition = function(vec) {
+    var oldVec = this.getPosition();
+    var ipVec = new teien.Vector3D((vec.x + oldVec.x) / 2, 
+                                   (vec.y + oldVec.y) / 2, 
+                                   (vec.z + oldVec.z) / 2);
+    //console.log("(" + ipVec.x() + ", " + ipVec.y() + ", " + ipVec.z() +")");
+
+    this.setPosition(ipVec);
+};
+
 
 // quat: teien.Quaternion
 teien.Actor.prototype.setRotation = function(quat) {
     this.transform.setRotation(new Ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w));
     if (this.rigidBody) {    
         this.rigidBody.setCenterOfMassTransform(this.transform);
+	    //this.rigidBody.setWorldTransform(this.transform);                
+        this.rigidBody.activate();
     }
 };
 
 teien.Actor.prototype.setLinearVelocity = function(vec) {
-    if (this.rigidBody)
+    if (this.rigidBody){
         this.rigidBody.setLinearVelocity(new Ammo.btVector3(vec.x, vec.y, vec.z));
+        this.rigidBody.activate();
+    }
 };
 
 teien.Actor.prototype.setAngularVelocity = function(vec) {
-    if (this.rigidBody)
+    if (this.rigidBody){
         this.rigidBody.setAngularVelocity(new Ammo.btVector3(vec.x, vec.y, vec.z));
+        this.rigidBody.activate();
+    }
 };
 
 teien.Actor.prototype.getPosition = function() {
@@ -84,6 +103,7 @@ teien.Actor.prototype.fromHash = function(param){
                                  param.transform.position.y,
                                  param.transform.position.z);
     this.setPosition(pos);
+    //this.setInterpolatePosition(pos);    
     var rot = new teien.Quaternion(param.transform.rotation.x,
                                    param.transform.rotation.y,
                                    param.transform.rotation.z,
@@ -100,6 +120,51 @@ teien.Actor.prototype.fromHash = function(param){
     pos = this.getPosition();
 };
 
+teien.Actor.prototype.toHash = function(){
+    var hash = {};
+	hash.name = this.name;
+    hash.state = this.state;
+    hash.physics_info = this.physics_info;
+    hash.ext_info = this.ext_info;
+
+    var trans = {};
+    var pos = this.transform.getOrigin();
+    trans.position = {
+        x: pos.x(),
+        y: pos.y(),
+        z: pos.z()
+    };
+    var rot = this.transform.getRotation();    
+    trans.rotation = {
+        x: rot.x(),
+        y: rot.y(),
+        z: rot.z(),
+        w: rot.w()
+    };
+    hash.transform = trans;
+
+    if (this.rigidBody) {
+        var l_v = this.rigidBody.getLinearVelocity();
+        hash.linear_vel = {
+            x: l_v.x(),
+            y: l_v.y(),
+            z: l_v.z()
+        };
+    }
+
+    if (this.rigidBody) {    
+        var a_v = this.rigidBody.getAngularVelocity();
+        hash.angular_vel = {
+            x: a_v.x(),
+            y: a_v.y(),
+            z: a_v.z()
+        };
+    }
+
+    return hash;
+};
+
+
 /*
 teien.Actor.prototype.applyImpulse = function(imp, rel) {
 	if (rel === undefined)
@@ -110,15 +175,17 @@ teien.Actor.prototype.applyImpulse = function(imp, rel) {
 */
 
 teien.Actor.prototype.updateTransform = function(delta) {
+
     if (this.rigidBody){
         this.transform = this.rigidBody.getCenterOfMassTransform();
         // This function don't return the right value of @mass == 0.
         //this.rigidBody.getMotionState().getWorldTransform(this.transform); 
         //console.log(this.transform.getOrigin().y() + "\n");
     }
-    this.notify(delta);    
+    //this.notify(delta);    
 };
 
+/*
 // Objserver
 teien.Actor.prototype.attach = function(observer){
     for(i=0; i < this.observers.length; i++){
@@ -141,3 +208,4 @@ teien.Actor.prototype.notify = function(delta){
         this.observers[i].update(delta);
     }
 }
+*/

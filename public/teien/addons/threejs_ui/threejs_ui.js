@@ -58,16 +58,21 @@ teien.ThreejsUi.prototype.onWindowResize = function(s){
 };
 
 teien.ThreejsUi.prototype.update = function(delta, actors) {
+    //console.log("threejsui::update is called\n");    
     for (var i in actors) {
         var actor = actors[i];
+//        console.log("threejsui::update: " + actor.name + "\n");
         if (actor.ext_info.threejs){
             if (this.viewActors[actor.name] == undefined){
                 viewActor = teien.ThreejsUi.createViewActor(actor, this.scene);
                 viewActor.setup(this.scene);
-                actor.attach(viewActor);
+//                actor.attach(viewActor);
                 this.viewActors[actor.name] = viewActor;
             }
-            
+            else {
+//                this.viewActors[actor.name].actor = actor;
+                this.viewActors[actor.name].update(delta * 1000);
+            }
         }
     }
     this.controls.update(delta * 1000);
@@ -315,9 +320,9 @@ teien.ThreejsUi.MeshViewActor.prototype.setup = function(scene){
 };
 
 teien.ThreejsUi.MeshViewActor.prototype.update = function(delta){
-    //console.log(this.actor.name + " update()\n");
-    
     var pos = this.actor.getPosition();
+
+    //console.log(this.actor.name + " update(): " + pos.y + "\n");    
     
     this.mesh.position.x = pos.x;
     this.mesh.position.y = pos.y;

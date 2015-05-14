@@ -23,6 +23,14 @@ SphereActor.prototype.fromHash = function(param){
     this.radius = param.radius;
 };
 
+SphereActor.prototype.toHash = function(){
+    hash = teien.Actor.prototype.toHash.call(this);
+    hash.type = this.type;
+    hash.radius = this.radius;
+    return hash;
+};
+
+
 SphereActor.prototype.update = function(params){
     
 };

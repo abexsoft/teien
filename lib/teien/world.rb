@@ -3,7 +3,7 @@ require_relative './physics'
 
 module Teien
   class World
-    SYNC_PERIOD = 0.5
+    SYNC_PERIOD = 1.0
     attr_accessor :env    
     attr_accessor :clients
     attr_accessor :actors
@@ -31,7 +31,7 @@ module Teien
         }
       }
 
-      # network
+      # network  {:ws, :state}
       @clients = []
 
       # actor
@@ -54,6 +54,20 @@ module Teien
       end
     end
 
+    def send_connected(ws)
+      actors = []
+      @actors.each{|k, v|
+        actors << v.to_hash
+      }
+      
+      actors_event = {}
+      actors_event[:type] = "connected"
+      actors_event[:data] = actors
+
+      #puts actors_event.to_json
+      ws.send(actors_event.to_json)      
+    end
+    
     def send_actors(ws)
       actors = []
       @actors.each{|k, v|
@@ -75,59 +89,71 @@ module Teien
     def setup()
       @physics.setup(@env)
       @app.setup if @app.respond_to?(:setup)
+      @sync_left_time = SYNC_PERIOD      
       set_update_period(1.0 / 60.0)
-      @sync_left_time = SYNC_PERIOD
     end
 
     def connected(ws, event)
-      @clients << ws
+      @clients << {:ws => ws, :state => "CONNECTING"}
       Teien::log.debug("Connection's num: #{@clients.size}")
-
       @app.connected(ws, event) if @app.respond_to?(:connected)
       @clients.each { |client| 
-        event = {:type => "connected", :total_clients => @clients.size}
-        client.send (event.to_json)
+        event = {:type => "client_connected", :total_clients => @clients.size}
+        client[:ws].send (event.to_json)
       }
 
-      send_actors(ws)
+      send_connected(ws)
     end
 
     def disconnected(ws, event)
-      @clients.delete(ws)
+      @clients.each { |client|
+        if (client[:ws] == ws)
+          @clients.delete(client)
+          break;
+        end
+      }
       Teien::log.debug("Connection's num: #{@clients.size}")
 
       @app.disconnected(ws, event) if @app.respond_to?(:disconnected)
       @clients.each { |client| 
-        event = {:type => "disconnected", :total_clients => @clients.size}
-        client.send (event.to_json)
+        event = {:type => "client_disconnected", :total_clients => @clients.size}
+        client[:ws].send (event.to_json)
       }
 
       ws = nil
     end
 
     def receive_message(ws, event)
+      data = JSON.parse(event.data)
+      case data["type"]
+      when "ready" then
+        @clients.each { |client|
+          if (client[:ws] == ws)
+            client[:state] = "READY"
+            break
+          end
+        }
+      else
+        puts "receive #{data[:type]}"
+      end
+      
       @app.receive_message(ws, event) if @app.respond_to?(:receive_message)
-=begin
-      @clients.each { |client| 
-        client.send event.data
-      }
-=end
     end
 
     def update (delta)
+      #puts "delta: #{delta}"
       @physics.update(delta)
       @app.update(delta) if @app.respond_to?(:update)
 
       @sync_left_time -= delta
       if @sync_left_time < 0
         @clients.each { |client|
-          send_actors(client)
+          send_actors(client[:ws]) if (client[:state] == "READY")
         }
         @sync_left_time = SYNC_PERIOD
       end
-        
     end
-
+    
     def run()
       Teien::log.info("Starting up a teien server.")
       setup()
@@ -146,12 +172,13 @@ module Teien
       return if @update_period <= 0
 
       @update_timer_thread = Thread.new {
-        now = 0
+        last_time = 0
         loop do
           start_time = Time.now
-          update(start_time - now) unless now == 0
-          now = Time.now
-          elapsed = now - start_time
+          update(start_time - last_time) unless last_time == 0
+          last_time = start_time
+          end_time = Time.now
+          elapsed = end_time - start_time
           sleep([@update_period - elapsed, 0].max)
         end
       }
