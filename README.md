@@ -1,24 +1,11 @@
 # Teien
 
-Teien will be a web application library to make 3D worlds connected by network easily with Ruby.
-
-## Usage
-
-   $ git clone https://github.com/abexsoft/teien.git  
-   $ cd teien  
-   $ ./bin/teien
-
-   and then access to http://localhost:4567 with your browser.
-
-## Structure
-
-   * app/           : web interface codes for sinatra.  
-   * lib/teien/     : server side codes of 3D world.   
-   * public/teien/  : client(browser) side codes of 3D world.
+Teien will be a web application to control mutiple 3D worlds with Ruby.
+Now constructing a 3D world creating libraries, called Niwa, for Teien. 
 
 ## License
 
 Teien is licensed under MIT License.  
-Copyright (C) 2015 abexsoft@gmail.com
+Copyright (C) 2015 abexsoft@gmail.com 
 
 

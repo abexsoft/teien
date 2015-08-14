@@ -2,11 +2,14 @@ require 'logger'
 require 'faye/websocket'
 
 require_relative "teien/utils"
-require_relative "teien/actor"
 require_relative "teien/server"
+=begin
+require_relative "teien/actor"
+
 require_relative 'teien/actors/sphere_actor'
 require_relative 'teien/actors/box_actor'
 require_relative 'teien/actors/ghost_actor'
+=end
 
 module Teien
   @@log = Logger.new(STDOUT)
